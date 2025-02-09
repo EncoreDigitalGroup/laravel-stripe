@@ -1,5 +1,5 @@
 {
-    "name": "encoredigitalgroup/php-package-template",
+    "name": "encoredigitalgroup/common-stripe",
     "type": "library",
     "authors": [
         {
@@ -46,14 +46,14 @@
     },
     "autoload": {
         "psr-4": {
-            "EncoreDigitalGroup\\PackageTemplate\\": "src/"
+            "EncoreDigitalGroup\\Common\\Stripe\\": "src/"
         }
     },
     "scripts": {},
     "extra": {
         "laravel": {
             "providers": [
-                "EncoreDigitalGroup\\PackageTemplate\\ServiceProvider"
+                "EncoreDigitalGroup\\Common\\Stripe\\Providers\\ServiceProvider"
             ],
             "dont-discover": []
         },
