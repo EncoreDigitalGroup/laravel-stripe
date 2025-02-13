@@ -7,11 +7,18 @@
 
 namespace EncoreDigitalGroup\PackageTemplate\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__ . "/../../resources/views/components", "stripe");
+        Blade::componentNamespace('EncoreDigitalGroup\\Common\\Stripe\\Views\\Components', "stripe");
+    }
 }
