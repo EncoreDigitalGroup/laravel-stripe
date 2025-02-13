@@ -8,10 +8,8 @@
 namespace EncoreDigitalGroup\Common\Stripe;
 
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
-use PHPGenesis\Logger\Logger;
-use Stripe\Exception\ApiErrorException;
-use Stripe\FinancialConnections\Session as FinancialConnectionsSession;
 
 class Stripe
 {
@@ -22,20 +20,10 @@ class Stripe
         return StripeCustomer::make(...$params);
     }
 
-    public function createFinancialConnectionsSession(StripeCustomer $customer): ?FinancialConnectionsSession
+    public static function financialConnections(StripeCustomer $customer, array $permissions = ["transactions"]): StripeFinancialConnection
     {
-        try {
-            return $this
-                ->stripe
-                ->financialConnections
-                ->sessions
-                ->create($customer->toArray());
-        } catch (ApiErrorException $exception) {
-            Logger::error("[Stripe] Exception {exception.message}", [
-                "exception.message" => $exception->getMessage(),
-            ]);
-        }
+        $stripe = self::make()->stripe;
 
-        return null;
+        return StripeFinancialConnection::make(stripe: $stripe, customer: $customer, permissions: $permissions);
     }
 }
