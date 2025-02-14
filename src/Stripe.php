@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Common\Stripe;
 
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
+use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
 
 class Stripe
@@ -20,10 +21,13 @@ class Stripe
         return StripeCustomer::make(...$params);
     }
 
-    public static function financialConnections(StripeCustomer $customer, array $permissions = ["transactions"]): StripeFinancialConnection
+    public static function financialConnections(mixed ...$params): StripeFinancialConnection
     {
-        $stripe = self::make()->stripe;
+        return StripeFinancialConnection::make(...$params);
+    }
 
-        return StripeFinancialConnection::make(stripe: $stripe, customer: $customer, permissions: $permissions);
+    public static function webhook(): StripeWebhook
+    {
+        return StripeWebhook::make();
     }
 }
