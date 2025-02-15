@@ -13,9 +13,7 @@ use Illuminate\View\Component;
 
 class FinancialConnections extends Component
 {
-    public function __construct(public ?string $stripePublicKey = null, public ?string $stripeSessionSecret = null)
-    {
-    }
+    public function __construct(public ?string $stripePublicKey = null, public ?string $stripeSessionSecret = null) {}
 
     public function render(): View|Closure|string
     {

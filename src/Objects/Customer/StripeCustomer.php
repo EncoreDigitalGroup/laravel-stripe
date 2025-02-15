@@ -16,16 +16,14 @@ class StripeCustomer
     use HasMake;
 
     public function __construct(
-        public ?string         $id = null,
-        public ?StripeAddress  $address = null,
-        public ?string         $description = null,
-        public ?string         $email = null,
-        public ?string         $name = null,
-        public ?string         $phone = null,
+        public ?string $id = null,
+        public ?StripeAddress $address = null,
+        public ?string $description = null,
+        public ?string $email = null,
+        public ?string $name = null,
+        public ?string $phone = null,
         public ?StripeShipping $shipping = null
-    )
-    {
-    }
+    ) {}
 
     public function toArray(): array
     {

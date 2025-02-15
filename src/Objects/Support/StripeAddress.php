@@ -20,9 +20,7 @@ class StripeAddress
         public ?string $state = null,
         public ?string $postalCode = null,
         public ?string $country = null
-    )
-    {
-    }
+    ) {}
 
     public function toArray(): array
     {

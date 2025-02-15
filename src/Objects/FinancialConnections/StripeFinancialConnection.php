@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
@@ -15,10 +16,8 @@ class StripeFinancialConnection
 
     public function __construct(
         public StripeCustomer $customer,
-        public array          $permissions = ["transactions"]
-    )
-    {
-    }
+        public array $permissions = ["transactions"]
+    ) {}
 
     public function toArray(): array
     {
