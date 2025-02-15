@@ -5,14 +5,16 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\PackageTemplate\Providers;
+namespace EncoreDigitalGroup\Common\Stripe\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
     public function boot(): void
     {
