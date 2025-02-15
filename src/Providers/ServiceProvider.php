@@ -12,11 +12,13 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__ . "/../../resources/views/components", "stripe");
-        Blade::componentNamespace('EncoreDigitalGroup\\Common\\Stripe\\Views\\Components', "stripe");
+        $this->loadViewsFrom(__DIR__ . "/../../resources/views", "stripe");
+        Blade::componentNamespace('EncoreDigitalGroup\\Common\\Stripe\\Views', "stripe");
     }
 }
