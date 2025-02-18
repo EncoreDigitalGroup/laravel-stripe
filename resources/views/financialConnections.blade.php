@@ -1,6 +1,8 @@
 <script>
-    const stripe = new Stripe({{ $stripePublicKey }})
-    const financialConnectionsSessionResult = await stripe.collectFinancialConnectionsAccounts({
-        clientSecret: {{ $stripeSessionSecret }},
+    const stripe = new Stripe("{{ $stripePublicKey }}")
+    stripe.collectFinancialConnectionsAccounts({
+        clientSecret: "{{ $stripeSessionSecret }}",
+    }).then(function (result) {
+        console.info(result);
     });
 </script>
