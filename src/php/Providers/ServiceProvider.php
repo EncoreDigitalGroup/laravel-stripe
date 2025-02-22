@@ -25,6 +25,6 @@ class ServiceProvider extends BaseServiceProvider
 
         FilamentAsset::register([
             Js::make("financialConnections", __DIR__ . "/../../../dist/bundle.js"),
-        ], 'encoredigitalgroup/common-stripe');
+        ], "encoredigitalgroup/common-stripe");
     }
 }
