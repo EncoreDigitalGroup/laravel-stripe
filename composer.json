@@ -50,7 +50,11 @@
             "EncoreDigitalGroup\\Common\\Stripe\\": "src/php/"
         }
     },
-    "scripts": {},
+    "scripts": {
+        "post-autoload-dump": [
+            "PHPGenesis\\Common\\Composer\\Scripts::postAutoloadDump"
+        ]
+    },
     "extra": {
         "laravel": {
             "providers": [

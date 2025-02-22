@@ -1,15 +1,32 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "ESNext",
-        "moduleResolution": "Node",
-        "strict": true,
+        "allowSyntheticDefaultImports": true,
+        "allowUnreachableCode": false,
+        "alwaysStrict": true,
+        "baseUrl": ".",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "noImplicitAny": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "outDir": "./dist",
-        "rootDir": "./src"
+        "removeComments": true,
+        "resolveJsonModule": true,
+        "rootDir": "./src/ts",
+        "skipLibCheck": true,
+        "strict": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "target": "ES2020",
+        "types": [
+            "node"
+        ]
     },
     "include": [
-        "src"
+        "src/ts/**/*"
     ]
 }
