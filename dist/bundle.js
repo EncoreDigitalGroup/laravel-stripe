@@ -134,7 +134,7 @@
     });
   };
 
-  // src/ts/index.ts
+  // src/ts/FinancialConnection.ts
   var FinancialConnection = class {
     constructor(stripePublicKey, stripeSessionSecret, redirectSuccessUrl, redirectErrorUrl) {
       this.stripePublicKey = stripePublicKey;
@@ -157,5 +157,7 @@
       }
     }
   };
+
+  // src/ts/index.ts
   window.FinancialConnection = FinancialConnection;
 })();
