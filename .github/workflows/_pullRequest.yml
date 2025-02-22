@@ -58,7 +58,27 @@ jobs:
             path: 'src/'
             branch: ${{ github.head_ref }}
 
+    BundleAsset:
+        needs: StaticAnalysis
+        name: BundleAsset
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v4
+
+            -   name: Set Up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "20"
+
+            -   name: Install Dependencies
+                run: npm install
+
+            -   name: Bundle Assets
+                shell: bash
+                run: "$GITHUB_WORKSPACE/scripts/ci_build.sh"
+
     AutoMerge:
-        needs: [ StaticAnalysis ]
+        needs: [ StaticAnalysis, BundleAsset ]
         name: Auto-Merge
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v2
