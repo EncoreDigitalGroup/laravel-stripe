@@ -148,13 +148,35 @@
         throw new Error("Failed to initialize Stripe");
       }
       try {
-        await stripe.collectFinancialConnectionsAccounts({
+        const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
           clientSecret: this.stripeSessionSecret
         });
-        window.location.href = this.redirectSuccessUrl;
+        if (financialConnectionResult.financialConnectionsSession === void 0) {
+          this.fail();
+          return;
+        }
+        const financialConnection = financialConnectionResult.financialConnectionsSession;
+        if (financialConnection.accounts.length === 0) {
+          this.fail();
+          return;
+        }
+        this.success();
       } catch (error) {
-        window.location.href = this.redirectErrorUrl;
+        this.fail();
       }
+    }
+    redirect(success = true) {
+      if (success) {
+        window.location.href = this.redirectSuccessUrl;
+        return;
+      }
+      window.location.href = this.redirectErrorUrl;
+    }
+    fail() {
+      this.redirect(false);
+    }
+    success() {
+      this.redirect();
     }
   };
 
