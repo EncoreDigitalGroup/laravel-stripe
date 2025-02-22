@@ -5,7 +5,7 @@
         "fix": "prettier --write 'src/ts/**/*'",
         "json:sort": "jsonsort tsconfig.json && jsonsort package.json",
         "lint": "gts lint",
-        "postinstall": "@json:sort"
+        "postinstall": "npm run json:sort"
     },
     "devDependencies": {
         "@stripe/stripe-js": "^5.6.0",
