@@ -1,17 +1,19 @@
 {
-    "name": "@encoredigitalgroup/common-stripe",
-    "devDependencies": {
-        "@stripe/stripe-js": "^5.6.0",
-        "@types/node": "^22.13.5",
-        "esbuild": "^0.25.0",
-        "gts": "^6.0.2",
-        "typescript": "^5.6.3"
-    },
-    "scripts": {
-        "build": "npx esbuild src/ts/index.ts --bundle --outfile=dist/bundle.js --platform=browser --format=iife",
-        "check": "gts check",
-        "fix": "gts fix",
-        "lint": "gts lint",
-        "clean": "gts clean"
-    }
+  "name": "@encoredigitalgroup/common-stripe",
+  "scripts": {
+    "build": "npm run json:sort && npx esbuild src/ts/index.ts --bundle --outfile=dist/bundle.js --platform=browser --format=iife",
+    "fix": "prettier --write 'src/ts/**/*'",
+    "json:sort": "jsonsort tsconfig.json && jsonsort package.json",
+    "lint": "gts lint",
+    "postinstall": "@json:sort"
+  },
+  "devDependencies": {
+    "@stripe/stripe-js": "^5.6.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/node": "^22.13.5",
+    "esbuild": "^0.25.0",
+    "gts": "^6.0.2",
+    "json-sort-cli": "^4.0.4",
+    "typescript": "^5.6.3"
+  }
 }

@@ -2,7 +2,6 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 import {loadStripe} from "@stripe/stripe-js";
 
 declare global {
@@ -21,7 +20,7 @@ export class FinancialConnection {
         stripePublicKey: string,
         stripeSessionSecret: string,
         redirectSuccessUrl: string,
-        redirectErrorUrl: string
+        redirectErrorUrl: string,
     ) {
         this.stripePublicKey = stripePublicKey;
         this.stripeSessionSecret = stripeSessionSecret;
@@ -32,7 +31,7 @@ export class FinancialConnection {
     async initialize(): Promise<void> {
         const stripe = await loadStripe(this.stripePublicKey);
         if (!stripe) {
-            throw new Error('Failed to initialize Stripe');
+            throw new Error("Failed to initialize Stripe");
         }
 
         try {
