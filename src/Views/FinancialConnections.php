@@ -33,7 +33,7 @@ class FinancialConnections extends Component
     private function redirectUrlIsNull(string $property): void
     {
         if (is_null($this->$property)) {
-            $this->$property == Config::get("app.url");
+            Config::get("app.url");
         }
     }
 }
