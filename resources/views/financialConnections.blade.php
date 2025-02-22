@@ -6,4 +6,6 @@
         "{{ $redirectSuccessUrl }}",
         "{{ $redirectErrorUrl }}"
     );
+
+    stripeConnection.initialize();
 </script>
