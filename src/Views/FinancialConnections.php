@@ -19,8 +19,7 @@ class FinancialConnections extends Component
         public ?string $stripeSessionSecret = null,
         public ?string $redirectSuccessUrl = null,
         public ?string $redirectErrorUrl = null
-    )
-    {
+    ) {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
     }
@@ -32,7 +31,7 @@ class FinancialConnections extends Component
 
     private function redirectUrlIsNull(string $property): void
     {
-        if (is_null($this->$property)) {
+        if (is_null($this->{$property})) {
             Config::get("app.url");
         }
     }
