@@ -27,6 +27,7 @@
     "require": {
         "php": "^8.3",
         "encoredigitalgroup/stdlib": "^2.0",
+        "filament/support": "^3.2",
         "illuminate/support": "^11.0",
         "phpgenesis/logger": "^0.3",
         "stripe/stripe-php": "^16.5"
@@ -46,7 +47,7 @@
     },
     "autoload": {
         "psr-4": {
-            "EncoreDigitalGroup\\Common\\Stripe\\": "src/"
+            "EncoreDigitalGroup\\Common\\Stripe\\": "src/php/"
         }
     },
     "scripts": {},

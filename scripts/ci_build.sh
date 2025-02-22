@@ -9,6 +9,8 @@ git config --global user.email "ghbot@encoredigitalgroup.com"
 
 cd "$GITHUB_WORKSPACE"
 
+npm run build
+
 if [ -z "$(git status --porcelain)" ]; then
   # Working directory clean
   echo "Working Tree is Clean! Nothing to commit."

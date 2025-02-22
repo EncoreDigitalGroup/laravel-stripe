@@ -1,5 +1,17 @@
 {
+    "name": "@encoredigitalgroup/common-stripe",
     "devDependencies": {
-        "@stripe/stripe-js": "^5.6.0"
+        "@stripe/stripe-js": "^5.6.0",
+        "@types/node": "^22.13.5",
+        "esbuild": "^0.25.0",
+        "gts": "^6.0.2",
+        "typescript": "^5.6.3"
+    },
+    "scripts": {
+        "build": "npx esbuild src/ts/index.ts --bundle --outfile=dist/bundle.js --platform=browser --format=iife",
+        "check": "gts check",
+        "fix": "gts fix",
+        "lint": "gts lint",
+        "clean": "gts clean"
     }
 }
