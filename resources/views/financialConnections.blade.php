@@ -1,4 +1,3 @@
-<body></body>
 <script>
     const stripe = new Stripe("{{ $stripePublicKey }}");
     stripe.collectFinancialConnectionsAccounts({
