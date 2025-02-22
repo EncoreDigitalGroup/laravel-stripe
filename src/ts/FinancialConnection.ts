@@ -25,17 +25,48 @@ export class FinancialConnection {
 
     async initialize(): Promise<void> {
         const stripe = await loadStripe(this.stripePublicKey);
+
         if (!stripe) {
             throw new Error("Failed to initialize Stripe");
         }
 
         try {
-            await stripe.collectFinancialConnectionsAccounts({
-                clientSecret: this.stripeSessionSecret,
+            const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
+                clientSecret: this.stripeSessionSecret
             });
-            window.location.href = this.redirectSuccessUrl;
+
+            if (financialConnectionResult.financialConnectionsSession === undefined) {
+                this.fail();
+                return;
+            }
+
+            const financialConnection = financialConnectionResult.financialConnectionsSession;
+
+            if (financialConnection.accounts.length === 0) {
+                this.fail();
+                return;
+            }
+
+            this.success();
         } catch (error) {
-            window.location.href = this.redirectErrorUrl;
+            this.fail();
         }
+    }
+
+    redirect(success = true): void {
+        if (success) {
+            window.location.href = this.redirectSuccessUrl;
+            return;
+        }
+
+        window.location.href = this.redirectErrorUrl;
+    }
+
+    fail(): void {
+        this.redirect(false);
+    }
+
+    success(): void {
+        this.redirect();
     }
 }
