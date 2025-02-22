@@ -1,10 +1,9 @@
+<script src="/js/encoredigitalgroup/common-stripe/financialConnections.js"></script>
 <script>
-    const stripe = new Stripe("{{ $stripePublicKey }}");
-    stripe.collectFinancialConnectionsAccounts({
-        clientSecret: "{{ $stripeSessionSecret }}",
-    }).then(function (event) {
-        window.location.href = "{{ $redirectSuccessUrl }}"
-    }).catch(function (event) {
-        window.location.href = "{{ $redirectErrorUrl }}"
-    })
+    const stripeConnection = new FinancialConnection(
+        "{{ $stripePublicKey }}",
+        "{{ $stripeSessionSecret }}",
+        "{{ $redirectSuccessUrl }}",
+        "{{ $redirectErrorUrl }}"
+    );
 </script>
