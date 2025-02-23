@@ -19,7 +19,7 @@ export class FinancialConnection {
         redirectSuccessUrl: string,
         redirectErrorUrl: string,
         publicSecurityKey: string,
-        privateSecurityKey: string
+        privateSecurityKey: string,
     ) {
         this.stripePublicKey = stripePublicKey;
         this.stripeSessionSecret = stripeSessionSecret;
