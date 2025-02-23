@@ -2,7 +2,6 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 import {loadStripe} from "@stripe/stripe-js";
 
 export class FinancialConnection {
@@ -31,8 +30,24 @@ export class FinancialConnection {
         }
 
         try {
+            const publicSecurityKey = document.getElementById("spPublicSecurityKey") as HTMLElement;
+            const privateSecurityKey = document.getElementById("spPrivateSecurityKey");
+
+            if (publicSecurityKey === undefined || publicSecurityKey === null) {
+                this.fail();
+                return;
+            }
+
+            if (privateSecurityKey === undefined || privateSecurityKey === null) {
+                this.fail();
+                return;
+            }
+
+            console.info(publicSecurityKey);
+            console.info(privateSecurityKey);
+
             const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
-                clientSecret: this.stripeSessionSecret
+                clientSecret: this.stripeSessionSecret,
             });
 
             if (financialConnectionResult.financialConnectionsSession === undefined) {

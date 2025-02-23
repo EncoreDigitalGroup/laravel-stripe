@@ -1,10 +1,9 @@
 {
     "name": "@encoredigitalgroup/common-stripe",
     "scripts": {
-        "build": "npm run json:sort && npx esbuild src/ts/index.ts --bundle --outfile=dist/bundle.js --platform=browser --format=iife",
+        "build": "npm run json:sort && npm run fix && npx esbuild src/ts/index.ts --bundle --outfile=dist/bundle.js --platform=browser --format=iife",
         "fix": "prettier --write 'src/ts/**/*'",
         "json:sort": "jsonsort --indentationCount=4 tsconfig.json && jsonsort --indentationCount=4 package.json",
-        "lint": "gts lint",
         "postinstall": "npm run json:sort"
     },
     "devDependencies": {

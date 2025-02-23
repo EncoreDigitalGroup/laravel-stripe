@@ -148,6 +148,18 @@
         throw new Error("Failed to initialize Stripe");
       }
       try {
+        const publicSecurityKey = document.getElementById("spPublicSecurityKey");
+        const privateSecurityKey = document.getElementById("spPrivateSecurityKey");
+        if (publicSecurityKey === void 0 || publicSecurityKey === null) {
+          this.fail();
+          return;
+        }
+        if (privateSecurityKey === void 0 || privateSecurityKey === null) {
+          this.fail();
+          return;
+        }
+        console.info(publicSecurityKey);
+        console.info(privateSecurityKey);
         const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
           clientSecret: this.stripeSessionSecret
         });

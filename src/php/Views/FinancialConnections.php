@@ -18,8 +18,11 @@ class FinancialConnections extends Component
         public ?string $stripePublicKey = null,
         public ?string $stripeSessionSecret = null,
         public ?string $redirectSuccessUrl = null,
-        public ?string $redirectErrorUrl = null
-    ) {
+        public ?string $redirectErrorUrl = null,
+        public ?string $publicSecurityKey = null,
+        public ?string $privateSecurityKey = null
+    )
+    {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
     }
