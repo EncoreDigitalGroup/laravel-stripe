@@ -57,10 +57,8 @@ export class FinancialConnection {
                 await axios.post(
                     "/_private/api/financials/bankAccounts/create",
                     JSON.stringify({
-                        securityKeys: {
-                            publicKey: this.publicSecurityKey,
-                            privateKey: this.privateSecurityKey,
-                        },
+                        publicSecurityKey: this.publicSecurityKey,
+                        privateSecurityKey: this.privateSecurityKey,
                         accounts: financialConnection.accounts,
                     }),
                 );
