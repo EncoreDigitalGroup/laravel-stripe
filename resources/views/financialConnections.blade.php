@@ -3,6 +3,7 @@
     const stripeConnection = new FinancialConnection(
         "{{ $stripePublicKey }}",
         "{{ $stripeSessionSecret }}",
+        "{{ $stripeCustomerId }}",
         "{{ $redirectSuccessUrl }}",
         "{{ $redirectErrorUrl }}",
         "{{ $postSuccessUrl }}",

@@ -2638,9 +2638,10 @@
 
   // src/ts/FinancialConnection.ts
   var FinancialConnection = class {
-    constructor(stripePublicKey, stripeSessionSecret, redirectSuccessUrl, redirectErrorUrl, postSuccessUrl, publicSecurityKey, privateSecurityKey) {
+    constructor(stripePublicKey, stripeSessionSecret, stripeCustomerId, redirectSuccessUrl, redirectErrorUrl, postSuccessUrl, publicSecurityKey, privateSecurityKey) {
       this.stripePublicKey = stripePublicKey;
       this.stripeSessionSecret = stripeSessionSecret;
+      this.stripeCustomerId = stripeCustomerId;
       this.redirectSuccessUrl = redirectSuccessUrl;
       this.redirectErrorUrl = redirectErrorUrl;
       this.postSuccessUrl = postSuccessUrl;
@@ -2672,9 +2673,9 @@
             publicKey: this.publicSecurityKey.toString(),
             privateKey: this.privateSecurityKey.toString()
           },
+          stripeCustomerId: this.stripeCustomerId,
           accounts: financialConnection.accounts
         };
-        console.info(connectedAccountsPayload);
         try {
           await axios_default.post(this.postSuccessUrl, JSON.stringify(connectedAccountsPayload));
           this.success();

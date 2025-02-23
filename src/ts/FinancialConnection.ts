@@ -8,6 +8,7 @@ import axios from "axios";
 export class FinancialConnection {
     private readonly stripePublicKey: string;
     private readonly stripeSessionSecret: string;
+    private readonly stripeCustomerId: string;
     private readonly redirectSuccessUrl: string;
     private readonly redirectErrorUrl: string;
     private readonly postSuccessUrl: string;
@@ -17,6 +18,7 @@ export class FinancialConnection {
     constructor(
         stripePublicKey: string,
         stripeSessionSecret: string,
+        stripeCustomerId: string,
         redirectSuccessUrl: string,
         redirectErrorUrl: string,
         postSuccessUrl: string,
@@ -25,6 +27,7 @@ export class FinancialConnection {
     ) {
         this.stripePublicKey = stripePublicKey;
         this.stripeSessionSecret = stripeSessionSecret;
+        this.stripeCustomerId = stripeCustomerId;
         this.redirectSuccessUrl = redirectSuccessUrl;
         this.redirectErrorUrl = redirectErrorUrl;
         this.postSuccessUrl = postSuccessUrl;
@@ -64,10 +67,9 @@ export class FinancialConnection {
                     publicKey: this.publicSecurityKey.toString(),
                     privateKey: this.privateSecurityKey.toString(),
                 },
+                stripeCustomerId: this.stripeCustomerId,
                 accounts: financialConnection.accounts,
             };
-
-            console.info(connectedAccountsPayload);
 
             try {
                 await axios.post(this.postSuccessUrl, JSON.stringify(connectedAccountsPayload));
