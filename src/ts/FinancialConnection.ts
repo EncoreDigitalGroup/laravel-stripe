@@ -33,16 +33,19 @@ export class FinancialConnection {
     }
 
     async initialize(): Promise<void> {
-        const stripe = await loadStripe(this.stripePublicKey);
-
-        if (!stripe) {
-            throw new Error("Failed to initialize Stripe");
-        }
-
         try {
+            const stripe = await loadStripe(this.stripePublicKey);
+
+            if (stripe === null) {
+                this.fail();
+                return;
+            }
+
             const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
                 clientSecret: this.stripeSessionSecret,
             });
+
+            console.info(this.postSuccessUrl);
 
             if (financialConnectionResult.financialConnectionsSession === undefined) {
                 this.fail();
@@ -56,15 +59,18 @@ export class FinancialConnection {
                 return;
             }
 
+            const connectedAccountsPayload = {
+                securityKeys: {
+                    publicKey: this.publicSecurityKey.toString(),
+                    privateKey: this.privateSecurityKey.toString(),
+                },
+                accounts: financialConnection.accounts,
+            };
+
+            console.info(connectedAccountsPayload);
+
             try {
-                await axios.post(
-                    this.postSuccessUrl,
-                    JSON.stringify({
-                        publicSecurityKey: this.publicSecurityKey,
-                        privateSecurityKey: this.privateSecurityKey,
-                        accounts: financialConnection.accounts,
-                    }),
-                );
+                await axios.post(this.postSuccessUrl, JSON.stringify(connectedAccountsPayload));
                 this.success();
             } catch (error) {
                 this.fail();
@@ -85,9 +91,11 @@ export class FinancialConnection {
 
     fail(): void {
         this.redirect(false);
+        return;
     }
 
     success(): void {
         this.redirect();
+        return;
     }
 }
