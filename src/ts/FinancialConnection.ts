@@ -63,9 +63,6 @@ export class FinancialConnection {
                 return;
             }
 
-            console.info(financialConnection);
-            return;
-
             try {
                 await axios.post(
                     "/_private/api/financials/bankAccounts/create",
