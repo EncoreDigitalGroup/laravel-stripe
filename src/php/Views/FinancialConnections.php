@@ -19,12 +19,14 @@ class FinancialConnections extends Component
         public ?string $stripeSessionSecret = null,
         public ?string $redirectSuccessUrl = null,
         public ?string $redirectErrorUrl = null,
+        public ?string $postSuccessUrl = null,
         public ?string $publicSecurityKey = null,
         public ?string $privateSecurityKey = null
     )
     {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
+        $this->redirectUrlIsNull("postSuccessUrl");
     }
 
     public function render(): View|Closure|string

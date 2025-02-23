@@ -5,6 +5,7 @@
         "{{ $stripeSessionSecret }}",
         "{{ $redirectSuccessUrl }}",
         "{{ $redirectErrorUrl }}",
+        "{{ $postSuccessUrl }}",
         "{{ $publicSecurityKey }}",
         "{{ $privateSecurityKey }}"
     );

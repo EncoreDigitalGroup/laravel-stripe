@@ -10,6 +10,7 @@ export class FinancialConnection {
     private readonly stripeSessionSecret: string;
     private readonly redirectSuccessUrl: string;
     private readonly redirectErrorUrl: string;
+    private readonly postSuccessUrl: string;
     private readonly publicSecurityKey: string;
     private readonly privateSecurityKey: string;
 
@@ -18,6 +19,7 @@ export class FinancialConnection {
         stripeSessionSecret: string,
         redirectSuccessUrl: string,
         redirectErrorUrl: string,
+        postSuccessUrl: string,
         publicSecurityKey: string,
         privateSecurityKey: string,
     ) {
@@ -25,6 +27,7 @@ export class FinancialConnection {
         this.stripeSessionSecret = stripeSessionSecret;
         this.redirectSuccessUrl = redirectSuccessUrl;
         this.redirectErrorUrl = redirectErrorUrl;
+        this.postSuccessUrl = postSuccessUrl;
         this.publicSecurityKey = publicSecurityKey;
         this.privateSecurityKey = privateSecurityKey;
     }
@@ -55,7 +58,7 @@ export class FinancialConnection {
 
             try {
                 await axios.post(
-                    "/_private/api/financials/bankAccounts/create",
+                    this.postSuccessUrl,
                     JSON.stringify({
                         publicSecurityKey: this.publicSecurityKey,
                         privateSecurityKey: this.privateSecurityKey,
