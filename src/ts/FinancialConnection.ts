@@ -30,8 +30,8 @@ export class FinancialConnection {
         }
 
         try {
-            const publicSecurityKey = document.getElementById("spPublicSecurityKey") as HTMLElement;
-            const privateSecurityKey = document.getElementById("spPrivateSecurityKey");
+            const publicSecurityKey = document.getElementById("spPublicSecurityKey") as HTMLInputElement;
+            const privateSecurityKey = document.getElementById("spPrivateSecurityKey") as HTMLInputElement;
 
             if (publicSecurityKey === undefined || publicSecurityKey === null) {
                 this.fail();
@@ -43,8 +43,8 @@ export class FinancialConnection {
                 return;
             }
 
-            console.info(publicSecurityKey);
-            console.info(privateSecurityKey);
+            console.info(publicSecurityKey.value);
+            console.info(privateSecurityKey.value);
 
             const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
                 clientSecret: this.stripeSessionSecret,
