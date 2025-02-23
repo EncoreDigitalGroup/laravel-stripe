@@ -3,6 +3,7 @@
  * All Right Reserved.
  */
 import {loadStripe} from "@stripe/stripe-js";
+import axios from "axios";
 
 export class FinancialConnection {
     private readonly stripePublicKey: string;
@@ -62,7 +63,21 @@ export class FinancialConnection {
                 return;
             }
 
-            this.success();
+            try {
+                await axios.post(
+                    "/_private/api/financials/bankAccounts/create",
+                    JSON.stringify({
+                        securityKeys: {
+                            publicKey: publicSecurityKey.value,
+                            privateKey: privateSecurityKey.value,
+                        },
+                        accountData: financialConnection,
+                    }),
+                );
+                this.success();
+            } catch (error) {
+                this.fail();
+            }
         } catch (error) {
             this.fail();
         }
