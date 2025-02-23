@@ -6,7 +6,6 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections;
 
-use Illuminate\Support\Collection;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class StripeBankAccount
@@ -24,11 +23,11 @@ class StripeBankAccount
 
     #[SerializedName("livemode")]
     public ?bool $liveMode;
-    public Collection $permissions;
-    public Collection $subscriptions;
+    public array $permissions;
+    public array $subscriptions;
 
     #[SerializedName("supported_payment_method_types")]
-    public Collection $supportedPaymentMethodTypes;
+    public array $supportedPaymentMethodTypes;
 
     #[SerializedName("transaction_refresh")]
     public ?string $transactionRefresh;
