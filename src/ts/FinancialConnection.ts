@@ -10,17 +10,23 @@ export class FinancialConnection {
     private readonly stripeSessionSecret: string;
     private readonly redirectSuccessUrl: string;
     private readonly redirectErrorUrl: string;
+    private readonly publicSecurityKey: string;
+    private readonly privateSecurityKey: string;
 
     constructor(
         stripePublicKey: string,
         stripeSessionSecret: string,
         redirectSuccessUrl: string,
         redirectErrorUrl: string,
+        publicSecurityKey: string,
+        privateSecurityKey: string
     ) {
         this.stripePublicKey = stripePublicKey;
         this.stripeSessionSecret = stripeSessionSecret;
         this.redirectSuccessUrl = redirectSuccessUrl;
         this.redirectErrorUrl = redirectErrorUrl;
+        this.publicSecurityKey = publicSecurityKey;
+        this.privateSecurityKey = privateSecurityKey;
     }
 
     async initialize(): Promise<void> {
@@ -31,22 +37,6 @@ export class FinancialConnection {
         }
 
         try {
-            const publicSecurityKey = document.getElementById("spPublicSecurityKey") as HTMLInputElement;
-            const privateSecurityKey = document.getElementById("spPrivateSecurityKey") as HTMLInputElement;
-
-            if (publicSecurityKey === undefined || publicSecurityKey === null) {
-                this.fail();
-                return;
-            }
-
-            if (privateSecurityKey === undefined || privateSecurityKey === null) {
-                this.fail();
-                return;
-            }
-
-            console.info(publicSecurityKey.value);
-            console.info(privateSecurityKey.value);
-
             const financialConnectionResult = await stripe.collectFinancialConnectionsAccounts({
                 clientSecret: this.stripeSessionSecret,
             });
@@ -68,10 +58,10 @@ export class FinancialConnection {
                     "/_private/api/financials/bankAccounts/create",
                     JSON.stringify({
                         securityKeys: {
-                            publicKey: publicSecurityKey.value,
-                            privateKey: privateSecurityKey.value,
+                            publicKey: this.publicSecurityKey,
+                            privateKey: this.privateSecurityKey,
                         },
-                        accountData: financialConnection,
+                        accounts: financialConnection.accounts,
                     }),
                 );
                 this.success();
