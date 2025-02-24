@@ -17,11 +17,16 @@ class FinancialConnections extends Component
     public function __construct(
         public ?string $stripePublicKey = null,
         public ?string $stripeSessionSecret = null,
+        public ?string $stripeCustomerId = null,
         public ?string $redirectSuccessUrl = null,
-        public ?string $redirectErrorUrl = null
+        public ?string $redirectErrorUrl = null,
+        public ?string $postSuccessUrl = null,
+        public ?string $publicSecurityKey = null,
+        public ?string $privateSecurityKey = null
     ) {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
+        $this->redirectUrlIsNull("postSuccessUrl");
     }
 
     public function render(): View|Closure|string
@@ -29,7 +34,7 @@ class FinancialConnections extends Component
         return $this->view("stripe::financialConnections");
     }
 
-    private function redirectUrlIsNull(string $property): void
+    protected function redirectUrlIsNull(string $property): void
     {
         if (is_null($this->{$property})) {
             Config::get("app.url");
