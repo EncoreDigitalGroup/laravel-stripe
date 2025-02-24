@@ -23,8 +23,7 @@ class FinancialConnections extends Component
         public ?string $postSuccessUrl = null,
         public ?string $publicSecurityKey = null,
         public ?string $privateSecurityKey = null
-    )
-    {
+    ) {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
         $this->redirectUrlIsNull("postSuccessUrl");

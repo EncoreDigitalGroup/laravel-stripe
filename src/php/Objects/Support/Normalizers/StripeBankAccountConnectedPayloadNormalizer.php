@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
@@ -6,17 +7,17 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
 
+use ArrayObject;
+use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
 use InvalidArgumentException;
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
-use PHPGenesis\Logger\Logger;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface, DenormalizerInterface
+class StripeBankAccountConnectedPayloadNormalizer implements DenormalizerInterface, NormalizerInterface
 {
     private ObjectNormalizer $objectNormalizer;
 
@@ -25,7 +26,7 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         $this->objectNormalizer = $objectNormalizer;
     }
 
-    public function normalize(mixed $data, string $format = null, array $context = []): array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): array
     {
         if (!$data instanceof StripeBankAccountConnectedPayload) {
             throw new InvalidArgumentException("The object must be an instance of StripeBankAccountConnectedPayload");
@@ -41,14 +42,14 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn($account): array|\ArrayObject|bool|float|int|string|null => $this->objectNormalizer->normalize($account, $format, $context),
+            fn ($account): array|ArrayObject|bool|float|int|string|null => $this->objectNormalizer->normalize($account, $format, $context),
             $data->accounts
         );
 
         return $result;
     }
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): StripeBankAccountConnectedPayload
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): StripeBankAccountConnectedPayload
     {
         if ($data instanceof StripeBankAccountConnectedPayload) {
             return $data;
@@ -66,7 +67,7 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
             $decodedData["securityKeys"]["privateKey"] = $securityKeys->privateKey;
         }
 
-        $payload = new StripeBankAccountConnectedPayload();
+        $payload = new StripeBankAccountConnectedPayload;
 
         // Handle stripeCustomerId
         $payload->setStripeCustomerId($data["stripeCustomerId"]);
@@ -88,7 +89,7 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         // Handle accounts
         if (isset($data["accounts"]) && is_array($data["accounts"])) {
             $payload->accounts = array_map(
-                fn($accountData): mixed => $this->objectNormalizer->denormalize(
+                fn ($accountData): mixed => $this->objectNormalizer->denormalize(
                     $accountData,
                     StripeBankAccount::class,
                     $format,
@@ -101,12 +102,12 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         return $payload;
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof StripeBankAccountConnectedPayload;
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
     {
         return $type === StripeBankAccountConnectedPayload::class || $type === StripeBankAccountConnectedPayload::class . "[]";
     }

@@ -12,14 +12,14 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class StripeBankAccountConnectedPayload
 {
+    /** @var StripeBankAccount[] */
+    public array $accounts;
+
     #[SerializedName("securityKeys")]
     private ?SecurityKeyPair $securityKeys = null;
 
     #[SerializedName("stripeCustomerId")]
     private ?string $stripeCustomerId = null;
-
-    /** @var StripeBankAccount[] $accounts */
-    public array $accounts;
 
     public function setSecurityKeys(array $securityKeys): static
     {
