@@ -34,14 +34,14 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         $result = [];
 
         // Only include securityKeys if it exists
-        if ($data->getSecurityKeys() !== null) {
-            $result['securityKeys'] = $this->objectNormalizer->normalize($data->getSecurityKeys(), $format, $context);
+        if ($data->getSecurityKeys() instanceof \EncoreDigitalGroup\Common\Stripe\Objects\Support\SecurityKeyPair) {
+            $result["securityKeys"] = $this->objectNormalizer->normalize($data->getSecurityKeys(), $format, $context);
         }
 
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
-        $result['accounts'] = array_map(
-            fn($account) => $this->objectNormalizer->normalize($account, $format, $context),
+        $result["accounts"] = array_map(
+            fn($account): array|\ArrayObject|bool|float|int|string|null => $this->objectNormalizer->normalize($account, $format, $context),
             $data->accounts
         );
 
@@ -52,18 +52,15 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
     {
         if ($data instanceof StripeBankAccountConnectedPayload) {
             return $data;
-        } elseif (!is_array($data)) {
+        }
+        if (!is_array($data)) {
             $stripeCustomerId = $data->getStripeCustomerId();
             $securityKeys = $data->getSecurityKeys();
-
             $encodedData = json_encode($data);
-
             if (!$encodedData) {
                 throw new ImproperBooleanReturnedException;
             }
-
             $decodedData = json_decode($encodedData, true);
-
             $decodedData["stripeCustomerId"] = $stripeCustomerId;
             $decodedData["securityKeys"]["publicKey"] = $securityKeys->publicKey;
             $decodedData["securityKeys"]["privateKey"] = $securityKeys->privateKey;
@@ -91,7 +88,7 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
         // Handle accounts
         if (isset($data["accounts"]) && is_array($data["accounts"])) {
             $payload->accounts = array_map(
-                fn($accountData) => $this->objectNormalizer->denormalize(
+                fn($accountData): mixed => $this->objectNormalizer->denormalize(
                     $accountData,
                     StripeBankAccount::class,
                     $format,
