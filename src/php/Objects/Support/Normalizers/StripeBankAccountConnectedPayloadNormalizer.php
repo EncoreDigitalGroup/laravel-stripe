@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeBankAccountConnectedP
 use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
 use InvalidArgumentException;
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
+use PHPGenesis\Logger\Logger;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -30,18 +31,19 @@ class StripeBankAccountConnectedPayloadNormalizer implements NormalizerInterface
             throw new InvalidArgumentException("The object must be an instance of StripeBankAccountConnectedPayload");
         }
 
-        $result = [
-            'accounts' => array_map(
-                fn($account) => $this->objectNormalizer->normalize($account, $format, $context),
-                $data->accounts
-            ),
-            "stripeCustomerId" => $data->getStripeCustomerId(),
-        ];
+        $result = [];
 
         // Only include securityKeys if it exists
         if ($data->getSecurityKeys() !== null) {
             $result['securityKeys'] = $this->objectNormalizer->normalize($data->getSecurityKeys(), $format, $context);
         }
+
+        $result["stripeCustomerId"] = $data->getStripeCustomerId();
+
+        $result['accounts'] = array_map(
+            fn($account) => $this->objectNormalizer->normalize($account, $format, $context),
+            $data->accounts
+        );
 
         return $result;
     }
