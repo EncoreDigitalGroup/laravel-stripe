@@ -17,13 +17,26 @@ class StripeWebhook
 {
     use HasMake;
 
-    public function getWebhookSignatureHeader(): string
+    public function __construct(
+        public string $url,
+        public array $events = []
+    ) {}
+
+    public static function getWebhookSignatureHeader(): string
     {
         return Request::header("HTTP_STRIPE_SIGNATURE", Str::empty());
     }
 
-    public function fromRequest(string $payload, string $signature, string $secret): StripeEvent
+    public static function fromRequest(string $payload, string $signature, string $secret): StripeEvent
     {
         return Webhook::constructEvent($payload, $signature, $secret);
+    }
+
+    public function toArray(): array
+    {
+        return [
+            "enabled_events" => $this->events,
+            "url" => $this->url,
+        ];
     }
 }
