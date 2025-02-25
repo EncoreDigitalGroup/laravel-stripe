@@ -7,14 +7,19 @@
   };
 
   // node_modules/@stripe/stripe-js/dist/index.mjs
-  var V3_URL = "https://js.stripe.com/v3";
+  var ORIGIN = "https://js.stripe.com";
+  var STRIPE_JS_URL = "".concat(ORIGIN, "/v3");
   var V3_URL_REGEX = /^https:\/\/js\.stripe\.com\/v3\/?(\?.*)?$/;
+  var STRIPE_JS_URL_REGEX = /^https:\/\/js\.stripe\.com\/(v3|[a-z]+)\/stripe\.js(\?.*)?$/;
   var EXISTING_SCRIPT_MESSAGE = "loadStripe.setLoadParameters was called but an existing Stripe.js script already exists in the document; existing script parameters will be used";
+  var isStripeJSURL = function isStripeJSURL2(url) {
+    return V3_URL_REGEX.test(url) || STRIPE_JS_URL_REGEX.test(url);
+  };
   var findScript = function findScript2() {
-    var scripts = document.querySelectorAll('script[src^="'.concat(V3_URL, '"]'));
+    var scripts = document.querySelectorAll('script[src^="'.concat(ORIGIN, '"]'));
     for (var i = 0; i < scripts.length; i++) {
       var script = scripts[i];
-      if (!V3_URL_REGEX.test(script.src)) {
+      if (!isStripeJSURL(script.src)) {
         continue;
       }
       return script;
@@ -24,7 +29,7 @@
   var injectScript = function injectScript2(params) {
     var queryString = params && !params.advancedFraudSignals ? "?advancedFraudSignals=false" : "";
     var script = document.createElement("script");
-    script.src = "".concat(V3_URL).concat(queryString);
+    script.src = "".concat(STRIPE_JS_URL).concat(queryString);
     var headOrBody = document.head || document.body;
     if (!headOrBody) {
       throw new Error("Expected document.body not to be null. Stripe.js requires a <body> element.");
@@ -38,7 +43,7 @@
     }
     stripe._registerWrapper({
       name: "stripe-js",
-      version: "5.6.0",
+      version: "5.7.0",
       startTime
     });
   };
