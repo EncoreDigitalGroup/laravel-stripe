@@ -26,8 +26,8 @@ class Stripe
         return StripeFinancialConnection::make(...$params);
     }
 
-    public static function webhook(): StripeWebhook
+    public static function webhook(mixed ...$params): StripeWebhook
     {
-        return StripeWebhook::make();
+        return StripeWebhook::make(...$params);
     }
 }
