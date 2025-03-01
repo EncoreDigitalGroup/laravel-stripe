@@ -34,7 +34,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn($accountData) => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
+            fn($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
             $data->accounts
         );
 
@@ -77,14 +77,14 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         // If it's already the right type, extract its data for consistent processing
         if ($data instanceof StripeBankAccountConnectedPayload) {
             $extractedData = [
-                'stripeCustomerId' => $data->getStripeCustomerId(),
-                'accounts' => $data->accounts ?? [],
+                "stripeCustomerId" => $data->getStripeCustomerId(),
+                "accounts" => $data->accounts ?? [],
             ];
 
             if ($data->getSecurityKeys() instanceof SecurityKeyPair) {
-                $extractedData['securityKeys'] = [
-                    'publicKey' => $data->getSecurityKeys()->publicKey,
-                    'privateKey' => $data->getSecurityKeys()->privateKey,
+                $extractedData["securityKeys"] = [
+                    "publicKey" => $data->getSecurityKeys()->publicKey,
+                    "privateKey" => $data->getSecurityKeys()->privateKey,
                 ];
             }
 
@@ -136,7 +136,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
                     foreach ($accountData as $key => $value) {
                         // Ensure the key is a string before running regex on it
                         if (is_string($key)) {
-                            $camelKey = preg_replace_callback('/_([a-z])/', function ($matches) {
+                            $camelKey = preg_replace_callback("/_([a-z])/", function (array $matches): string {
                                 return ucfirst($matches[1]);
                             }, $key);
                         } else {

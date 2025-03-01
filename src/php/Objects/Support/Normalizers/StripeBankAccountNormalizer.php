@@ -21,17 +21,17 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Normaliz
         }
 
         return [
-            'id' => $data->id,
-            'category' => $data->category,
-            'created' => $data->created,
-            'display_name' => $data->displayName,
-            'institution_name' => $data->institutionName,
-            'last4' => $data->last4,
-            'livemode' => $data->liveMode,
-            'permissions' => $data->permissions,
-            'subscriptions' => $data->subscriptions,
-            'supported_payment_method_types' => $data->supportedPaymentMethodTypes,
-            'transaction_refresh' => $data->transactionRefresh,
+            "id" => $data->id,
+            "category" => $data->category,
+            "created" => $data->created,
+            "display_name" => $data->displayName,
+            "institution_name" => $data->institutionName,
+            "last4" => $data->last4,
+            "livemode" => $data->liveMode,
+            "permissions" => $data->permissions,
+            "subscriptions" => $data->subscriptions,
+            "supported_payment_method_types" => $data->supportedPaymentMethodTypes,
+            "transaction_refresh" => $data->transactionRefresh,
         ];
     }
 
@@ -47,17 +47,17 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Normaliz
 
         $bankAccount = new StripeBankAccount();
 
-        $bankAccount->id = $data['id'] ?? null;
-        $bankAccount->category = $data['category'] ?? null;
-        $bankAccount->created = $data['created'] ?? null;
-        $bankAccount->displayName = $data['display_name'] ?? null;
-        $bankAccount->institutionName = $data['institution_name'] ?? null;
-        $bankAccount->last4 = $data['last4'] ?? null;
-        $bankAccount->liveMode = $data['livemode'] ?? null;
-        $bankAccount->permissions = $data['permissions'] ?? [];
-        $bankAccount->subscriptions = $data['subscriptions'] ?? [];
-        $bankAccount->supportedPaymentMethodTypes = $data['supported_payment_method_types'] ?? [];
-        $bankAccount->transactionRefresh = $data['transaction_refresh'] ?? null;
+        $bankAccount->id = $data["id"] ?? null;
+        $bankAccount->category = $data["category"] ?? null;
+        $bankAccount->created = $data["created"] ?? null;
+        $bankAccount->displayName = $data["display_name"] ?? null;
+        $bankAccount->institutionName = $data["institution_name"] ?? null;
+        $bankAccount->last4 = $data["last4"] ?? null;
+        $bankAccount->liveMode = $data["livemode"] ?? null;
+        $bankAccount->permissions = $data["permissions"] ?? [];
+        $bankAccount->subscriptions = $data["subscriptions"] ?? [];
+        $bankAccount->supportedPaymentMethodTypes = $data["supported_payment_method_types"] ?? [];
+        $bankAccount->transactionRefresh = $data["transaction_refresh"] ?? null;
 
         return $bankAccount;
     }
