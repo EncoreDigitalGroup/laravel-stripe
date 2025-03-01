@@ -19,5 +19,5 @@ class StripeBankAccount
     public array $permissions = [];
     public array $subscriptions = [];
     public array $supportedPaymentMethodTypes = [];
-    public ?string $transactionRefresh = null;
+    public ?StripeTransactionRefresh $transactionRefresh = null;
 }
