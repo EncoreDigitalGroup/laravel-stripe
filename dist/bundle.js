@@ -408,21 +408,6 @@
   var toFiniteNumber = (value, defaultValue) => {
     return value != null && Number.isFinite(value = +value) ? value : defaultValue;
   };
-  var ALPHA = "abcdefghijklmnopqrstuvwxyz";
-  var DIGIT = "0123456789";
-  var ALPHABET = {
-    DIGIT,
-    ALPHA,
-    ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
-  };
-  var generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
-    let str = "";
-    const { length } = alphabet;
-    while (size--) {
-      str += alphabet[Math.random() * length | 0];
-    }
-    return str;
-  };
   function isSpecCompliantForm(thing) {
     return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === "FormData" && thing[Symbol.iterator]);
   }
@@ -521,8 +506,6 @@
     findKey,
     global: _global,
     isContextDefined,
-    ALPHABET,
-    generateString,
     isSpecCompliantForm,
     toJSONObject,
     isAsyncFn,
@@ -1550,8 +1533,9 @@
   }
 
   // node_modules/axios/lib/core/buildFullPath.js
-  function buildFullPath(baseURL, requestedURL) {
-    if (baseURL && !isAbsoluteURL(requestedURL)) {
+  function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
+    let isRelativeUrl = !isAbsoluteURL(requestedURL);
+    if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
       return combineURLs(baseURL, requestedURL);
     }
     return requestedURL;
@@ -2174,7 +2158,7 @@
   }
 
   // node_modules/axios/lib/env/data.js
-  var VERSION = "1.7.9";
+  var VERSION = "1.8.1";
 
   // node_modules/axios/lib/helpers/validator.js
   var validators = {};
@@ -2306,6 +2290,12 @@
           }, true);
         }
       }
+      if (config.allowAbsoluteUrls !== void 0) {
+      } else if (this.defaults.allowAbsoluteUrls !== void 0) {
+        config.allowAbsoluteUrls = this.defaults.allowAbsoluteUrls;
+      } else {
+        config.allowAbsoluteUrls = true;
+      }
       validator_default.assertOptions(config, {
         baseUrl: validators2.spelling("baseURL"),
         withXsrfToken: validators2.spelling("withXSRFToken")
@@ -2376,7 +2366,7 @@
     }
     getUri(config) {
       config = mergeConfig(this.defaults, config);
-      const fullPath = buildFullPath(config.baseURL, config.url);
+      const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
       return buildURL(fullPath, config.params, config.paramsSerializer);
     }
   };
