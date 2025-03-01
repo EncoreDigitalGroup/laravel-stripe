@@ -8,7 +8,6 @@
 namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
 
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
-use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
