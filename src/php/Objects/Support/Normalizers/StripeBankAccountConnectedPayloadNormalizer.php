@@ -11,7 +11,9 @@ use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAcco
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
+use EncoreDigitalGroup\StdLib\Objects\Serializers\JsonSerializer;
 use InvalidArgumentException;
+use PHPGenesis\Logger\Logger;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -32,7 +34,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn ($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
+            fn($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
             $data->accounts
         );
 
@@ -127,33 +129,16 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
     private function handleAccounts(StripeBankAccountConnectedPayload $payload, array $data, ?string $format, array $context): StripeBankAccountConnectedPayload
     {
         if (isset($data["accounts"]) && is_array($data["accounts"])) {
-            $payload->accounts = array_map(
-                function ($accountData) use ($format, $context) {
-                    // Create an array with the original values but camelCase keys
-                    $camelCaseData = [];
-                    foreach ($accountData as $key => $value) {
-                        // Ensure the key is a string before running regex on it
-                        if (is_string($key)) {
-                            $camelKey = preg_replace_callback("/_([a-z])/", function (array $matches): string {
-                                return ucfirst($matches[1]);
-                            }, $key);
-                        } else {
-                            // Handle non-string keys by converting them
-                            $camelKey = (string) $key;
-                        }
-                        $camelCaseData[$camelKey] = $value;
-                    }
+            $accounts = [];
 
-                    // Now denormalize with our prepared data
-                    return $this->objectNormalizer->denormalize(
-                        $camelCaseData,
-                        StripeBankAccount::class,
-                        $format,
-                        $context
-                    );
-                },
-                $data["accounts"]
-            );
+            foreach ($data["accounts"] as $account) {
+                $normalizer = new StripeBankAccountNormalizer($this->objectNormalizer);
+                $denormalizedAccount = $normalizer->denormalize($account, StripeBankAccount::class, $format, $context);
+
+                $accounts[] = $denormalizedAccount;
+            }
+
+            $payload->accounts = $accounts;
         }
 
         return $payload;

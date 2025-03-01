@@ -8,6 +8,7 @@
 namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
 
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
+use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -57,7 +58,12 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         $bankAccount->permissions = $data["permissions"] ?? [];
         $bankAccount->subscriptions = $data["subscriptions"] ?? [];
         $bankAccount->supportedPaymentMethodTypes = $data["supported_payment_method_types"] ?? [];
-        $bankAccount->transactionRefresh = $data["transaction_refresh"] ?? null;
+        $bankAccount->transactionRefresh = null;
+
+        if (isset($data["transaction_refresh"])) {
+            $normalizer = new StripeTransactionRefreshNormalizer($this->objectNormalizer);
+            $bankAccount->transactionRefresh = $normalizer->denormalize($data["transaction_refresh"], StripeTransactionRefresh::class, $format, $context);
+        }
 
         return $bankAccount;
     }
