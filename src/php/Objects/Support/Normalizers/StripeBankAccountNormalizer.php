@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class StripeBankAccountNormalizer extends AbstractNormalizer implements NormalizerInterface, DenormalizerInterface
+class StripeBankAccountNormalizer extends AbstractNormalizer implements DenormalizerInterface, NormalizerInterface
 {
     public function normalize(mixed $data, ?string $format = null, array $context = []): array
     {
@@ -45,7 +45,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Normaliz
             throw new InvalidArgumentException("Data must be an array for denormalization");
         }
 
-        $bankAccount = new StripeBankAccount();
+        $bankAccount = new StripeBankAccount;
 
         $bankAccount->id = $data["id"] ?? null;
         $bankAccount->category = $data["category"] ?? null;

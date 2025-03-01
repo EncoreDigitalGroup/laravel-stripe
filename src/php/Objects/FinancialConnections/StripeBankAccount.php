@@ -7,8 +7,6 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections;
 
-use Symfony\Component\Serializer\Attribute\SerializedName;
-
 class StripeBankAccount
 {
     public ?string $id = null;

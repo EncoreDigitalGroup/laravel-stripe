@@ -7,7 +7,6 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
 
-use ArrayObject;
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
@@ -15,7 +14,6 @@ use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer implements DenormalizerInterface, NormalizerInterface
 {
@@ -34,7 +32,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
+            fn ($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
             $data->accounts
         );
 
@@ -141,7 +139,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
                             }, $key);
                         } else {
                             // Handle non-string keys by converting them
-                            $camelKey = (string)$key;
+                            $camelKey = (string) $key;
                         }
                         $camelCaseData[$camelKey] = $value;
                     }
