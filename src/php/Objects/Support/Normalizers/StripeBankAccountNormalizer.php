@@ -11,17 +11,9 @@ use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAcco
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class StripeBankAccountNormalizer implements NormalizerInterface, DenormalizerInterface
+class StripeBankAccountNormalizer extends AbstractNormalizer implements NormalizerInterface, DenormalizerInterface
 {
-    private ObjectNormalizer $objectNormalizer;
-
-    public function __construct(ObjectNormalizer $objectNormalizer)
-    {
-        $this->objectNormalizer = $objectNormalizer;
-    }
-
     public function normalize(mixed $data, ?string $format = null, array $context = []): array
     {
         if (!$data instanceof StripeBankAccount) {
