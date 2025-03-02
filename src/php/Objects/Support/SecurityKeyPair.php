@@ -69,6 +69,16 @@ class SecurityKeyPair
         return $securityKey;
     }
 
+    public static function flush(string $stripeCustomerId): void
+    {
+        $publicKey = Cache::get(self::publicCacheKey($stripeCustomerId));
+
+        Cache::forget(self::publicCacheKey($stripeCustomerId));
+        Cache::forget(self::privateCacheKey($stripeCustomerId));
+        Cache::forget(self::matchCacheKey($publicKey));
+        Cache::forget(self::tenantCacheKey($publicKey));
+    }
+
     private static function put(string $stripeCustomerId, SecurityKeyPair $securityKey, int $ttlInMinutes = 60): void
     {
         Cache::put(self::publicCacheKey($stripeCustomerId), $securityKey->publicKey, $ttlInMinutes);
