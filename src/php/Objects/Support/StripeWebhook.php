@@ -19,7 +19,7 @@ class StripeWebhook
 
     public function __construct(
         public string $url,
-        public array  $events = []
+        public array $events = []
     ) {}
 
     public static function getWebhookSignatureHeader(): string
