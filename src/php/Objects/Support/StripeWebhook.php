@@ -24,7 +24,7 @@ class StripeWebhook
 
     public static function getWebhookSignatureHeader(): string
     {
-        return Request::header("HTTP_STRIPE_SIGNATURE", Str::empty());
+        return Request::header("stripe-signature", Str::empty());
     }
 
     public static function fromRequest(string $payload, string $signature, string $secret): StripeEvent
