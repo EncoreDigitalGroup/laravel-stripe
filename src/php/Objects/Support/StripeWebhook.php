@@ -19,12 +19,12 @@ class StripeWebhook
 
     public function __construct(
         public string $url,
-        public array $events = []
+        public array  $events = []
     ) {}
 
     public static function getWebhookSignatureHeader(): string
     {
-        return Request::header("HTTP_STRIPE_SIGNATURE", Str::empty());
+        return Request::header("stripe-signature", Str::empty());
     }
 
     public static function fromRequest(string $payload, string $signature, string $secret): StripeEvent
