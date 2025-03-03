@@ -13,15 +13,25 @@ permissions:
     pull-requests: write
 
 jobs:
-    GitStatusCheck:
-        name: GitStatusCheck
+    PhpGitStatusCheck:
+        name: PHP GitStatusCheck
         runs-on: ubuntu-latest
         outputs:
             shouldRun: ${{ steps.GitStatusCheck.outputs.shouldRun }}
         steps:
-            -   name: GitStatusCheck
+            -   name: PHP GitStatusCheck
                 id: GitStatusCheck
                 uses: EncoreDigitalGroup/ci-workflows/actions/php/gitStatusCheck@v2
+
+    TypeScriptGitStatusCheck:
+        name: TypeScript GitStatusCheck
+        runs-on: ubuntu-latest
+        outputs:
+            shouldRun: ${{ steps.GitStatusCheck.outputs.shouldRun }}
+        steps:
+            -   name: TypeScript GitStatusCheck
+                id: GitStatusCheck
+                uses: EncoreDigitalGroup/ci-workflows/actions/ts/gitStatusCheck@v2
 
     FormatTitle:
         name: FormatTitle
@@ -36,9 +46,9 @@ jobs:
                     token: ${{ secrets.GITHUB_TOKEN }}
 
     CodeStyle:
-        needs: GitStatusCheck
+        needs: [ PhpGitStatusCheck, TypeScriptGitStatusCheck ]
         name: CodeStyle
-        if: needs.GitStatusCheck.outputs.shouldRun == 'true'
+        if: needs.PhpGitStatusCheck.outputs.shouldRun == 'true' || needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'true'
         runs-on: ubuntu-latest
         steps:
             -   name: CodeStyle
@@ -61,6 +71,7 @@ jobs:
     BundleAsset:
         needs: StaticAnalysis
         name: BundleAsset
+        if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'true'
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout Repository
