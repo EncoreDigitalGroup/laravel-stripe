@@ -213,6 +213,9 @@
       <path value="$PROJECT_DIR$/vendor/spatie/invade" />
       <path value="$PROJECT_DIR$/vendor/spatie/color" />
       <path value="$PROJECT_DIR$/vendor/symfony/html-sanitizer" />
+      <path value="$PROJECT_DIR$/vendor/iamcal/sql-parser" />
+      <path value="$PROJECT_DIR$/vendor/marc-mabe/php-enum" />
+      <path value="$PROJECT_DIR$/vendor/orchestra/sidekick" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3" />
