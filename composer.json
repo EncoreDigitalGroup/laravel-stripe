@@ -30,7 +30,7 @@
         "filament/support": "^3.2",
         "illuminate/support": "^11|^12",
         "phpgenesis/logger": "^1",
-        "stripe/stripe-php": "^16.5"
+        "stripe/stripe-php": "^16.5 || ^17.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.9",
