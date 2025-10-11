@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Common\Stripe\Services;
 
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
+use Illuminate\Support\Collection;
 use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
 
@@ -16,11 +17,7 @@ class StripeCustomerService
 {
     use HasStripe;
 
-    /**
-     * Create a new customer in Stripe
-     *
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function create(StripeCustomer $customer): StripeCustomer
     {
         $data = $customer->toArray();
@@ -33,11 +30,7 @@ class StripeCustomerService
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }
 
-    /**
-     * Retrieve a customer from Stripe
-     *
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function get(string $customerId): StripeCustomer
     {
         $stripeCustomer = $this->stripe->customers->retrieve($customerId);
@@ -45,11 +38,7 @@ class StripeCustomerService
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }
 
-    /**
-     * Update an existing customer in Stripe
-     *
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function update(string $customerId, StripeCustomer $customer): StripeCustomer
     {
         $data = $customer->toArray();
@@ -62,11 +51,7 @@ class StripeCustomerService
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }
 
-    /**
-     * Delete a customer from Stripe
-     *
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function delete(string $customerId): bool
     {
         $result = $this->stripe->customers->delete($customerId);
@@ -75,44 +60,27 @@ class StripeCustomerService
     }
 
     /**
-     * List all customers from Stripe with optional filters
-     *
-     * @param  array  $params  Optional parameters (limit, starting_after, ending_before, email, etc.)
-     * @return array<StripeCustomer>
-     *
+     * @return Collection<int, StripeCustomer>
      * @throws ApiErrorException
      */
-    public function list(array $params = []): array
+    public function list(array $params = []): Collection
     {
         $stripeCustomers = $this->stripe->customers->all($params);
 
-        $customers = [];
-        foreach ($stripeCustomers->data as $stripeCustomer) {
-            $customers[] = StripeCustomer::fromStripeObject($stripeCustomer);
-        }
-
-        return $customers;
+        return collect($stripeCustomers->data)
+            ->map(fn($stripeCustomer) => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
-     * Search for customers using Stripe's search API
-     *
-     * @param  string  $query  Search query (e.g., "email:'customer@example.com'")
-     * @param  array  $params  Optional parameters (limit, page, etc.)
-     * @return array<StripeCustomer>
-     *
+     * @return Collection<int, StripeCustomer>
      * @throws ApiErrorException
      */
-    public function search(string $query, array $params = []): array
+    public function search(string $query, array $params = []): Collection
     {
         $params["query"] = $query;
         $stripeCustomers = $this->stripe->customers->search($params);
 
-        $customers = [];
-        foreach ($stripeCustomers->data as $stripeCustomer) {
-            $customers[] = StripeCustomer::fromStripeObject($stripeCustomer);
-        }
-
-        return $customers;
+        return collect($stripeCustomers->data)
+            ->map(fn($stripeCustomer) => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 }
