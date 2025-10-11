@@ -48,45 +48,15 @@ class StripePrice
      */
     public static function fromStripeObject(Price $stripePrice): self
     {
-        $recurring = null;
-        if ($stripePrice->recurring) {
-            $recurring = [
-                'interval' => $stripePrice->recurring->interval ? RecurringInterval::from($stripePrice->recurring->interval) : null,
-                'interval_count' => $stripePrice->recurring->interval_count,
-                'trial_period_days' => $stripePrice->recurring->trial_period_days,
-                'usage_type' => $stripePrice->recurring->usage_type ? RecurringUsageType::from($stripePrice->recurring->usage_type) : null,
-                'aggregate_usage' => $stripePrice->recurring->aggregate_usage ? RecurringAggregateUsage::from($stripePrice->recurring->aggregate_usage) : null,
-            ];
-        }
-
-        $tiers = null;
-        if ($stripePrice->tiers) {
-            $tiers = [];
-            foreach ($stripePrice->tiers as $tier) {
-                $tiers[] = [
-                    'up_to' => $tier->up_to,
-                    'unit_amount' => $tier->unit_amount,
-                    'unit_amount_decimal' => $tier->unit_amount_decimal,
-                    'flat_amount' => $tier->flat_amount,
-                    'flat_amount_decimal' => $tier->flat_amount_decimal,
-                ];
-            }
-        }
-
-        $customUnitAmount = null;
-        if ($stripePrice->custom_unit_amount) {
-            $customUnitAmount = [
-                'maximum' => $stripePrice->custom_unit_amount->maximum,
-                'minimum' => $stripePrice->custom_unit_amount->minimum,
-                'preset' => $stripePrice->custom_unit_amount->preset,
-            ];
-        }
+        $recurring = self::extractRecurring($stripePrice);
+        $tiers = self::extractTiers($stripePrice);
+        $customUnitAmount = self::extractCustomUnitAmount($stripePrice);
 
         return self::make(
             id: $stripePrice->id,
             product: is_string($stripePrice->product)
                 ? $stripePrice->product
-                : $stripePrice->product?->id,
+                : $stripePrice->product->id,
             active: $stripePrice->active,
             currency: $stripePrice->currency,
             unitAmount: $stripePrice->unit_amount,
@@ -95,7 +65,7 @@ class StripePrice
             billingScheme: $stripePrice->billing_scheme ? BillingScheme::from($stripePrice->billing_scheme) : null,
             recurring: $recurring,
             nickname: $stripePrice->nickname,
-            metadata: $stripePrice->metadata?->toArray(),
+            metadata: $stripePrice->metadata->toArray(),
             lookupKey: $stripePrice->lookup_key,
             tiers: $tiers,
             tiersMode: $stripePrice->tiers_mode ? TiersMode::from($stripePrice->tiers_mode) : null,
@@ -106,17 +76,91 @@ class StripePrice
         );
     }
 
+    private static function extractRecurring(Price $stripePrice): ?array
+    {
+        if (!$stripePrice->recurring) {
+            return null;
+        }
+
+        /** @var \Stripe\StripeObject $recurringObj */
+        $recurringObj = $stripePrice->recurring;
+
+        $interval = isset($recurringObj->interval) && $recurringObj->interval
+            ? RecurringInterval::from($recurringObj->interval)
+            : null;
+
+        $usageType = isset($recurringObj->usage_type) && $recurringObj->usage_type
+            ? RecurringUsageType::from($recurringObj->usage_type)
+            : null;
+
+        $aggregateUsage = isset($recurringObj->aggregate_usage) && $recurringObj->aggregate_usage
+            ? RecurringAggregateUsage::from($recurringObj->aggregate_usage)
+            : null;
+
+        return [
+            'interval' => $interval,
+            'interval_count' => $recurringObj->interval_count ?? null,
+            'trial_period_days' => $recurringObj->trial_period_days ?? null,
+            'usage_type' => $usageType,
+            'aggregate_usage' => $aggregateUsage,
+        ];
+    }
+
+    private static function extractTiers(Price $stripePrice): ?array
+    {
+        if (!$stripePrice->tiers) {
+            return null;
+        }
+
+        $tiers = [];
+        foreach ($stripePrice->tiers as $tier) {
+            /** @var \Stripe\StripeObject $tierObj */
+            $tierObj = $tier;
+            $tiers[] = [
+                'up_to' => $tierObj->up_to ?? null,
+                'unit_amount' => $tierObj->unit_amount ?? null,
+                'unit_amount_decimal' => $tierObj->unit_amount_decimal ?? null,
+                'flat_amount' => $tierObj->flat_amount ?? null,
+                'flat_amount_decimal' => $tierObj->flat_amount_decimal ?? null,
+            ];
+        }
+
+        return $tiers;
+    }
+
+    private static function extractCustomUnitAmount(Price $stripePrice): ?array
+    {
+        if (!$stripePrice->custom_unit_amount) {
+            return null;
+        }
+
+        /** @var \Stripe\StripeObject $customUnitAmountObj */
+        $customUnitAmountObj = $stripePrice->custom_unit_amount;
+
+        return [
+            'maximum' => $customUnitAmountObj->maximum ?? null,
+            'minimum' => $customUnitAmountObj->minimum ?? null,
+            'preset' => $customUnitAmountObj->preset ?? null,
+        ];
+    }
+
     public function toArray(): array
     {
         // Convert recurring enums back to values if present
         $recurring = $this->recurring;
         if ($recurring) {
             $recurring = [
-                'interval' => $recurring['interval']?->value ?? $recurring['interval'],
+                'interval' => isset($recurring['interval']) && $recurring['interval'] instanceof RecurringInterval
+                    ? $recurring['interval']->value
+                    : ($recurring['interval'] ?? null),
                 'interval_count' => $recurring['interval_count'] ?? null,
                 'trial_period_days' => $recurring['trial_period_days'] ?? null,
-                'usage_type' => $recurring['usage_type']?->value ?? $recurring['usage_type'],
-                'aggregate_usage' => $recurring['aggregate_usage']?->value ?? $recurring['aggregate_usage'],
+                'usage_type' => isset($recurring['usage_type']) && $recurring['usage_type'] instanceof RecurringUsageType
+                    ? $recurring['usage_type']->value
+                    : ($recurring['usage_type'] ?? null),
+                'aggregate_usage' => isset($recurring['aggregate_usage']) && $recurring['aggregate_usage'] instanceof RecurringAggregateUsage
+                    ? $recurring['aggregate_usage']->value
+                    : ($recurring['aggregate_usage'] ?? null),
             ];
             $recurring = Arr::whereNotNull($recurring);
         }

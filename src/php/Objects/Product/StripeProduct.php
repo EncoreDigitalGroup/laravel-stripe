@@ -39,11 +39,13 @@ class StripeProduct
     {
         $packageDimensions = null;
         if ($stripeProduct->package_dimensions) {
+            /** @var \Stripe\StripeObject $pkgDim */
+            $pkgDim = $stripeProduct->package_dimensions;
             $packageDimensions = [
-                'height' => $stripeProduct->package_dimensions->height,
-                'length' => $stripeProduct->package_dimensions->length,
-                'weight' => $stripeProduct->package_dimensions->weight,
-                'width' => $stripeProduct->package_dimensions->width,
+                'height' => $pkgDim->height ?? null,
+                'length' => $pkgDim->length ?? null,
+                'weight' => $pkgDim->weight ?? null,
+                'width' => $pkgDim->width ?? null,
             ];
         }
 
@@ -52,8 +54,8 @@ class StripeProduct
             name: $stripeProduct->name,
             description: $stripeProduct->description,
             active: $stripeProduct->active,
-            images: $stripeProduct->images?->toArray(),
-            metadata: $stripeProduct->metadata?->toArray(),
+            images: $stripeProduct->images,
+            metadata: $stripeProduct->metadata->toArray(),
             defaultPrice: is_string($stripeProduct->default_price)
                 ? $stripeProduct->default_price
                 : $stripeProduct->default_price?->id,

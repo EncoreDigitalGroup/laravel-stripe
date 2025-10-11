@@ -33,31 +33,40 @@ class StripeCustomer
     {
         $address = null;
         if ($stripeCustomer->address) {
+            /** @var \Stripe\StripeObject $stripeAddress */
+            $stripeAddress = $stripeCustomer->address;
             $address = StripeAddress::make(
-                line1: $stripeCustomer->address->line1,
-                line2: $stripeCustomer->address->line2,
-                city: $stripeCustomer->address->city,
-                state: $stripeCustomer->address->state,
-                postalCode: $stripeCustomer->address->postal_code,
-                country: $stripeCustomer->address->country
+                line1: $stripeAddress->line1 ?? null,
+                line2: $stripeAddress->line2 ?? null,
+                city: $stripeAddress->city ?? null,
+                state: $stripeAddress->state ?? null,
+                postalCode: $stripeAddress->postal_code ?? null,
+                country: $stripeAddress->country ?? null
             );
         }
 
         $shipping = null;
         if ($stripeCustomer->shipping) {
-            $shippingAddress = StripeAddress::make(
-                line1: $stripeCustomer->shipping->address->line1,
-                line2: $stripeCustomer->shipping->address->line2,
-                city: $stripeCustomer->shipping->address->city,
-                state: $stripeCustomer->shipping->address->state,
-                postalCode: $stripeCustomer->shipping->address->postal_code,
-                country: $stripeCustomer->shipping->address->country
-            );
+            /** @var \Stripe\StripeObject $stripeShipping */
+            $stripeShipping = $stripeCustomer->shipping;
+            $shippingAddress = null;
+            if (isset($stripeShipping->address)) {
+                /** @var \Stripe\StripeObject $shippingAddressObj */
+                $shippingAddressObj = $stripeShipping->address;
+                $shippingAddress = StripeAddress::make(
+                    line1: $shippingAddressObj->line1 ?? null,
+                    line2: $shippingAddressObj->line2 ?? null,
+                    city: $shippingAddressObj->city ?? null,
+                    state: $shippingAddressObj->state ?? null,
+                    postalCode: $shippingAddressObj->postal_code ?? null,
+                    country: $shippingAddressObj->country ?? null
+                );
+            }
 
             $shipping = StripeShipping::make(
                 address: $shippingAddress,
-                name: $stripeCustomer->shipping->name,
-                phone: $stripeCustomer->shipping->phone
+                name: $stripeShipping->name ?? null,
+                phone: $stripeShipping->phone ?? null
             );
         }
 

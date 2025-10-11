@@ -14,7 +14,7 @@ use Stripe\StripeClient;
 
 trait HasStripe
 {
-    private StripeClient $stripe;
+    protected StripeClient $stripe;
 
     public function __construct()
     {
@@ -27,9 +27,12 @@ trait HasStripe
         $this->stripe = new StripeClient($config->authentication->secretKey);
     }
 
-    public static function make(): Stripe
+    /**
+     * @return static
+     */
+    public static function make(): static
     {
-        return new self;
+        return new static;
     }
 
     public static function config(): StripeConfig

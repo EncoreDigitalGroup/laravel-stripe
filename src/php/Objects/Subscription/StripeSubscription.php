@@ -44,14 +44,14 @@ class StripeSubscription
     public static function fromStripeObject(Subscription $stripeSubscription): self
     {
         $items = null;
-        if ($stripeSubscription->items && $stripeSubscription->items->data) {
+        if ($stripeSubscription->items->data) {
             $items = [];
             foreach ($stripeSubscription->items->data as $item) {
                 $items[] = [
                     'id' => $item->id,
                     'price' => $item->price->id ?? null,
                     'quantity' => $item->quantity,
-                    'metadata' => $item->metadata?->toArray(),
+                    'metadata' => $item->metadata->toArray(),
                 ];
             }
         }
@@ -60,7 +60,7 @@ class StripeSubscription
             id: $stripeSubscription->id,
             customer: is_string($stripeSubscription->customer)
                 ? $stripeSubscription->customer
-                : $stripeSubscription->customer?->id,
+                : $stripeSubscription->customer->id,
             status: $stripeSubscription->status ? SubscriptionStatus::from($stripeSubscription->status) : null,
             currentPeriodStart: $stripeSubscription->current_period_start,
             currentPeriodEnd: $stripeSubscription->current_period_end,
@@ -72,7 +72,7 @@ class StripeSubscription
             defaultPaymentMethod: is_string($stripeSubscription->default_payment_method)
                 ? $stripeSubscription->default_payment_method
                 : $stripeSubscription->default_payment_method?->id,
-            metadata: $stripeSubscription->metadata?->toArray(),
+            metadata: $stripeSubscription->metadata->toArray(),
             currency: $stripeSubscription->currency,
             collectionMethod: $stripeSubscription->collection_method ? CollectionMethod::from($stripeSubscription->collection_method) : null,
             billingCycleAnchor: $stripeSubscription->billing_cycle_anchor,
