@@ -7,6 +7,8 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Objects\Subscription;
 
+use EncoreDigitalGroup\Common\Stripe\Enums\CollectionMethod;
+use EncoreDigitalGroup\Common\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Stripe\Subscription;
@@ -18,7 +20,7 @@ class StripeSubscription
     public function __construct(
         public ?string $id = null,
         public ?string $customer = null,
-        public ?string $status = null,
+        public ?SubscriptionStatus $status = null,
         public ?int $currentPeriodStart = null,
         public ?int $currentPeriodEnd = null,
         public ?int $cancelAt = null,
@@ -29,7 +31,7 @@ class StripeSubscription
         public ?string $defaultPaymentMethod = null,
         public ?array $metadata = null,
         public ?string $currency = null,
-        public ?string $collectionMethod = null,
+        public ?CollectionMethod $collectionMethod = null,
         public ?int $billingCycleAnchor = null,
         public ?bool $cancelAtPeriodEnd = null,
         public ?int $daysUntilDue = null,
@@ -59,7 +61,7 @@ class StripeSubscription
             customer: is_string($stripeSubscription->customer)
                 ? $stripeSubscription->customer
                 : $stripeSubscription->customer?->id,
-            status: $stripeSubscription->status,
+            status: $stripeSubscription->status ? SubscriptionStatus::from($stripeSubscription->status) : null,
             currentPeriodStart: $stripeSubscription->current_period_start,
             currentPeriodEnd: $stripeSubscription->current_period_end,
             cancelAt: $stripeSubscription->cancel_at,
@@ -72,7 +74,7 @@ class StripeSubscription
                 : $stripeSubscription->default_payment_method?->id,
             metadata: $stripeSubscription->metadata?->toArray(),
             currency: $stripeSubscription->currency,
-            collectionMethod: $stripeSubscription->collection_method,
+            collectionMethod: $stripeSubscription->collection_method ? CollectionMethod::from($stripeSubscription->collection_method) : null,
             billingCycleAnchor: $stripeSubscription->billing_cycle_anchor,
             cancelAtPeriodEnd: $stripeSubscription->cancel_at_period_end,
             daysUntilDue: $stripeSubscription->days_until_due,
@@ -85,7 +87,7 @@ class StripeSubscription
         $array = [
             'id' => $this->id,
             'customer' => $this->customer,
-            'status' => $this->status,
+            'status' => $this->status?->value,
             'current_period_start' => $this->currentPeriodStart,
             'current_period_end' => $this->currentPeriodEnd,
             'cancel_at' => $this->cancelAt,
@@ -96,7 +98,7 @@ class StripeSubscription
             'default_payment_method' => $this->defaultPaymentMethod,
             'metadata' => $this->metadata,
             'currency' => $this->currency,
-            'collection_method' => $this->collectionMethod,
+            'collection_method' => $this->collectionMethod?->value,
             'billing_cycle_anchor' => $this->billingCycleAnchor,
             'cancel_at_period_end' => $this->cancelAtPeriodEnd,
             'days_until_due' => $this->daysUntilDue,
