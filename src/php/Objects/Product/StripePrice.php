@@ -85,24 +85,24 @@ class StripePrice
         /** @var \Stripe\StripeObject $recurringObj */
         $recurringObj = $stripePrice->recurring;
 
-        $interval = isset($recurringObj->interval) && $recurringObj->interval
+        $interval = property_exists($recurringObj, 'interval') && $recurringObj->interval !== null && $recurringObj->interval
             ? RecurringInterval::from($recurringObj->interval)
             : null;
 
-        $usageType = isset($recurringObj->usage_type) && $recurringObj->usage_type
+        $usageType = property_exists($recurringObj, 'usage_type') && $recurringObj->usage_type !== null && $recurringObj->usage_type
             ? RecurringUsageType::from($recurringObj->usage_type)
             : null;
 
-        $aggregateUsage = isset($recurringObj->aggregate_usage) && $recurringObj->aggregate_usage
+        $aggregateUsage = property_exists($recurringObj, 'aggregate_usage') && $recurringObj->aggregate_usage !== null && $recurringObj->aggregate_usage
             ? RecurringAggregateUsage::from($recurringObj->aggregate_usage)
             : null;
 
         return [
-            'interval' => $interval,
-            'interval_count' => $recurringObj->interval_count ?? null,
-            'trial_period_days' => $recurringObj->trial_period_days ?? null,
-            'usage_type' => $usageType,
-            'aggregate_usage' => $aggregateUsage,
+            "interval" => $interval,
+            "interval_count" => $recurringObj->interval_count ?? null,
+            "trial_period_days" => $recurringObj->trial_period_days ?? null,
+            "usage_type" => $usageType,
+            "aggregate_usage" => $aggregateUsage,
         ];
     }
 
@@ -117,11 +117,11 @@ class StripePrice
             /** @var \Stripe\StripeObject $tierObj */
             $tierObj = $tier;
             $tiers[] = [
-                'up_to' => $tierObj->up_to ?? null,
-                'unit_amount' => $tierObj->unit_amount ?? null,
-                'unit_amount_decimal' => $tierObj->unit_amount_decimal ?? null,
-                'flat_amount' => $tierObj->flat_amount ?? null,
-                'flat_amount_decimal' => $tierObj->flat_amount_decimal ?? null,
+                "up_to" => $tierObj->up_to ?? null,
+                "unit_amount" => $tierObj->unit_amount ?? null,
+                "unit_amount_decimal" => $tierObj->unit_amount_decimal ?? null,
+                "flat_amount" => $tierObj->flat_amount ?? null,
+                "flat_amount_decimal" => $tierObj->flat_amount_decimal ?? null,
             ];
         }
 
@@ -138,9 +138,9 @@ class StripePrice
         $customUnitAmountObj = $stripePrice->custom_unit_amount;
 
         return [
-            'maximum' => $customUnitAmountObj->maximum ?? null,
-            'minimum' => $customUnitAmountObj->minimum ?? null,
-            'preset' => $customUnitAmountObj->preset ?? null,
+            "maximum" => $customUnitAmountObj->maximum ?? null,
+            "minimum" => $customUnitAmountObj->minimum ?? null,
+            "preset" => $customUnitAmountObj->preset ?? null,
         ];
     }
 
@@ -148,41 +148,41 @@ class StripePrice
     {
         // Convert recurring enums back to values if present
         $recurring = $this->recurring;
-        if ($recurring) {
+        if ($recurring !== null && $recurring !== []) {
             $recurring = [
-                'interval' => isset($recurring['interval']) && $recurring['interval'] instanceof RecurringInterval
-                    ? $recurring['interval']->value
-                    : ($recurring['interval'] ?? null),
-                'interval_count' => $recurring['interval_count'] ?? null,
-                'trial_period_days' => $recurring['trial_period_days'] ?? null,
-                'usage_type' => isset($recurring['usage_type']) && $recurring['usage_type'] instanceof RecurringUsageType
-                    ? $recurring['usage_type']->value
-                    : ($recurring['usage_type'] ?? null),
-                'aggregate_usage' => isset($recurring['aggregate_usage']) && $recurring['aggregate_usage'] instanceof RecurringAggregateUsage
-                    ? $recurring['aggregate_usage']->value
-                    : ($recurring['aggregate_usage'] ?? null),
+                "interval" => isset($recurring["interval"]) && $recurring["interval"] instanceof RecurringInterval
+                    ? $recurring["interval"]->value
+                    : ($recurring["interval"] ?? null),
+                "interval_count" => $recurring["interval_count"] ?? null,
+                "trial_period_days" => $recurring["trial_period_days"] ?? null,
+                "usage_type" => isset($recurring["usage_type"]) && $recurring["usage_type"] instanceof RecurringUsageType
+                    ? $recurring["usage_type"]->value
+                    : ($recurring["usage_type"] ?? null),
+                "aggregate_usage" => isset($recurring["aggregate_usage"]) && $recurring["aggregate_usage"] instanceof RecurringAggregateUsage
+                    ? $recurring["aggregate_usage"]->value
+                    : ($recurring["aggregate_usage"] ?? null),
             ];
             $recurring = Arr::whereNotNull($recurring);
         }
 
         $array = [
-            'id' => $this->id,
-            'product' => $this->product,
-            'active' => $this->active,
-            'currency' => $this->currency,
-            'unit_amount' => $this->unitAmount,
-            'unit_amount_decimal' => $this->unitAmountDecimal,
-            'type' => $this->type?->value,
-            'billing_scheme' => $this->billingScheme?->value,
-            'recurring' => $recurring,
-            'nickname' => $this->nickname,
-            'metadata' => $this->metadata,
-            'lookup_key' => $this->lookupKey,
-            'tiers' => $this->tiers,
-            'tiers_mode' => $this->tiersMode?->value,
-            'transform_quantity' => $this->transformQuantity,
-            'custom_unit_amount' => $this->customUnitAmount,
-            'tax_behavior' => $this->taxBehavior?->value,
+            "id" => $this->id,
+            "product" => $this->product,
+            "active" => $this->active,
+            "currency" => $this->currency,
+            "unit_amount" => $this->unitAmount,
+            "unit_amount_decimal" => $this->unitAmountDecimal,
+            "type" => $this->type?->value,
+            "billing_scheme" => $this->billingScheme?->value,
+            "recurring" => $recurring,
+            "nickname" => $this->nickname,
+            "metadata" => $this->metadata,
+            "lookup_key" => $this->lookupKey,
+            "tiers" => $this->tiers,
+            "tiers_mode" => $this->tiersMode?->value,
+            "transform_quantity" => $this->transformQuantity,
+            "custom_unit_amount" => $this->customUnitAmount,
+            "tax_behavior" => $this->taxBehavior?->value,
         ];
 
         return Arr::whereNotNull($array);

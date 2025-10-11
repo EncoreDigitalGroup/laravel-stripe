@@ -48,10 +48,10 @@ class StripeSubscription
             $items = [];
             foreach ($stripeSubscription->items->data as $item) {
                 $items[] = [
-                    'id' => $item->id,
-                    'price' => $item->price->id ?? null,
-                    'quantity' => $item->quantity,
-                    'metadata' => $item->metadata->toArray(),
+                    "id" => $item->id,
+                    "price" => $item->price->id ?? null,
+                    "quantity" => $item->quantity,
+                    "metadata" => $item->metadata->toArray(),
                 ];
             }
         }
@@ -85,24 +85,24 @@ class StripeSubscription
     public function toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'customer' => $this->customer,
-            'status' => $this->status?->value,
-            'current_period_start' => $this->currentPeriodStart,
-            'current_period_end' => $this->currentPeriodEnd,
-            'cancel_at' => $this->cancelAt,
-            'canceled_at' => $this->canceledAt,
-            'trial_start' => $this->trialStart,
-            'trial_end' => $this->trialEnd,
-            'items' => $this->items,
-            'default_payment_method' => $this->defaultPaymentMethod,
-            'metadata' => $this->metadata,
-            'currency' => $this->currency,
-            'collection_method' => $this->collectionMethod?->value,
-            'billing_cycle_anchor' => $this->billingCycleAnchor,
-            'cancel_at_period_end' => $this->cancelAtPeriodEnd,
-            'days_until_due' => $this->daysUntilDue,
-            'description' => $this->description,
+            "id" => $this->id,
+            "customer" => $this->customer,
+            "status" => $this->status?->value,
+            "current_period_start" => $this->currentPeriodStart,
+            "current_period_end" => $this->currentPeriodEnd,
+            "cancel_at" => $this->cancelAt,
+            "canceled_at" => $this->canceledAt,
+            "trial_start" => $this->trialStart,
+            "trial_end" => $this->trialEnd,
+            "items" => $this->items,
+            "default_payment_method" => $this->defaultPaymentMethod,
+            "metadata" => $this->metadata,
+            "currency" => $this->currency,
+            "collection_method" => $this->collectionMethod?->value,
+            "billing_cycle_anchor" => $this->billingCycleAnchor,
+            "cancel_at_period_end" => $this->cancelAtPeriodEnd,
+            "days_until_due" => $this->daysUntilDue,
+            "description" => $this->description,
         ];
 
         return Arr::whereNotNull($array);

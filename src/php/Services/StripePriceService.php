@@ -22,10 +22,9 @@ class StripePriceService
         $data = $price->toArray();
 
         // Remove id if present (can't send id on create)
-        unset($data['id']);
+        unset($data["id"], $data["created"]);
 
         // Remove created timestamp (read-only)
-        unset($data['created']);
 
         $stripePrice = $this->stripe->prices->create($data);
 
@@ -51,25 +50,23 @@ class StripePriceService
         $data = $price->toArray();
 
         // Remove id from update data
-        unset($data['id']);
+        unset($data["id"], $data["created"],
+            $data["product"],
+            $data["currency"],
+            $data["unit_amount"],
+            $data["unit_amount_decimal"],
+            $data["type"],
+            $data["billing_scheme"],
+            $data["recurring"],
+            $data["tiers"],
+            $data["tiers_mode"],
+            $data["transform_quantity"],
+            $data["custom_unit_amount"]
+        );
 
         // Remove created timestamp (read-only)
-        unset($data['created']);
 
         // Remove immutable fields that can't be updated
-        unset(
-            $data['product'],
-            $data['currency'],
-            $data['unit_amount'],
-            $data['unit_amount_decimal'],
-            $data['type'],
-            $data['billing_scheme'],
-            $data['recurring'],
-            $data['tiers'],
-            $data['tiers_mode'],
-            $data['transform_quantity'],
-            $data['custom_unit_amount']
-        );
 
         $stripePrice = $this->stripe->prices->update($priceId, $data);
 
@@ -85,7 +82,7 @@ class StripePriceService
     public function archive(string $priceId): StripePrice
     {
         $stripePrice = $this->stripe->prices->update($priceId, [
-            'active' => false,
+            "active" => false,
         ]);
 
         return StripePrice::fromStripeObject($stripePrice);
@@ -99,7 +96,7 @@ class StripePriceService
     public function reactivate(string $priceId): StripePrice
     {
         $stripePrice = $this->stripe->prices->update($priceId, [
-            'active' => true,
+            "active" => true,
         ]);
 
         return StripePrice::fromStripeObject($stripePrice);
@@ -109,17 +106,19 @@ class StripePriceService
      * Get all prices for a specific product
      *
      * @return Collection<int, StripePrice>
+     *
      * @throws ApiErrorException
      */
     public function listByProduct(string $productId, array $params = []): Collection
     {
-        $params['product'] = $productId;
+        $params["product"] = $productId;
 
         return $this->list($params);
     }
 
     /**
      * @return Collection<int, StripePrice>
+     *
      * @throws ApiErrorException
      */
     public function list(array $params = []): Collection
@@ -127,20 +126,21 @@ class StripePriceService
         $stripePrices = $this->stripe->prices->all($params);
 
         return collect($stripePrices->data)
-            ->map(fn($stripePrice) => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn ($stripePrice): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**
      * @return Collection<int, StripePrice>
+     *
      * @throws ApiErrorException
      */
     public function search(string $query, array $params = []): Collection
     {
-        $params['query'] = $query;
+        $params["query"] = $query;
         $stripePrices = $this->stripe->prices->search($params);
 
         return collect($stripePrices->data)
-            ->map(fn($stripePrice) => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn ($stripePrice): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**
@@ -150,7 +150,7 @@ class StripePriceService
      */
     public function getByLookupKey(string $lookupKey): ?StripePrice
     {
-        $prices = $this->list(['lookup_keys' => [$lookupKey]]);
+        $prices = $this->list(["lookup_keys" => [$lookupKey]]);
 
         return $prices->first();
     }

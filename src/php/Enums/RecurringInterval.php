@@ -9,8 +9,8 @@ namespace EncoreDigitalGroup\Common\Stripe\Enums;
 
 enum RecurringInterval: string
 {
-    case Day = 'day';
-    case Week = 'week';
-    case Month = 'month';
-    case Year = 'year';
+    case Day = "day";
+    case Week = "week";
+    case Month = "month";
+    case Year = "year";
 }

@@ -9,6 +9,6 @@ namespace EncoreDigitalGroup\Common\Stripe\Enums;
 
 enum TiersMode: string
 {
-    case Graduated = 'graduated';
-    case Volume = 'volume';
+    case Graduated = "graduated";
+    case Volume = "volume";
 }

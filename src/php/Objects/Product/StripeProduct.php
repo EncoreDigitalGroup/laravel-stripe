@@ -42,10 +42,10 @@ class StripeProduct
             /** @var \Stripe\StripeObject $pkgDim */
             $pkgDim = $stripeProduct->package_dimensions;
             $packageDimensions = [
-                'height' => $pkgDim->height ?? null,
-                'length' => $pkgDim->length ?? null,
-                'weight' => $pkgDim->weight ?? null,
-                'width' => $pkgDim->width ?? null,
+                "height" => $pkgDim->height ?? null,
+                "length" => $pkgDim->length ?? null,
+                "weight" => $pkgDim->weight ?? null,
+                "width" => $pkgDim->width ?? null,
             ];
         }
 
@@ -74,18 +74,18 @@ class StripeProduct
     public function toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'active' => $this->active,
-            'images' => $this->images,
-            'metadata' => $this->metadata,
-            'default_price' => $this->defaultPrice,
-            'tax_code' => $this->taxCode,
-            'unit_label' => $this->unitLabel,
-            'url' => $this->url,
-            'shippable' => $this->shippable,
-            'package_dimensions' => $this->packageDimensions,
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "active" => $this->active,
+            "images" => $this->images,
+            "metadata" => $this->metadata,
+            "default_price" => $this->defaultPrice,
+            "tax_code" => $this->taxCode,
+            "unit_label" => $this->unitLabel,
+            "url" => $this->url,
+            "shippable" => $this->shippable,
+            "package_dimensions" => $this->packageDimensions,
         ];
 
         return Arr::whereNotNull($array);

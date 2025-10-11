@@ -9,6 +9,6 @@ namespace EncoreDigitalGroup\Common\Stripe\Enums;
 
 enum RecurringUsageType: string
 {
-    case Metered = 'metered';
-    case Licensed = 'licensed';
+    case Metered = "metered";
+    case Licensed = "licensed";
 }

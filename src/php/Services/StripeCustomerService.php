@@ -10,7 +10,6 @@ namespace EncoreDigitalGroup\Common\Stripe\Services;
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
-use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
 
 class StripeCustomerService
@@ -61,6 +60,7 @@ class StripeCustomerService
 
     /**
      * @return Collection<int, StripeCustomer>
+     *
      * @throws ApiErrorException
      */
     public function list(array $params = []): Collection
@@ -68,11 +68,12 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->all($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn($stripeCustomer) => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
      * @return Collection<int, StripeCustomer>
+     *
      * @throws ApiErrorException
      */
     public function search(string $query, array $params = []): Collection
@@ -81,6 +82,6 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->search($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn($stripeCustomer) => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 }

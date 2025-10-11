@@ -7,7 +7,6 @@
 
 namespace EncoreDigitalGroup\Common\Stripe\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Stripe;
 use EncoreDigitalGroup\Common\Stripe\Support\Config\StripeConfig;
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use Stripe\StripeClient;
@@ -27,9 +26,6 @@ trait HasStripe
         $this->stripe = new StripeClient($config->authentication->secretKey);
     }
 
-    /**
-     * @return static
-     */
     public static function make(): static
     {
         return new static;

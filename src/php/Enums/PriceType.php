@@ -9,6 +9,6 @@ namespace EncoreDigitalGroup\Common\Stripe\Enums;
 
 enum PriceType: string
 {
-    case OneTime = 'one_time';
-    case Recurring = 'recurring';
+    case OneTime = "one_time";
+    case Recurring = "recurring";
 }

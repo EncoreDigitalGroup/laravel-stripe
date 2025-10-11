@@ -22,7 +22,7 @@ class StripeSubscriptionService
         $data = $subscription->toArray();
 
         // Remove id if present (can't send id on create)
-        unset($data['id']);
+        unset($data["id"]);
 
         $stripeSubscription = $this->stripe->subscriptions->create($data);
 
@@ -43,7 +43,7 @@ class StripeSubscriptionService
         $data = $subscription->toArray();
 
         // Remove id from update data
-        unset($data['id']);
+        unset($data["id"]);
 
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
 
@@ -62,7 +62,7 @@ class StripeSubscriptionService
     public function cancelAtPeriodEnd(string $subscriptionId): StripeSubscription
     {
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, [
-            'cancel_at_period_end' => true,
+            "cancel_at_period_end" => true,
         ]);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
@@ -72,7 +72,7 @@ class StripeSubscriptionService
     public function resume(string $subscriptionId): StripeSubscription
     {
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, [
-            'cancel_at_period_end' => false,
+            "cancel_at_period_end" => false,
         ]);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
@@ -80,6 +80,7 @@ class StripeSubscriptionService
 
     /**
      * @return Collection<int, StripeSubscription>
+     *
      * @throws ApiErrorException
      */
     public function list(array $params = []): Collection
@@ -87,19 +88,20 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn($stripeSubscription) => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
      * @return Collection<int, StripeSubscription>
+     *
      * @throws ApiErrorException
      */
     public function search(string $query, array $params = []): Collection
     {
-        $params['query'] = $query;
+        $params["query"] = $query;
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn($stripeSubscription) => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

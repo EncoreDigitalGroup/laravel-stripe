@@ -22,10 +22,9 @@ class StripeProductService
         $data = $product->toArray();
 
         // Remove id if present (can't send id on create)
-        unset($data['id']);
+        unset($data["id"], $data["created"], $data["updated"]);
 
         // Remove created/updated timestamps (read-only)
-        unset($data['created'], $data['updated']);
 
         $stripeProduct = $this->stripe->products->create($data);
 
@@ -46,10 +45,9 @@ class StripeProductService
         $data = $product->toArray();
 
         // Remove id from update data
-        unset($data['id']);
+        unset($data["id"], $data["created"], $data["updated"]);
 
         // Remove created/updated timestamps (read-only)
-        unset($data['created'], $data['updated']);
 
         $stripeProduct = $this->stripe->products->update($productId, $data);
 
@@ -72,7 +70,7 @@ class StripeProductService
     public function archive(string $productId): StripeProduct
     {
         $stripeProduct = $this->stripe->products->update($productId, [
-            'active' => false,
+            "active" => false,
         ]);
 
         return StripeProduct::fromStripeObject($stripeProduct);
@@ -86,7 +84,7 @@ class StripeProductService
     public function reactivate(string $productId): StripeProduct
     {
         $stripeProduct = $this->stripe->products->update($productId, [
-            'active' => true,
+            "active" => true,
         ]);
 
         return StripeProduct::fromStripeObject($stripeProduct);
@@ -94,6 +92,7 @@ class StripeProductService
 
     /**
      * @return Collection<int, StripeProduct>
+     *
      * @throws ApiErrorException
      */
     public function list(array $params = []): Collection
@@ -101,19 +100,20 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn($stripeProduct) => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
      * @return Collection<int, StripeProduct>
+     *
      * @throws ApiErrorException
      */
     public function search(string $query, array $params = []): Collection
     {
-        $params['query'] = $query;
+        $params["query"] = $query;
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn($stripeProduct) => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }
