@@ -10,6 +10,7 @@ namespace EncoreDigitalGroup\Common\Stripe;
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
+use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
 
 class Stripe
@@ -29,5 +30,10 @@ class Stripe
     public static function webhook(mixed ...$params): StripeWebhook
     {
         return StripeWebhook::make(...$params);
+    }
+
+    public static function customers(): StripeCustomerService
+    {
+        return StripeCustomerService::make();
     }
 }

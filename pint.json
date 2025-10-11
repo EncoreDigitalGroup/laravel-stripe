@@ -21,12 +21,7 @@
             "import_functions": true
         },
         "ordered_imports": {
-            "sort_algorithm": "alpha",
-            "imports_order": [
-                "const",
-                "class",
-                "function"
-            ]
+            "sort_algorithm": "alpha"
         },
         "php_unit_test_annotation": {
             "style": "annotation"
@@ -69,7 +64,6 @@
         "not_operator_with_successor_space": false,
         "single_blank_line_at_eof": false,
         "single_quote": false,
-        "single_line_comment_style": false,
-        "single_line_comment_spacing": false
+        "single_line_comment_style": false
     }
 }
