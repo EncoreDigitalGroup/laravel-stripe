@@ -62,23 +62,25 @@ class StripeSubscription
                 ? $stripeSubscription->customer
                 : $stripeSubscription->customer->id,
             status: $stripeSubscription->status ? SubscriptionStatus::from($stripeSubscription->status) : null,
-            currentPeriodStart: $stripeSubscription->current_period_start,
-            currentPeriodEnd: $stripeSubscription->current_period_end,
-            cancelAt: $stripeSubscription->cancel_at,
-            canceledAt: $stripeSubscription->canceled_at,
-            trialStart: $stripeSubscription->trial_start,
-            trialEnd: $stripeSubscription->trial_end,
+            currentPeriodStart: $stripeSubscription->current_period_start ?? null,
+            currentPeriodEnd: $stripeSubscription->current_period_end ?? null,
+            cancelAt: $stripeSubscription->cancel_at ?? null,
+            canceledAt: $stripeSubscription->canceled_at ?? null,
+            trialStart: $stripeSubscription->trial_start ?? null,
+            trialEnd: $stripeSubscription->trial_end ?? null,
             items: $items,
-            defaultPaymentMethod: is_string($stripeSubscription->default_payment_method)
-                ? $stripeSubscription->default_payment_method
-                : $stripeSubscription->default_payment_method?->id,
+            defaultPaymentMethod: isset($stripeSubscription->default_payment_method)
+                ? (is_string($stripeSubscription->default_payment_method)
+                    ? $stripeSubscription->default_payment_method
+                    : $stripeSubscription->default_payment_method->id)
+                : null,
             metadata: $stripeSubscription->metadata->toArray(),
-            currency: $stripeSubscription->currency,
-            collectionMethod: $stripeSubscription->collection_method ? CollectionMethod::from($stripeSubscription->collection_method) : null,
-            billingCycleAnchor: $stripeSubscription->billing_cycle_anchor,
-            cancelAtPeriodEnd: $stripeSubscription->cancel_at_period_end,
-            daysUntilDue: $stripeSubscription->days_until_due,
-            description: $stripeSubscription->description
+            currency: $stripeSubscription->currency ?? null,
+            collectionMethod: isset($stripeSubscription->collection_method) ? CollectionMethod::from($stripeSubscription->collection_method) : null,
+            billingCycleAnchor: $stripeSubscription->billing_cycle_anchor ?? null,
+            cancelAtPeriodEnd: $stripeSubscription->cancel_at_period_end ?? null,
+            daysUntilDue: $stripeSubscription->days_until_due ?? null,
+            description: $stripeSubscription->description ?? null
         );
     }
 

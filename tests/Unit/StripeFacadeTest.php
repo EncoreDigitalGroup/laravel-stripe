@@ -27,18 +27,24 @@ test('can create a customer object via static method', function () {
 });
 
 test('can create financial connections object via static method', function () {
-    $connection = Stripe::financialConnections();
+    $customer = StripeCustomer::make(email: 'test@example.com');
+    $connection = Stripe::financialConnections(customer: $customer);
 
-    expect($connection)->toBeInstanceOf(StripeFinancialConnection::class);
+    expect($connection)->toBeInstanceOf(StripeFinancialConnection::class)
+        ->and($connection->customer)->toBe($customer);
 });
 
 test('can create webhook object via static method', function () {
-    $webhook = Stripe::webhook();
+    $webhook = Stripe::webhook(url: 'https://example.com/webhook');
 
-    expect($webhook)->toBeInstanceOf(StripeWebhook::class);
+    expect($webhook)->toBeInstanceOf(StripeWebhook::class)
+        ->and($webhook->url)->toBe('https://example.com/webhook');
 });
 
 test('can get customer service via static method', function () {
+    // Use fake to avoid needing real API key
+    Stripe::fake();
+
     $service = Stripe::customers();
 
     expect($service)->toBeInstanceOf(StripeCustomerService::class);

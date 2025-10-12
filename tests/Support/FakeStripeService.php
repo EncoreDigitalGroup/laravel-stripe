@@ -46,7 +46,7 @@ class FakeStripeService
 
     public function delete(string $id, array $params = []): mixed
     {
-        return $this->__call("delete", array_merge([$id], $params));
+        return $this->__call("delete", [$id, $params]);
     }
 
     public function search(array $params = []): mixed

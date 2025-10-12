@@ -26,6 +26,7 @@ class StripePriceService
 
         // Remove created timestamp (read-only)
 
+        /** @phpstan-ignore argument.type */
         $stripePrice = $this->stripe->prices->create($data);
 
         return StripePrice::fromStripeObject($stripePrice);

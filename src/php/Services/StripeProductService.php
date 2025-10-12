@@ -26,6 +26,7 @@ class StripeProductService
 
         // Remove created/updated timestamps (read-only)
 
+        /** @phpstan-ignore argument.type */
         $stripeProduct = $this->stripe->products->create($data);
 
         return StripeProduct::fromStripeObject($stripeProduct);

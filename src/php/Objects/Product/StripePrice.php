@@ -57,43 +57,43 @@ class StripePrice
             product: is_string($stripePrice->product)
                 ? $stripePrice->product
                 : $stripePrice->product->id,
-            active: $stripePrice->active,
+            active: $stripePrice->active ?? null,
             currency: $stripePrice->currency,
-            unitAmount: $stripePrice->unit_amount,
-            unitAmountDecimal: $stripePrice->unit_amount_decimal,
-            type: $stripePrice->type ? PriceType::from($stripePrice->type) : null,
-            billingScheme: $stripePrice->billing_scheme ? BillingScheme::from($stripePrice->billing_scheme) : null,
+            unitAmount: $stripePrice->unit_amount ?? null,
+            unitAmountDecimal: $stripePrice->unit_amount_decimal ?? null,
+            type: isset($stripePrice->type) ? PriceType::from($stripePrice->type) : null,
+            billingScheme: isset($stripePrice->billing_scheme) ? BillingScheme::from($stripePrice->billing_scheme) : null,
             recurring: $recurring,
-            nickname: $stripePrice->nickname,
+            nickname: $stripePrice->nickname ?? null,
             metadata: $stripePrice->metadata->toArray(),
-            lookupKey: $stripePrice->lookup_key,
+            lookupKey: $stripePrice->lookup_key ?? null,
             tiers: $tiers,
-            tiersMode: $stripePrice->tiers_mode ? TiersMode::from($stripePrice->tiers_mode) : null,
-            transformQuantity: $stripePrice->transform_quantity,
+            tiersMode: isset($stripePrice->tiers_mode) ? TiersMode::from($stripePrice->tiers_mode) : null,
+            transformQuantity: $stripePrice->transform_quantity ?? null,
             customUnitAmount: $customUnitAmount,
-            taxBehavior: $stripePrice->tax_behavior ? TaxBehavior::from($stripePrice->tax_behavior) : null,
-            created: $stripePrice->created
+            taxBehavior: isset($stripePrice->tax_behavior) ? TaxBehavior::from($stripePrice->tax_behavior) : null,
+            created: $stripePrice->created ?? null
         );
     }
 
     private static function extractRecurring(Price $stripePrice): ?array
     {
-        if (!$stripePrice->recurring) {
+        if (!isset($stripePrice->recurring)) {
             return null;
         }
 
         /** @var \Stripe\StripeObject $recurringObj */
         $recurringObj = $stripePrice->recurring;
 
-        $interval = property_exists($recurringObj, "interval") && $recurringObj->interval !== null && $recurringObj->interval
+        $interval = isset($recurringObj->interval)
             ? RecurringInterval::from($recurringObj->interval)
             : null;
 
-        $usageType = property_exists($recurringObj, "usage_type") && $recurringObj->usage_type !== null && $recurringObj->usage_type
+        $usageType = isset($recurringObj->usage_type)
             ? RecurringUsageType::from($recurringObj->usage_type)
             : null;
 
-        $aggregateUsage = property_exists($recurringObj, "aggregate_usage") && $recurringObj->aggregate_usage !== null && $recurringObj->aggregate_usage
+        $aggregateUsage = isset($recurringObj->aggregate_usage)
             ? RecurringAggregateUsage::from($recurringObj->aggregate_usage)
             : null;
 
@@ -108,7 +108,7 @@ class StripePrice
 
     private static function extractTiers(Price $stripePrice): ?array
     {
-        if (!$stripePrice->tiers) {
+        if (!isset($stripePrice->tiers)) {
             return null;
         }
 
@@ -130,7 +130,7 @@ class StripePrice
 
     private static function extractCustomUnitAmount(Price $stripePrice): ?array
     {
-        if (!$stripePrice->custom_unit_amount) {
+        if (!isset($stripePrice->custom_unit_amount)) {
             return null;
         }
 

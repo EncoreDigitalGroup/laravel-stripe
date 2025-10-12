@@ -38,7 +38,7 @@ class StripeProduct
     public static function fromStripeObject(Product $stripeProduct): self
     {
         $packageDimensions = null;
-        if ($stripeProduct->package_dimensions) {
+        if (isset($stripeProduct->package_dimensions)) {
             /** @var \Stripe\StripeObject $pkgDim */
             $pkgDim = $stripeProduct->package_dimensions;
             $packageDimensions = [
@@ -52,22 +52,26 @@ class StripeProduct
         return self::make(
             id: $stripeProduct->id,
             name: $stripeProduct->name,
-            description: $stripeProduct->description,
-            active: $stripeProduct->active,
-            images: $stripeProduct->images,
+            description: $stripeProduct->description ?? null,
+            active: $stripeProduct->active ?? null,
+            images: $stripeProduct->images ?? null,
             metadata: $stripeProduct->metadata->toArray(),
-            defaultPrice: is_string($stripeProduct->default_price)
-                ? $stripeProduct->default_price
-                : $stripeProduct->default_price?->id,
-            taxCode: is_string($stripeProduct->tax_code)
-                ? $stripeProduct->tax_code
-                : $stripeProduct->tax_code?->id,
-            unitLabel: $stripeProduct->unit_label,
-            url: $stripeProduct->url,
-            shippable: $stripeProduct->shippable,
+            defaultPrice: isset($stripeProduct->default_price)
+                ? (is_string($stripeProduct->default_price)
+                    ? $stripeProduct->default_price
+                    : $stripeProduct->default_price->id)
+                : null,
+            taxCode: isset($stripeProduct->tax_code)
+                ? (is_string($stripeProduct->tax_code)
+                    ? $stripeProduct->tax_code
+                    : $stripeProduct->tax_code->id)
+                : null,
+            unitLabel: $stripeProduct->unit_label ?? null,
+            url: $stripeProduct->url ?? null,
+            shippable: $stripeProduct->shippable ?? null,
             packageDimensions: $packageDimensions,
-            created: $stripeProduct->created,
-            updated: $stripeProduct->updated
+            created: $stripeProduct->created ?? null,
+            updated: $stripeProduct->updated ?? null
         );
     }
 

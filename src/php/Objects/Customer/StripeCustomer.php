@@ -32,7 +32,7 @@ class StripeCustomer
     public static function fromStripeObject(Customer $stripeCustomer): self
     {
         $address = null;
-        if ($stripeCustomer->address) {
+        if (isset($stripeCustomer->address)) {
             /** @var \Stripe\StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
             $address = StripeAddress::make(
@@ -46,11 +46,11 @@ class StripeCustomer
         }
 
         $shipping = null;
-        if ($stripeCustomer->shipping) {
+        if (isset($stripeCustomer->shipping)) {
             /** @var \Stripe\StripeObject $stripeShipping */
             $stripeShipping = $stripeCustomer->shipping;
             $shippingAddress = null;
-            if (property_exists($stripeShipping, "address") && $stripeShipping->address !== null) {
+            if (isset($stripeShipping->address)) {
                 /** @var \Stripe\StripeObject $shippingAddressObj */
                 $shippingAddressObj = $stripeShipping->address;
                 $shippingAddress = StripeAddress::make(
@@ -63,20 +63,23 @@ class StripeCustomer
                 );
             }
 
-            $shipping = StripeShipping::make(
-                address: $shippingAddress,
-                name: $stripeShipping->name ?? null,
-                phone: $stripeShipping->phone ?? null
-            );
+            // Only create shipping if we have the required fields (address and name)
+            if ($shippingAddress !== null && isset($stripeShipping->name)) {
+                $shipping = StripeShipping::make(
+                    address: $shippingAddress,
+                    name: $stripeShipping->name,
+                    phone: $stripeShipping->phone ?? null
+                );
+            }
         }
 
         return self::make(
             id: $stripeCustomer->id,
             address: $address,
-            description: $stripeCustomer->description,
+            description: $stripeCustomer->description ?? null,
             email: $stripeCustomer->email,
-            name: $stripeCustomer->name,
-            phone: $stripeCustomer->phone,
+            name: $stripeCustomer->name ?? null,
+            phone: $stripeCustomer->phone ?? null,
             shipping: $shipping
         );
     }

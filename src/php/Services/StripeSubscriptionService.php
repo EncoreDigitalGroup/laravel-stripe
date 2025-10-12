@@ -24,6 +24,7 @@ class StripeSubscriptionService
         // Remove id if present (can't send id on create)
         unset($data["id"]);
 
+        /** @phpstan-ignore argument.type */
         $stripeSubscription = $this->stripe->subscriptions->create($data);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
