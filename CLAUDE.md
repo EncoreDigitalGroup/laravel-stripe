@@ -45,7 +45,6 @@ Always follow these rules when writing code:
         - Eloquent factories should create necessary relationships implicitly. If you don't need a relation for the test, let the factory create it rather than creating
           it in the test.
 - If there are "todo" comments that need to be resolved before the code gets merged, use `// FIXME`
-- Prefer `App::bound()` over `app()->bound()` but prefer `app()` over `App::make()`
 
 ## Commands
 
@@ -272,18 +271,19 @@ Stripe::fake([
 
 ## Code Style Notes
 
-1. **Prefer App facade over app() function for bound checks:**
+1. **Use app()->bound() for bound checks, app() for resolution:**
    ```php
    // Correct
-   if (App::bound(StripeClient::class)) {
-       $client = app(StripeClient::class);
-   }
-
-   // Incorrect
    if (app()->bound(StripeClient::class)) {
        $client = app(StripeClient::class);
    }
+
+   // Incorrect - App facade may not be booted in tests
+   if (App::bound(StripeClient::class)) {
+       $client = app(StripeClient::class);
+   }
    ```
+   Note: In tests, the App facade may throw "facade root has not been set" exceptions, so use `app()->bound()` instead.
 
 2. **Cognitive complexity:** Functions must stay under complexity of 10. Break complex methods into smaller private methods.
 

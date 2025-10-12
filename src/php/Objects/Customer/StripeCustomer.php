@@ -50,7 +50,7 @@ class StripeCustomer
             /** @var \Stripe\StripeObject $stripeShipping */
             $stripeShipping = $stripeCustomer->shipping;
             $shippingAddress = null;
-            if (property_exists($stripeShipping, 'address') && $stripeShipping->address !== null) {
+            if (property_exists($stripeShipping, "address") && $stripeShipping->address !== null) {
                 /** @var \Stripe\StripeObject $shippingAddressObj */
                 $shippingAddressObj = $stripeShipping->address;
                 $shippingAddress = StripeAddress::make(

@@ -85,15 +85,15 @@ class StripePrice
         /** @var \Stripe\StripeObject $recurringObj */
         $recurringObj = $stripePrice->recurring;
 
-        $interval = property_exists($recurringObj, 'interval') && $recurringObj->interval !== null && $recurringObj->interval
+        $interval = property_exists($recurringObj, "interval") && $recurringObj->interval !== null && $recurringObj->interval
             ? RecurringInterval::from($recurringObj->interval)
             : null;
 
-        $usageType = property_exists($recurringObj, 'usage_type') && $recurringObj->usage_type !== null && $recurringObj->usage_type
+        $usageType = property_exists($recurringObj, "usage_type") && $recurringObj->usage_type !== null && $recurringObj->usage_type
             ? RecurringUsageType::from($recurringObj->usage_type)
             : null;
 
-        $aggregateUsage = property_exists($recurringObj, 'aggregate_usage') && $recurringObj->aggregate_usage !== null && $recurringObj->aggregate_usage
+        $aggregateUsage = property_exists($recurringObj, "aggregate_usage") && $recurringObj->aggregate_usage !== null && $recurringObj->aggregate_usage
             ? RecurringAggregateUsage::from($recurringObj->aggregate_usage)
             : null;
 

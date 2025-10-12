@@ -47,19 +47,19 @@ class Stripe
      */
     public static function fake(array $fakes = []): object
     {
-        if (!class_exists('\Tests\Support\FakeStripeClient')) {
+        if (!class_exists(\Tests\Support\FakeStripeClient::class)) {
             throw new \RuntimeException(
-                'Stripe::fake() is only available in the test environment. ' .
+                "Stripe::fake() is only available in the test environment. " .
                 'Make sure Tests\Support\FakeStripeClient exists.'
             );
         }
 
-        $fakeClass = '\Tests\Support\FakeStripeClient';
+        $fakeClass = \Tests\Support\FakeStripeClient::class;
         $fake = new $fakeClass($fakes);
 
         // Bind to container so services will use it
-        if (function_exists('app')) {
-            app()->singleton(\Stripe\StripeClient::class, fn() => $fake);
+        if (function_exists("app")) {
+            app()->instance(\Stripe\StripeClient::class, $fake);
         }
 
         return $fake;

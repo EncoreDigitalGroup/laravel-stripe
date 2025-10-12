@@ -68,8 +68,10 @@
             "dont-discover": []
         },
         "scripts-dev": {
-            "post-update-cmd": [],
-            "post-autoload-dump": []
+            "post-autoload-dump": [
+                "vendor/bin/testbench package:discover"
+            ],
+            "post-update-cmd": []
         }
     }
 }

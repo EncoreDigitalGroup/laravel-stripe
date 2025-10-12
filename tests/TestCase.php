@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2024-2025. Encore Digital Group.
  * All Right Reserved.
@@ -18,6 +19,11 @@ class TestCase extends OrchestraTestCase
         parent::setUp();
 
         $this->setupAppKey();
+    }
+
+    protected function getPackageProviders($app): array
+    {
+        return [];
     }
 
     public function ignorePackageDiscoveriesFrom(): array

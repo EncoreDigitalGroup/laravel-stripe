@@ -11,20 +11,20 @@ use EncoreDigitalGroup\Common\Stripe\Stripe;
 use Tests\Support\StripeFixtures;
 use Tests\Support\StripeMethod;
 
-test('can create a customer using faked stripe client', function () {
+test("can create a customer using faked stripe client", function (): void {
     // Arrange: Set up fake Stripe responses using enum
     $fake = Stripe::fake([
         StripeMethod::CustomersCreate->value => StripeFixtures::customer([
-            'id' => 'cus_test123',
-            'email' => 'john@example.com',
-            'name' => 'John Doe',
+            "id" => "cus_test123",
+            "email" => "john@example.com",
+            "name" => "John Doe",
         ]),
     ]);
 
     // Act: Create a customer through the service
     $customer = StripeCustomer::make(
-        email: 'john@example.com',
-        name: 'John Doe'
+        email: "john@example.com",
+        name: "John Doe"
     );
 
     $service = StripeCustomerService::make();
@@ -33,163 +33,163 @@ test('can create a customer using faked stripe client', function () {
     // Assert: Verify the response
     expect($result)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($result->id)->toBe('cus_test123')
-        ->and($result->email)->toBe('john@example.com')
-        ->and($result->name)->toBe('John Doe')
+        ->and($result->id)->toBe("cus_test123")
+        ->and($result->email)->toBe("john@example.com")
+        ->and($result->name)->toBe("John Doe")
         // Assert: Verify the Stripe API was called (can use enum or string)
         ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersCreate);
 
 });
 
-test('can retrieve a customer using faked stripe client', function () {
+test("can retrieve a customer using faked stripe client", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.retrieve' => StripeFixtures::customer([
-            'id' => 'cus_existing',
-            'email' => 'existing@example.com',
+        "customers.retrieve" => StripeFixtures::customer([
+            "id" => "cus_existing",
+            "email" => "existing@example.com",
         ]),
     ]);
 
     // Act
     $service = StripeCustomerService::make();
-    $customer = $service->get('cus_existing');
+    $customer = $service->get("cus_existing");
 
     // Assert
     expect($customer)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($customer->id)->toBe('cus_existing')
-        ->and($customer->email)->toBe('existing@example.com');
+        ->and($customer->id)->toBe("cus_existing")
+        ->and($customer->email)->toBe("existing@example.com");
 
-    expect($fake)->toHaveCalledStripeMethod('customers.retrieve');
+    expect($fake)->toHaveCalledStripeMethod("customers.retrieve");
 });
 
-test('can update a customer using faked stripe client', function () {
+test("can update a customer using faked stripe client", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.update' => StripeFixtures::customer([
-            'id' => 'cus_123',
-            'email' => 'updated@example.com',
-            'name' => 'Updated Name',
+        "customers.update" => StripeFixtures::customer([
+            "id" => "cus_123",
+            "email" => "updated@example.com",
+            "name" => "Updated Name",
         ]),
     ]);
 
     // Act
     $customer = StripeCustomer::make(
-        email: 'updated@example.com',
-        name: 'Updated Name'
+        email: "updated@example.com",
+        name: "Updated Name"
     );
 
     $service = StripeCustomerService::make();
-    $result = $service->update('cus_123', $customer);
+    $result = $service->update("cus_123", $customer);
 
     // Assert
     expect($result)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($result->email)->toBe('updated@example.com')
-        ->and($result->name)->toBe('Updated Name');
+        ->and($result->email)->toBe("updated@example.com")
+        ->and($result->name)->toBe("Updated Name");
 
-    expect($fake)->toHaveCalledStripeMethod('customers.update');
+    expect($fake)->toHaveCalledStripeMethod("customers.update");
 });
 
-test('can delete a customer using faked stripe client', function () {
+test("can delete a customer using faked stripe client", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.delete' => StripeFixtures::deleted('cus_123', 'customer'),
+        "customers.delete" => StripeFixtures::deleted("cus_123", "customer"),
     ]);
 
     // Act
     $service = StripeCustomerService::make();
-    $result = $service->delete('cus_123');
+    $result = $service->delete("cus_123");
 
     // Assert
     expect($result)->toBeTrue();
-    expect($fake)->toHaveCalledStripeMethod('customers.delete');
+    expect($fake)->toHaveCalledStripeMethod("customers.delete");
 });
 
-test('can list customers using faked stripe client', function () {
+test("can list customers using faked stripe client", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.all' => StripeFixtures::customerList([
-            StripeFixtures::customer(['id' => 'cus_1', 'email' => 'user1@example.com']),
-            StripeFixtures::customer(['id' => 'cus_2', 'email' => 'user2@example.com']),
-            StripeFixtures::customer(['id' => 'cus_3', 'email' => 'user3@example.com']),
+        "customers.all" => StripeFixtures::customerList([
+            StripeFixtures::customer(["id" => "cus_1", "email" => "user1@example.com"]),
+            StripeFixtures::customer(["id" => "cus_2", "email" => "user2@example.com"]),
+            StripeFixtures::customer(["id" => "cus_3", "email" => "user3@example.com"]),
         ]),
     ]);
 
     // Act
     $service = StripeCustomerService::make();
-    $customers = $service->list(['limit' => 10]);
+    $customers = $service->list(["limit" => 10]);
 
     // Assert
     expect($customers)
         ->toHaveCount(3)
         ->and($customers->first())->toBeInstanceOf(StripeCustomer::class)
-        ->and($customers->first()->id)->toBe('cus_1');
+        ->and($customers->first()->id)->toBe("cus_1");
 
-    expect($fake)->toHaveCalledStripeMethod('customers.all');
+    expect($fake)->toHaveCalledStripeMethod("customers.all");
 });
 
-test('can use callable responses for dynamic fake responses', function () {
+test("can use callable responses for dynamic fake responses", function (): void {
     // Arrange: Use a callable to generate dynamic responses
     $fake = Stripe::fake([
-        'customers.create' => function ($params) {
+        "customers.create" => function (array $params): array {
             return StripeFixtures::customer([
-                'id' => 'cus_dynamic',
-                'email' => $params['email'] ?? 'default@example.com',
-                'name' => $params['name'] ?? 'Default Name',
+                "id" => "cus_dynamic",
+                "email" => $params["email"] ?? "default@example.com",
+                "name" => $params["name"] ?? "Default Name",
             ]);
         },
     ]);
 
     // Act
     $customer = StripeCustomer::make(
-        email: 'dynamic@example.com',
-        name: 'Dynamic Name'
+        email: "dynamic@example.com",
+        name: "Dynamic Name"
     );
 
     $service = StripeCustomerService::make();
     $result = $service->create($customer);
 
     // Assert: The callable should have used our params
-    expect($result->email)->toBe('dynamic@example.com')
-        ->and($result->name)->toBe('Dynamic Name');
+    expect($result->email)->toBe("dynamic@example.com")
+        ->and($result->name)->toBe("Dynamic Name");
 });
 
-test('can use wildcard patterns for fake responses', function () {
+test("can use wildcard patterns for fake responses", function (): void {
     // Arrange: Use wildcard to match any customer method
     $fake = Stripe::fake([
-        'customers.*' => StripeFixtures::customer([
-            'id' => 'cus_wildcard',
-            'email' => 'wildcard@example.com',
+        "customers.*" => StripeFixtures::customer([
+            "id" => "cus_wildcard",
+            "email" => "wildcard@example.com",
         ]),
     ]);
 
     // Act: Try different methods
     $service = StripeCustomerService::make();
-    $retrieved = $service->get('cus_any');
+    $retrieved = $service->get("cus_any");
     $created = $service->create(StripeCustomer::make());
 
     // Assert: Both should work with the wildcard fake
-    expect($retrieved->id)->toBe('cus_wildcard')
-        ->and($created->id)->toBe('cus_wildcard');
+    expect($retrieved->id)->toBe("cus_wildcard")
+        ->and($created->id)->toBe("cus_wildcard");
 });
 
-test('throws exception when no fake is registered', function () {
+test("throws exception when no fake is registered", function (): void {
     // Arrange: Create fake without registering the method we'll call
     Stripe::fake([]);
 
     // Act & Assert: Should throw exception
     $service = StripeCustomerService::make();
 
-    expect(fn() => $service->get('cus_123'))
-        ->toThrow(\RuntimeException::class, 'No fake registered for Stripe method');
+    expect(fn (): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => $service->get("cus_123"))
+        ->toThrow(\RuntimeException::class, "No fake registered for Stripe method");
 });
 
-test('can assert method was not called', function () {
+test("can assert method was not called", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.create' => StripeFixtures::customer(),
-        'customers.delete' => StripeFixtures::deleted('cus_123'),
+        "customers.create" => StripeFixtures::customer(),
+        "customers.delete" => StripeFixtures::deleted("cus_123"),
     ]);
 
     // Act: Only create, don't delete
@@ -198,14 +198,14 @@ test('can assert method was not called', function () {
 
     // Assert
     expect($fake)
-        ->toHaveCalledStripeMethod('customers.create')
-        ->toNotHaveCalledStripeMethod('customers.delete');
+        ->toHaveCalledStripeMethod("customers.create")
+        ->toNotHaveCalledStripeMethod("customers.delete");
 });
 
-test('can get call count for a method', function () {
+test("can get call count for a method", function (): void {
     // Arrange
     $fake = Stripe::fake([
-        'customers.create' => StripeFixtures::customer(),
+        "customers.create" => StripeFixtures::customer(),
     ]);
 
     // Act: Create multiple customers
@@ -215,5 +215,5 @@ test('can get call count for a method', function () {
     $service->create(StripeCustomer::make());
 
     // Assert
-    expect($fake)->toHaveCalledStripeMethodTimes('customers.create', 3);
+    expect($fake)->toHaveCalledStripeMethodTimes("customers.create", 3);
 });
