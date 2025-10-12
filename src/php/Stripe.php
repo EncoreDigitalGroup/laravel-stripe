@@ -36,4 +36,32 @@ class Stripe
     {
         return StripeCustomerService::make();
     }
+
+    /**
+     * Create a fake Stripe client for testing
+     *
+     * This method is only available when the FakeStripeClient class exists (in test environment).
+     *
+     * @param array $fakes Array of method => response mappings
+     * @return object FakeStripeClient instance
+     */
+    public static function fake(array $fakes = []): object
+    {
+        if (!class_exists('\Tests\Support\FakeStripeClient')) {
+            throw new \RuntimeException(
+                'Stripe::fake() is only available in the test environment. ' .
+                'Make sure Tests\Support\FakeStripeClient exists.'
+            );
+        }
+
+        $fakeClass = '\Tests\Support\FakeStripeClient';
+        $fake = new $fakeClass($fakes);
+
+        // Bind to container so services will use it
+        if (function_exists('app')) {
+            app()->singleton(\Stripe\StripeClient::class, fn() => $fake);
+        }
+
+        return $fake;
+    }
 }

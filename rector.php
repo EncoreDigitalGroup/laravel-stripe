@@ -8,7 +8,6 @@
 declare(strict_types=1);
 
 use PHPGenesis\DevUtilities\Rector\Rector;
-use Rector\Config\RectorConfig;
 
 return Rector::configure()
     ->withPaths([

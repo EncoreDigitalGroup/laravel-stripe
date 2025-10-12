@@ -37,8 +37,8 @@
         "larastan/larastan": "^3.0",
         "neronmoon/scriptsdev": "^0.1.9",
         "orchestra/testbench": "^9.1",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-laravel": "^2",
+        "pestphp/pest": "^4",
+        "pestphp/pest-plugin-laravel": "^4",
         "phpgenesis/devutilities": "^1",
         "phpstan/extension-installer": "^1.3",
         "rector/rector": "^2.0",
@@ -48,6 +48,11 @@
     "autoload": {
         "psr-4": {
             "EncoreDigitalGroup\\Common\\Stripe\\": "src/php/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "scripts": {

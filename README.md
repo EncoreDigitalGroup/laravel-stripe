@@ -279,12 +279,13 @@ All service methods may throw Stripe API exceptions:
 
 ```php
 use Stripe\Exception\ApiErrorException;
+use PHPGenesis\Logger\Logger;
 
 try {
     $customer = $service->get('cus_invalid');
 } catch (ApiErrorException $e) {
     // Handle Stripe API error
-    logger()->error('Stripe API error', [
+    Logger::error('Stripe API error', [
         'message' => $e->getMessage(),
         'code' => $e->getStripeCode()
     ]);
