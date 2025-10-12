@@ -10,6 +10,8 @@ updates:
         directory: "/"
         registries:
             - composer
+        cooldown:
+            default-days: 7
         schedule:
             interval: weekly
             day: wednesday
