@@ -49,6 +49,24 @@ class StripeProduct
             ];
         }
 
+        $defaultPrice = null;
+        if (isset($stripeProduct->default_price)) {
+            if (is_string($stripeProduct->default_price)) {
+                $defaultPrice = $stripeProduct->default_price;
+            } else {
+                $defaultPrice = $stripeProduct->default_price->id;
+            }
+        }
+
+        $taxCode = null;
+        if (isset($stripeProduct->tax_code)) {
+            if (is_string($stripeProduct->tax_code)) {
+                $taxCode = $stripeProduct->tax_code;
+            } else {
+                $taxCode = $stripeProduct->tax_code->id;
+            }
+        }
+
         return self::make(
             id: $stripeProduct->id,
             name: $stripeProduct->name,
@@ -56,16 +74,8 @@ class StripeProduct
             active: $stripeProduct->active ?? null,
             images: $stripeProduct->images ?? null,
             metadata: $stripeProduct->metadata->toArray(),
-            defaultPrice: isset($stripeProduct->default_price)
-                ? (is_string($stripeProduct->default_price)
-                    ? $stripeProduct->default_price
-                    : $stripeProduct->default_price->id)
-                : null,
-            taxCode: isset($stripeProduct->tax_code)
-                ? (is_string($stripeProduct->tax_code)
-                    ? $stripeProduct->tax_code
-                    : $stripeProduct->tax_code->id)
-                : null,
+            defaultPrice: $defaultPrice,
+            taxCode: $taxCode,
             unitLabel: $stripeProduct->unit_label ?? null,
             url: $stripeProduct->url ?? null,
             shippable: $stripeProduct->shippable ?? null,

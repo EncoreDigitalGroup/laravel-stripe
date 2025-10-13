@@ -64,12 +64,20 @@ class FakeStripeService
             $params = [];
         } elseif (count($arguments) === 1) {
             // Could be just ID (string) or params (array)
-            $params = is_array($arguments[0]) ? $arguments[0] : [];
+            if (is_array($arguments[0])) {
+                $params = $arguments[0];
+            } else {
+                $params = [];
+            }
         } else {
             // Multiple arguments - typically (id, params)
             // For methods like update, retrieve, delete, the ID is separate from params
             // We should not add it to the params array since real Stripe doesn't do that
-            $params = (isset($arguments[1]) && is_array($arguments[1])) ? $arguments[1] : [];
+            if (isset($arguments[1]) && is_array($arguments[1])) {
+                $params = $arguments[1];
+            } else {
+                $params = [];
+            }
         }
 
         return $this->client->resolveFake($fullMethod, $params);

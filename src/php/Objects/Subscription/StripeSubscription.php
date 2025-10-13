@@ -43,25 +43,16 @@ class StripeSubscription
      */
     public static function fromStripeObject(Subscription $stripeSubscription): self
     {
-        $items = null;
-        if ($stripeSubscription->items->data) {
-            $items = [];
-            foreach ($stripeSubscription->items->data as $item) {
-                $items[] = [
-                    "id" => $item->id,
-                    "price" => $item->price->id ?? null,
-                    "quantity" => $item->quantity,
-                    "metadata" => $item->metadata->toArray(),
-                ];
-            }
-        }
+        $items = self::extractItems($stripeSubscription);
+        $customer = self::extractCustomerId($stripeSubscription->customer);
+        $status = self::extractStatus($stripeSubscription->status);
+        $defaultPaymentMethod = self::extractPaymentMethodId($stripeSubscription->default_payment_method ?? null);
+        $collectionMethod = self::extractCollectionMethod($stripeSubscription->collection_method ?? null);
 
         return self::make(
             id: $stripeSubscription->id,
-            customer: is_string($stripeSubscription->customer)
-                ? $stripeSubscription->customer
-                : $stripeSubscription->customer->id,
-            status: $stripeSubscription->status ? SubscriptionStatus::from($stripeSubscription->status) : null,
+            customer: $customer,
+            status: $status,
             currentPeriodStart: $stripeSubscription->current_period_start ?? null,
             currentPeriodEnd: $stripeSubscription->current_period_end ?? null,
             cancelAt: $stripeSubscription->cancel_at ?? null,
@@ -69,19 +60,74 @@ class StripeSubscription
             trialStart: $stripeSubscription->trial_start ?? null,
             trialEnd: $stripeSubscription->trial_end ?? null,
             items: $items,
-            defaultPaymentMethod: isset($stripeSubscription->default_payment_method)
-                ? (is_string($stripeSubscription->default_payment_method)
-                    ? $stripeSubscription->default_payment_method
-                    : $stripeSubscription->default_payment_method->id)
-                : null,
+            defaultPaymentMethod: $defaultPaymentMethod,
             metadata: $stripeSubscription->metadata->toArray(),
             currency: $stripeSubscription->currency ?? null,
-            collectionMethod: isset($stripeSubscription->collection_method) ? CollectionMethod::from($stripeSubscription->collection_method) : null,
+            collectionMethod: $collectionMethod,
             billingCycleAnchor: $stripeSubscription->billing_cycle_anchor ?? null,
             cancelAtPeriodEnd: $stripeSubscription->cancel_at_period_end ?? null,
             daysUntilDue: $stripeSubscription->days_until_due ?? null,
             description: $stripeSubscription->description ?? null
         );
+    }
+
+    private static function extractItems(Subscription $stripeSubscription): ?array
+    {
+        if (!$stripeSubscription->items->data) {
+            return null;
+        }
+
+        $items = [];
+        foreach ($stripeSubscription->items->data as $item) {
+            $items[] = [
+                "id" => $item->id,
+                "price" => $item->price->id ?? null,
+                "quantity" => $item->quantity,
+                "metadata" => $item->metadata->toArray(),
+            ];
+        }
+
+        return $items;
+    }
+
+    private static function extractCustomerId(mixed $customer): string
+    {
+        if (is_string($customer)) {
+            return $customer;
+        }
+
+        return $customer->id;
+    }
+
+    private static function extractStatus(?string $status): ?SubscriptionStatus
+    {
+        if ($status === null) {
+            return null;
+        }
+
+        return SubscriptionStatus::from($status);
+    }
+
+    private static function extractPaymentMethodId(mixed $paymentMethod): ?string
+    {
+        if ($paymentMethod === null) {
+            return null;
+        }
+
+        if (is_string($paymentMethod)) {
+            return $paymentMethod;
+        }
+
+        return $paymentMethod->id;
+    }
+
+    private static function extractCollectionMethod(?string $collectionMethod): ?CollectionMethod
+    {
+        if ($collectionMethod === null) {
+            return null;
+        }
+
+        return CollectionMethod::from($collectionMethod);
     }
 
     public function toArray(): array
