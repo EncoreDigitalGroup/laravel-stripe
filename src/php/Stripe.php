@@ -12,6 +12,8 @@ use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancia
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
 use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
+use Stripe\StripeClient;
 
 class Stripe
 {
@@ -37,29 +39,12 @@ class Stripe
         return StripeCustomerService::make();
     }
 
-    /**
-     * Create a fake Stripe client for testing
-     *
-     * This method is only available when the FakeStripeClient class exists (in test environment).
-     *
-     * @param array $fakes Array of method => response mappings
-     * @return object FakeStripeClient instance
-     */
-    public static function fake(array $fakes = []): object
+    public static function fake(array $fakes = []): FakeStripeClient
     {
-        if (!class_exists(\Tests\Support\FakeStripeClient::class)) {
-            throw new \RuntimeException(
-                "Stripe::fake() is only available in the test environment. " .
-                'Make sure Tests\Support\FakeStripeClient exists.'
-            );
-        }
+        $fake = new FakeStripeClient($fakes);
 
-        $fakeClass = \Tests\Support\FakeStripeClient::class;
-        $fake = new $fakeClass($fakes);
-
-        // Bind to container so services will use it
         if (function_exists("app")) {
-            app()->instance(\Stripe\StripeClient::class, $fake);
+            app()->instance(StripeClient::class, $fake);
         }
 
         return $fake;

@@ -8,8 +8,8 @@
 use EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Common\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Common\Stripe\Stripe;
-use Tests\Support\StripeFixtures;
-use Tests\Support\StripeMethod;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
 
 test('can create a subscription', function () {
     $fake = Stripe::fake([

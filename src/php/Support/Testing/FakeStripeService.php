@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace Tests\Support;
+namespace EncoreDigitalGroup\Common\Stripe\Support\Testing;
 
 /**
  * FakeStripeService represents a faked Stripe service (e.g., customers, subscriptions)

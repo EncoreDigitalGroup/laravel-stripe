@@ -8,8 +8,8 @@
 use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Common\Stripe\Stripe;
-use Tests\Support\StripeFixtures;
-use Tests\Support\StripeMethod;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
 
 test("can create a customer using faked stripe client", function (): void {
     // Arrange: Set up fake Stripe responses using enum
@@ -181,7 +181,7 @@ test("throws exception when no fake is registered", function (): void {
     // Act & Assert: Should throw exception
     $service = StripeCustomerService::make();
 
-    expect(fn (): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => $service->get("cus_123"))
+    expect(fn(): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => $service->get("cus_123"))
         ->toThrow(\RuntimeException::class, "No fake registered for Stripe method");
 });
 

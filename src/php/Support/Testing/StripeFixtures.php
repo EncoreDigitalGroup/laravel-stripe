@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace Tests\Support;
+namespace EncoreDigitalGroup\Common\Stripe\Support\Testing;
 
 /**
  * StripeFixtures provides common test data for Stripe API responses

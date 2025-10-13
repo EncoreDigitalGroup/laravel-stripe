@@ -10,9 +10,9 @@ use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancia
 use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
 use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
 use Illuminate\Support\Facades\App;
 use Stripe\StripeClient;
-use Tests\Support\FakeStripeClient;
 
 test('can create a customer object via static method', function () {
     $customer = Stripe::customer(

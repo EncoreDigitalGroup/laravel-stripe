@@ -6,8 +6,8 @@
  */
 
 use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
 use Stripe\Util\Util;
-use Tests\Support\StripeFixtures;
 
 test('can create StripeProduct using make method', function () {
     $product = StripeProduct::make(

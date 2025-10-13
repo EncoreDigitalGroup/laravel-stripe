@@ -5,10 +5,7 @@ This testing infrastructure provides a Laravel `Http::fake()`-like experience fo
 ## Quick Start
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
-use Tests\Support\StripeFixtures;
-use Tests\Support\StripeMethod;
+use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;use EncoreDigitalGroup\Common\Stripe\Stripe;use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
 
 test("creates a stripe customer", function () {
     // Fake the Stripe API using enums for type safety
