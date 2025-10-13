@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support;
+namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Number;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Str;

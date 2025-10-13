@@ -31,7 +31,7 @@ STRIPE_PUBLISHABLE_KEY=pk_test_...
 The library uses a configuration approach that reads from your environment. The secret key is required for API operations.
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 // The library automatically reads STRIPE_SECRET_KEY from your environment
 // No additional configuration needed

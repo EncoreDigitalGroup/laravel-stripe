@@ -37,7 +37,7 @@ enums while maintaining compatibility with Laravel 11-12 applications.
 ## Quick Example
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 // Create a customer
 $customer = Stripe::customers()->create(

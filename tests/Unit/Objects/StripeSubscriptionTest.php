@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Enums\CollectionMethod;
-use EncoreDigitalGroup\Common\Stripe\Enums\SubscriptionStatus;
-use EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use Stripe\Util\Util;
 
 test("can create StripeSubscription using make method", function (): void {

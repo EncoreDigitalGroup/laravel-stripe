@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support;
+namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class StripeBankAccountConnectedPayload

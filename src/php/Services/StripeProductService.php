@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Services;
+namespace EncoreDigitalGroup\Stripe\Services;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct;
-use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
 
@@ -101,7 +101,7 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
@@ -115,6 +115,6 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }

@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Enums;
+namespace EncoreDigitalGroup\Stripe\Enums;
 
 enum BillingScheme: string
 {

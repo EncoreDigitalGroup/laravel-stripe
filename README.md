@@ -33,7 +33,7 @@ The package will automatically register its service provider in Laravel.
 Configure your Stripe API keys using the configuration system:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Support\Config\StripeConfig;
+use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 
 $config = StripeConfig::make();
 $config->authentication->secretKey = env('STRIPE_SECRET_KEY');
@@ -54,8 +54,8 @@ STRIPE_PUBLIC_KEY=pk_test_...
 Create Stripe objects using the fluent factory methods:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 
 $customer = Stripe::customer(
     name: 'John Doe',
@@ -76,7 +76,7 @@ $customer = Stripe::customer(
 Manage customers using the customer service:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 $service = Stripe::customers();
 
@@ -104,8 +104,8 @@ $results = $service->search('email:"john@example.com"');
 Manage products and prices:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Services\StripeProductService;
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Stripe\Services\StripeProductService;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 
 $productService = StripeProductService::make();
 
@@ -130,10 +130,10 @@ $products = $productService->list(['active' => true]);
 Work with Stripe prices:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Services\StripePriceService;
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripePrice;
-use EncoreDigitalGroup\Common\Stripe\Enums\PriceType;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Services\StripePriceService;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
+use EncoreDigitalGroup\Stripe\Enums\PriceType;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 
 $priceService = StripePriceService::make();
 
@@ -157,8 +157,8 @@ $created = $priceService->create($price);
 Manage subscriptions:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 
 $subscriptionService = StripeSubscriptionService::make();
 
@@ -184,7 +184,7 @@ $subscriptionService->cancel('sub_xxxxx');
 Work with Stripe Financial Connections:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
 
 $connection = StripeFinancialConnection::make(
     accountId: 'fca_xxxxx',
@@ -197,7 +197,7 @@ $connection = StripeFinancialConnection::make(
 Handle Stripe webhooks:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 $webhook = Stripe::webhook(
     event: $request->input('type'),

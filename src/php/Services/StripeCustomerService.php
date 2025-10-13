@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Services;
+namespace EncoreDigitalGroup\Stripe\Services;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
 
@@ -68,7 +68,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->all($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
@@ -82,6 +82,6 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->search($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 }

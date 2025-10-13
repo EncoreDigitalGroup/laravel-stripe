@@ -5,11 +5,11 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct;
-use EncoreDigitalGroup\Common\Stripe\Services\StripeProductService;
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Stripe\Services\StripeProductService;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
 test("can create a product", function (): void {
     $fake = Stripe::fake([

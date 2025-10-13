@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support;
+namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Str;
 use Illuminate\Support\Facades\Request;
 use Stripe\Event as StripeEvent;
@@ -19,7 +19,7 @@ class StripeWebhook
 
     public function __construct(
         public string $url,
-        public array $events = []
+        public array  $events = []
     ) {}
 
     public static function getWebhookSignatureHeader(): string

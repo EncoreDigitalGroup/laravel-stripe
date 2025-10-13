@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Customer;
+namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress;
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Stripe\Customer;
 
@@ -17,12 +17,12 @@ class StripeCustomer
     use HasMake;
 
     public function __construct(
-        public ?string $id = null,
-        public ?StripeAddress $address = null,
-        public ?string $description = null,
-        public ?string $email = null,
-        public ?string $name = null,
-        public ?string $phone = null,
+        public ?string         $id = null,
+        public ?StripeAddress  $address = null,
+        public ?string         $description = null,
+        public ?string         $email = null,
+        public ?string         $name = null,
+        public ?string         $phone = null,
         public ?StripeShipping $shipping = null
     ) {}
 
@@ -64,7 +64,7 @@ class StripeCustomer
             }
 
             // Only create shipping if we have the required fields (address and name)
-            if ($shippingAddress instanceof \EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress && isset($stripeShipping->name)) {
+            if ($shippingAddress instanceof \EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress && isset($stripeShipping->name)) {
                 $shipping = StripeShipping::make(
                     address: $shippingAddress,
                     name: $stripeShipping->name,

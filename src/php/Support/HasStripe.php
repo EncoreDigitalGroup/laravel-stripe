@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Support;
+namespace EncoreDigitalGroup\Stripe\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Support\Config\StripeConfig;
+use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use Stripe\StripeClient;
 

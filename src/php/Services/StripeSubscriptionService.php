@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Services;
+namespace EncoreDigitalGroup\Stripe\Services;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription;
-use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
 
@@ -89,7 +89,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn($stripeSubscription): \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -103,6 +103,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn($stripeSubscription): \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

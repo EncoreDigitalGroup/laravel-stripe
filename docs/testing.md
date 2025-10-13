@@ -19,7 +19,7 @@ The fake client solves all these problems.
 ### Setup Fake Client
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 use Tests\Support\StripeFixtures;
 use Tests\Support\StripeMethod;
 

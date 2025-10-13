@@ -5,12 +5,12 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Enums\BillingScheme;
-use EncoreDigitalGroup\Common\Stripe\Enums\PriceType;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
-use EncoreDigitalGroup\Common\Stripe\Enums\TaxBehavior;
-use EncoreDigitalGroup\Common\Stripe\Enums\TiersMode;
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripePrice;
+use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
+use EncoreDigitalGroup\Stripe\Enums\PriceType;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
+use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use Stripe\Util\Util;
 
 test("can create StripePrice using make method", function (): void {

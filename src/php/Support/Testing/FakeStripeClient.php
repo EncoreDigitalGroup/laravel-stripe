@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Support\Testing;
+namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
 use BackedEnum;
 use RuntimeException;
@@ -99,7 +99,7 @@ class FakeStripeClient extends StripeClient
         $normalized = [];
         foreach ($fakes as $key => $value) {
             /** @phpstan-ignore-next-line */
-            $stringKey = $key instanceof BackedEnum ? $key->value : (string) $key;
+            $stringKey = $key instanceof BackedEnum ? $key->value : (string)$key;
 
             $normalized[$stringKey] = $value;
         }
@@ -179,10 +179,10 @@ class FakeStripeClient extends StripeClient
     }
 
     /**
-     * @param  mixed  $name
+     * @param mixed $name
      */
     public function __get($name): FakeStripeService
     {
-        return new FakeStripeService((string) $name, $this);
+        return new FakeStripeService((string)$name, $this);
     }
 }

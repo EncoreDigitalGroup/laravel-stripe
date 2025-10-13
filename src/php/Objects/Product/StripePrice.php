@@ -5,16 +5,16 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Product;
+namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
-use EncoreDigitalGroup\Common\Stripe\Enums\BillingScheme;
-use EncoreDigitalGroup\Common\Stripe\Enums\PriceType;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringAggregateUsage;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringUsageType;
-use EncoreDigitalGroup\Common\Stripe\Enums\TaxBehavior;
-use EncoreDigitalGroup\Common\Stripe\Enums\TiersMode;
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
+use EncoreDigitalGroup\Stripe\Enums\PriceType;
+use EncoreDigitalGroup\Stripe\Enums\RecurringAggregateUsage;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
+use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
+use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Stripe\Price;
 use Stripe\StripeObject;
@@ -24,24 +24,24 @@ class StripePrice
     use HasMake;
 
     public function __construct(
-        public ?string $id = null,
-        public ?string $product = null,
-        public ?bool $active = null,
-        public ?string $currency = null,
-        public ?int $unitAmount = null,
-        public ?string $unitAmountDecimal = null,
-        public ?PriceType $type = null,
+        public ?string        $id = null,
+        public ?string        $product = null,
+        public ?bool          $active = null,
+        public ?string        $currency = null,
+        public ?int           $unitAmount = null,
+        public ?string        $unitAmountDecimal = null,
+        public ?PriceType     $type = null,
         public ?BillingScheme $billingScheme = null,
-        public ?array $recurring = null,
-        public ?string $nickname = null,
-        public ?array $metadata = null,
-        public ?string $lookupKey = null,
-        public ?array $tiers = null,
-        public ?TiersMode $tiersMode = null,
-        public ?int $transformQuantity = null,
-        public ?array $customUnitAmount = null,
-        public ?TaxBehavior $taxBehavior = null,
-        public ?int $created = null
+        public ?array         $recurring = null,
+        public ?string        $nickname = null,
+        public ?array         $metadata = null,
+        public ?string        $lookupKey = null,
+        public ?array         $tiers = null,
+        public ?TiersMode     $tiersMode = null,
+        public ?int           $transformQuantity = null,
+        public ?array         $customUnitAmount = null,
+        public ?TaxBehavior   $taxBehavior = null,
+        public ?int           $created = null
     ) {}
 
     public static function fromStripeObject(Price $stripePrice): self

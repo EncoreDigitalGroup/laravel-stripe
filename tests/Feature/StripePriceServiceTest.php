@@ -5,11 +5,11 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripePrice;
-use EncoreDigitalGroup\Common\Stripe\Services\StripePriceService;
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
+use EncoreDigitalGroup\Stripe\Services\StripePriceService;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
 test("can create a price", function (): void {
     $fake = Stripe::fake([

@@ -5,7 +5,7 @@ This guide will walk you through common Stripe operations using the library. All
 ## Creating Your First Customer
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 // Create a customer object
 $customerData = Stripe::customer(
@@ -150,8 +150,8 @@ $subscription = Stripe::subscriptions()->resume('sub_...');
 The library uses enums for constants to prevent magic strings:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
-use EncoreDigitalGroup\Common\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 
 // Use enums instead of strings
 $price = Stripe::price(

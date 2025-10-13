@@ -17,7 +17,7 @@ Each service is responsible for:
 All services are accessed through the `Stripe` facade:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 
 $customerService = Stripe::customers();
 $productService = Stripe::products();

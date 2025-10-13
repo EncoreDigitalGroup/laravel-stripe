@@ -31,8 +31,8 @@ Problems with this approach:
 This library wraps everything in strongly-typed objects:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 
 $price = Stripe::prices()->create(
     Stripe::price(
@@ -125,7 +125,7 @@ Enums replace magic strings with type-safe constants.
 **Subscription Status**
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 
 SubscriptionStatus::Active
 SubscriptionStatus::Canceled
@@ -140,7 +140,7 @@ SubscriptionStatus::Unpaid
 **Recurring Interval**
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 
 RecurringInterval::Day
 RecurringInterval::Week
@@ -151,7 +151,7 @@ RecurringInterval::Year
 **Price Type**
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Enums\PriceType;
+use EncoreDigitalGroup\Stripe\Enums\PriceType;
 
 PriceType::OneTime
 PriceType::Recurring
@@ -160,7 +160,7 @@ PriceType::Recurring
 **Billing Scheme**
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Enums\BillingScheme;
+use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 
 BillingScheme::PerUnit
 BillingScheme::Tiered
@@ -378,7 +378,7 @@ Let your IDE guide you. Type `Stripe::` and see what's available. Type `Recurrin
 ### 4. Use Type Hints
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 
 function processCustomer(StripeCustomer $customer): void {
     // Type safety throughout your application

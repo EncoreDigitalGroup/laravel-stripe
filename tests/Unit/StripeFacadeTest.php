@@ -5,12 +5,12 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
-use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
+use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use Illuminate\Support\Facades\App;
 use Stripe\StripeClient;
 
@@ -87,5 +87,5 @@ test("fake method returns fake that can be used for assertions", function (): vo
 test("fake method throws exception when FakeStripeClient not available", function (): void {
     // This test would only fail if the class doesn't exist, which it does in our test environment
     // So we're just verifying the method exists and works
-    expect(fn (): \EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
+    expect(fn(): \EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
 });

@@ -5,11 +5,11 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Subscription\StripeSubscription;
-use EncoreDigitalGroup\Common\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeMethod;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
 test("can create a subscription", function (): void {
     $fake = Stripe::fake([

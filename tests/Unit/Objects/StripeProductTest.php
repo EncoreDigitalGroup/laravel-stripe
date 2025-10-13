@@ -5,8 +5,8 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Product\StripeProduct;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
 use Stripe\Util\Util;
 
 test("can create StripeProduct using make method", function (): void {
@@ -137,7 +137,7 @@ test("toArray returns correct structure", function (): void {
 test("toArray filters null values", function (): void {
     $product = StripeProduct::make(
         name: "Test Product"
-        // All other fields are null
+    // All other fields are null
     );
 
     $array = $product->toArray();

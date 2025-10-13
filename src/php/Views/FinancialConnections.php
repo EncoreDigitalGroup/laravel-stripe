@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Views;
+namespace EncoreDigitalGroup\Stripe\Views;
 
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -23,7 +23,8 @@ class FinancialConnections extends Component
         public ?string $postSuccessUrl = null,
         public ?string $publicSecurityKey = null,
         public ?string $privateSecurityKey = null
-    ) {
+    )
+    {
         $this->redirectUrlIsNull("redirectSuccessUrl");
         $this->redirectUrlIsNull("redirectErrorUrl");
         $this->redirectUrlIsNull("postSuccessUrl");

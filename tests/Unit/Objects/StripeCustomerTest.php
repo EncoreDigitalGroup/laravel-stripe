@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeShipping;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use Stripe\Util\Util;
 
 test("can create StripeCustomer using make method", function (): void {

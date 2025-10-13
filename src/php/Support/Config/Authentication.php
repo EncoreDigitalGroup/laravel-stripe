@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Support\Config;
+namespace EncoreDigitalGroup\Stripe\Support\Config;
 
 class Authentication
 {

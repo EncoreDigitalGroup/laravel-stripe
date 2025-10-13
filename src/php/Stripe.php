@@ -5,14 +5,14 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe;
+namespace EncoreDigitalGroup\Stripe;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeWebhook;
-use EncoreDigitalGroup\Common\Stripe\Services\StripeCustomerService;
-use EncoreDigitalGroup\Common\Stripe\Support\HasStripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
+use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
+use EncoreDigitalGroup\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use Stripe\StripeClient;
 
 class Stripe

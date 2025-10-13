@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Support;
+namespace EncoreDigitalGroup\Stripe\Support;
 
 trait HasMake
 {

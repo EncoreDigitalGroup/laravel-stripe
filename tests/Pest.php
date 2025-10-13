@@ -4,7 +4,7 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
+use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 
 pest()->extend(Tests\TestCase::class)
     ->in("Feature")

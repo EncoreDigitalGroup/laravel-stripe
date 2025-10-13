@@ -191,7 +191,7 @@ public function create(StripeProduct $product): StripeProduct
 Tests use a custom faking system that intercepts Stripe API calls without network requests:
 
 ```php
-use EncoreDigitalGroup\Common\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Stripe;
 use Tests\Support\StripeFixtures;
 use Tests\Support\StripeMethod;
 
@@ -397,6 +397,6 @@ Note: Prices can only be archived (not deleted) per Stripe API limitations.
 
 3. **Test isolation** - `Stripe::fake()` binds to container as singleton. Container is reset between tests by TestCase.
 
-4. **File structure** - Source is in `src/php/`, not just `src/`. Namespaces reflect this: `EncoreDigitalGroup\Common\Stripe\`.
+4. **File structure** - Source is in `src/php/`, not just `src/`. Namespaces reflect this: `EncoreDigitalGroup\Stripe\`.
 
 5. **Stripe SDK differences** - Package supports both v16.5+ and v17.0+ which may have minor API differences.

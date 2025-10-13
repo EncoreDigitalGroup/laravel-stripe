@@ -5,9 +5,9 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support;
+namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 
 class StripeAddress
 {

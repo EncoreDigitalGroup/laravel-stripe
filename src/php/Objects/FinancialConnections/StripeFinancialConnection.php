@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections;
+namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 
 class StripeFinancialConnection
 {
@@ -16,7 +16,7 @@ class StripeFinancialConnection
 
     public function __construct(
         public StripeCustomer $customer,
-        public array $permissions = ["transactions"]
+        public array          $permissions = ["transactions"]
     ) {}
 
     public function toArray(): array

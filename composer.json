@@ -47,7 +47,7 @@
     },
     "autoload": {
         "psr-4": {
-            "EncoreDigitalGroup\\Common\\Stripe\\": "src/php/"
+            "EncoreDigitalGroup\\Stripe\\": "src/php/"
         }
     },
     "autoload-dev": {
@@ -63,7 +63,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "EncoreDigitalGroup\\Common\\Stripe\\Providers\\ServiceProvider"
+                "EncoreDigitalGroup\\Stripe\\Providers\\ServiceProvider"
             ],
             "dont-discover": []
         },
