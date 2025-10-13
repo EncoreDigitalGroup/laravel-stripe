@@ -102,10 +102,11 @@ class FakeStripeClient extends StripeClient
     {
         $normalized = [];
         foreach ($fakes as $key => $value) {
+            /** @phpstan-ignore-next-line */
             if ($key instanceof BackedEnum) {
                 $stringKey = $key->value;
             } else {
-                $stringKey = $key;
+                $stringKey = (string)$key;
             }
 
             $normalized[$stringKey] = $value;
@@ -180,11 +181,20 @@ class FakeStripeClient extends StripeClient
             };
         }
 
-        return Util::convertToStripeObject($data, []);
+        $result = Util::convertToStripeObject($data, []);
+
+        if (!$result instanceof StripeObject) {
+            throw new RuntimeException("Failed to convert array to StripeObject");
+        }
+
+        return $result;
     }
 
-    public function __get($name)
+    /**
+     * @param mixed $name
+     */
+    public function __get($name): FakeStripeService
     {
-        return new FakeStripeService($name, $this);
+        return new FakeStripeService((string)$name, $this);
     }
 }
