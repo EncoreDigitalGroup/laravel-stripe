@@ -60,11 +60,7 @@ class StripeProduct
 
         $taxCode = null;
         if (isset($stripeProduct->tax_code)) {
-            if (is_string($stripeProduct->tax_code)) {
-                $taxCode = $stripeProduct->tax_code;
-            } else {
-                $taxCode = $stripeProduct->tax_code->id;
-            }
+            $taxCode = is_string($stripeProduct->tax_code) ? $stripeProduct->tax_code : $stripeProduct->tax_code->id;
         }
 
         return self::make(

@@ -17,12 +17,12 @@ class StripeCustomer
     use HasMake;
 
     public function __construct(
-        public ?string         $id = null,
-        public ?StripeAddress  $address = null,
-        public ?string         $description = null,
-        public ?string         $email = null,
-        public ?string         $name = null,
-        public ?string         $phone = null,
+        public ?string $id = null,
+        public ?StripeAddress $address = null,
+        public ?string $description = null,
+        public ?string $email = null,
+        public ?string $name = null,
+        public ?string $phone = null,
         public ?StripeShipping $shipping = null
     ) {}
 
@@ -64,7 +64,7 @@ class StripeCustomer
             }
 
             // Only create shipping if we have the required fields (address and name)
-            if ($shippingAddress !== null && isset($stripeShipping->name)) {
+            if ($shippingAddress instanceof \EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress && isset($stripeShipping->name)) {
                 $shipping = StripeShipping::make(
                     address: $shippingAddress,
                     name: $stripeShipping->name,

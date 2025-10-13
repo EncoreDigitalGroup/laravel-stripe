@@ -35,11 +35,7 @@ class FakeStripeClient extends StripeClient
 
     public function fake(string|BackedEnum $method, mixed $response): self
     {
-        if ($method instanceof BackedEnum) {
-            $stringMethod = $method->value;
-        } else {
-            $stringMethod = $method;
-        }
+        $stringMethod = $method instanceof BackedEnum ? $method->value : $method;
 
         $this->fakes[$stringMethod] = $response;
 
@@ -103,11 +99,7 @@ class FakeStripeClient extends StripeClient
         $normalized = [];
         foreach ($fakes as $key => $value) {
             /** @phpstan-ignore-next-line */
-            if ($key instanceof BackedEnum) {
-                $stringKey = $key->value;
-            } else {
-                $stringKey = (string)$key;
-            }
+            $stringKey = $key instanceof BackedEnum ? $key->value : (string) $key;
 
             $normalized[$stringKey] = $value;
         }
@@ -165,11 +157,7 @@ class FakeStripeClient extends StripeClient
             // Try to infer the object type from the ID prefix (before first underscore)
             $underscorePos = strpos($data["id"], "_");
 
-            if ($underscorePos !== false) {
-                $prefix = substr($data["id"], 0, $underscorePos);
-            } else {
-                $prefix = $data["id"];
-            }
+            $prefix = $underscorePos !== false ? substr($data["id"], 0, $underscorePos) : $data["id"];
 
             $data["object"] = match ($prefix) {
                 "cus" => "customer",
@@ -191,10 +179,10 @@ class FakeStripeClient extends StripeClient
     }
 
     /**
-     * @param mixed $name
+     * @param  mixed  $name
      */
     public function __get($name): FakeStripeService
     {
-        return new FakeStripeService((string)$name, $this);
+        return new FakeStripeService((string) $name, $this);
     }
 }

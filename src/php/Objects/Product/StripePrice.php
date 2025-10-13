@@ -24,24 +24,24 @@ class StripePrice
     use HasMake;
 
     public function __construct(
-        public ?string        $id = null,
-        public ?string        $product = null,
-        public ?bool          $active = null,
-        public ?string        $currency = null,
-        public ?int           $unitAmount = null,
-        public ?string        $unitAmountDecimal = null,
-        public ?PriceType     $type = null,
+        public ?string $id = null,
+        public ?string $product = null,
+        public ?bool $active = null,
+        public ?string $currency = null,
+        public ?int $unitAmount = null,
+        public ?string $unitAmountDecimal = null,
+        public ?PriceType $type = null,
         public ?BillingScheme $billingScheme = null,
-        public ?array         $recurring = null,
-        public ?string        $nickname = null,
-        public ?array         $metadata = null,
-        public ?string        $lookupKey = null,
-        public ?array         $tiers = null,
-        public ?TiersMode     $tiersMode = null,
-        public ?int           $transformQuantity = null,
-        public ?array         $customUnitAmount = null,
-        public ?TaxBehavior   $taxBehavior = null,
-        public ?int           $created = null
+        public ?array $recurring = null,
+        public ?string $nickname = null,
+        public ?array $metadata = null,
+        public ?string $lookupKey = null,
+        public ?array $tiers = null,
+        public ?TiersMode $tiersMode = null,
+        public ?int $transformQuantity = null,
+        public ?array $customUnitAmount = null,
+        public ?TaxBehavior $taxBehavior = null,
+        public ?int $created = null
     ) {}
 
     public static function fromStripeObject(Price $stripePrice): self
@@ -49,13 +49,7 @@ class StripePrice
         $recurring = self::extractRecurring($stripePrice);
         $tiers = self::extractTiers($stripePrice);
         $customUnitAmount = self::extractCustomUnitAmount($stripePrice);
-
-        $product = null;
-        if (is_string($stripePrice->product)) {
-            $product = $stripePrice->product;
-        } else {
-            $product = $stripePrice->product->id;
-        }
+        $product = is_string($stripePrice->product) ? $stripePrice->product : $stripePrice->product->id;
 
         $type = null;
         if (isset($stripePrice->type)) {
@@ -204,18 +198,15 @@ class StripePrice
         }
 
         $interval = $this->normalizeRecurringField(
-            $recurring["interval"] ?? null,
-            RecurringInterval::class
+            $recurring["interval"] ?? null
         );
 
         $usageType = $this->normalizeRecurringField(
-            $recurring["usage_type"] ?? null,
-            RecurringUsageType::class
+            $recurring["usage_type"] ?? null
         );
 
         $aggregateUsage = $this->normalizeRecurringField(
-            $recurring["aggregate_usage"] ?? null,
-            RecurringAggregateUsage::class
+            $recurring["aggregate_usage"] ?? null
         );
 
         $normalized = [
@@ -229,7 +220,7 @@ class StripePrice
         return Arr::whereNotNull($normalized);
     }
 
-    private function normalizeRecurringField(mixed $field, string $enumClass): ?string
+    private function normalizeRecurringField(mixed $field): ?string
     {
         if ($field instanceof RecurringInterval || $field instanceof RecurringUsageType || $field instanceof RecurringAggregateUsage) {
             return $field->value;
