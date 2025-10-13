@@ -21,12 +21,12 @@ class TestCase extends OrchestraTestCase
         $this->setupAppKey();
     }
 
-    protected function getPackageProviders($app): array
+    public function ignorePackageDiscoveriesFrom(): array
     {
         return [];
     }
 
-    public function ignorePackageDiscoveriesFrom(): array
+    protected function getPackageProviders($app): array
     {
         return [];
     }

@@ -14,34 +14,34 @@ use EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient;
 use Illuminate\Support\Facades\App;
 use Stripe\StripeClient;
 
-test('can create a customer object via static method', function () {
+test("can create a customer object via static method", function (): void {
     $customer = Stripe::customer(
-        email: 'test@example.com',
-        name: 'Test User'
+        email: "test@example.com",
+        name: "Test User"
     );
 
     expect($customer)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($customer->email)->toBe('test@example.com')
-        ->and($customer->name)->toBe('Test User');
+        ->and($customer->email)->toBe("test@example.com")
+        ->and($customer->name)->toBe("Test User");
 });
 
-test('can create financial connections object via static method', function () {
-    $customer = StripeCustomer::make(email: 'test@example.com');
+test("can create financial connections object via static method", function (): void {
+    $customer = StripeCustomer::make(email: "test@example.com");
     $connection = Stripe::financialConnections(customer: $customer);
 
     expect($connection)->toBeInstanceOf(StripeFinancialConnection::class)
         ->and($connection->customer)->toBe($customer);
 });
 
-test('can create webhook object via static method', function () {
-    $webhook = Stripe::webhook(url: 'https://example.com/webhook');
+test("can create webhook object via static method", function (): void {
+    $webhook = Stripe::webhook(url: "https://example.com/webhook");
 
     expect($webhook)->toBeInstanceOf(StripeWebhook::class)
-        ->and($webhook->url)->toBe('https://example.com/webhook');
+        ->and($webhook->url)->toBe("https://example.com/webhook");
 });
 
-test('can get customer service via static method', function () {
+test("can get customer service via static method", function (): void {
     // Use fake to avoid needing real API key
     Stripe::fake();
 
@@ -50,17 +50,17 @@ test('can get customer service via static method', function () {
     expect($service)->toBeInstanceOf(StripeCustomerService::class);
 });
 
-test('fake method creates FakeStripeClient', function () {
+test("fake method creates FakeStripeClient", function (): void {
     $fake = Stripe::fake([
-        'customers.create' => ['id' => 'cus_test', 'email' => 'test@example.com'],
+        "customers.create" => ["id" => "cus_test", "email" => "test@example.com"],
     ]);
 
     expect($fake)->toBeInstanceOf(FakeStripeClient::class);
 });
 
-test('fake method binds to container', function () {
+test("fake method binds to container", function (): void {
     Stripe::fake([
-        'customers.create' => ['id' => 'cus_test', 'email' => 'test@example.com'],
+        "customers.create" => ["id" => "cus_test", "email" => "test@example.com"],
     ]);
 
     // Verify the fake is bound to the container
@@ -71,21 +71,21 @@ test('fake method binds to container', function () {
     expect($client)->toBeInstanceOf(FakeStripeClient::class);
 });
 
-test('fake method returns fake that can be used for assertions', function () {
+test("fake method returns fake that can be used for assertions", function (): void {
     $fake = Stripe::fake([
-        'customers.create' => ['id' => 'cus_test', 'email' => 'test@example.com'],
+        "customers.create" => ["id" => "cus_test", "email" => "test@example.com"],
     ]);
 
     // Use the service
     $service = StripeCustomerService::make();
-    $service->create(StripeCustomer::make(email: 'test@example.com'));
+    $service->create(StripeCustomer::make(email: "test@example.com"));
 
     // Assert using the fake
-    expect($fake)->toHaveCalledStripeMethod('customers.create');
+    expect($fake)->toHaveCalledStripeMethod("customers.create");
 });
 
-test('fake method throws exception when FakeStripeClient not available', function () {
+test("fake method throws exception when FakeStripeClient not available", function (): void {
     // This test would only fail if the class doesn't exist, which it does in our test environment
     // So we're just verifying the method exists and works
-    expect(fn() => Stripe::fake())->not->toThrow(RuntimeException::class);
+    expect(fn (): \EncoreDigitalGroup\Common\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
 });

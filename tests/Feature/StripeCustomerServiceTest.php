@@ -58,9 +58,8 @@ test("can retrieve a customer using faked stripe client", function (): void {
     expect($customer)
         ->toBeInstanceOf(StripeCustomer::class)
         ->and($customer->id)->toBe("cus_existing")
-        ->and($customer->email)->toBe("existing@example.com");
-
-    expect($fake)->toHaveCalledStripeMethod("customers.retrieve");
+        ->and($customer->email)->toBe("existing@example.com")
+        ->and($fake)->toHaveCalledStripeMethod("customers.retrieve");
 });
 
 test("can update a customer using faked stripe client", function (): void {
@@ -86,9 +85,8 @@ test("can update a customer using faked stripe client", function (): void {
     expect($result)
         ->toBeInstanceOf(StripeCustomer::class)
         ->and($result->email)->toBe("updated@example.com")
-        ->and($result->name)->toBe("Updated Name");
-
-    expect($fake)->toHaveCalledStripeMethod("customers.update");
+        ->and($result->name)->toBe("Updated Name")
+        ->and($fake)->toHaveCalledStripeMethod("customers.update");
 });
 
 test("can delete a customer using faked stripe client", function (): void {
@@ -102,8 +100,8 @@ test("can delete a customer using faked stripe client", function (): void {
     $result = $service->delete("cus_123");
 
     // Assert
-    expect($result)->toBeTrue();
-    expect($fake)->toHaveCalledStripeMethod("customers.delete");
+    expect($result)->toBeTrue()
+        ->and($fake)->toHaveCalledStripeMethod("customers.delete");
 });
 
 test("can list customers using faked stripe client", function (): void {
@@ -124,14 +122,13 @@ test("can list customers using faked stripe client", function (): void {
     expect($customers)
         ->toHaveCount(3)
         ->and($customers->first())->toBeInstanceOf(StripeCustomer::class)
-        ->and($customers->first()->id)->toBe("cus_1");
-
-    expect($fake)->toHaveCalledStripeMethod("customers.all");
+        ->and($customers->first()->id)->toBe("cus_1")
+        ->and($fake)->toHaveCalledStripeMethod("customers.all");
 });
 
 test("can use callable responses for dynamic fake responses", function (): void {
     // Arrange: Use a callable to generate dynamic responses
-    $fake = Stripe::fake([
+    Stripe::fake([
         "customers.create" => function (array $params): array {
             return StripeFixtures::customer([
                 "id" => "cus_dynamic",
@@ -157,7 +154,7 @@ test("can use callable responses for dynamic fake responses", function (): void 
 
 test("can use wildcard patterns for fake responses", function (): void {
     // Arrange: Use wildcard to match any customer method
-    $fake = Stripe::fake([
+    Stripe::fake([
         "customers.*" => StripeFixtures::customer([
             "id" => "cus_wildcard",
             "email" => "wildcard@example.com",
@@ -181,8 +178,8 @@ test("throws exception when no fake is registered", function (): void {
     // Act & Assert: Should throw exception
     $service = StripeCustomerService::make();
 
-    expect(fn(): \EncoreDigitalGroup\Common\Stripe\Objects\Customer\StripeCustomer => $service->get("cus_123"))
-        ->toThrow(\RuntimeException::class, "No fake registered for Stripe method");
+    expect(fn (): StripeCustomer => $service->get("cus_123"))
+        ->toThrow(RuntimeException::class, "No fake registered for Stripe method");
 });
 
 test("can assert method was not called", function (): void {
