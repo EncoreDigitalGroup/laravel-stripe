@@ -15,6 +15,7 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
 use Stripe\Price;
 use Stripe\StripeObject;
@@ -53,7 +54,7 @@ class StripePrice
 
         // Handle customUnitAmount parameter conversion from array to DTO
         if (isset($params['customUnitAmount']) && is_array($params['customUnitAmount']) && !($params['customUnitAmount'] instanceof StripeCustomUnitAmount)) {
-            $params['customUnitAmount'] = StripeCustomUnitAmount::make(...$params['customUnitAmount']);
+            $params['customUnitAmount'] = (new StripeBuilder())->customUnitAmount()->build(...$params['customUnitAmount']);
         }
 
         return new static(...$params);
@@ -132,7 +133,7 @@ class StripePrice
             $aggregateUsage = RecurringAggregateUsage::from($recurringObj->aggregate_usage);
         }
 
-        return StripeRecurring::make(
+        return (new StripeBuilder())->recurring()->build(
             interval: $interval,
             intervalCount: $recurringObj->interval_count ?? null,
             trialPeriodDays: $recurringObj->trial_period_days ?? null,
@@ -151,7 +152,7 @@ class StripePrice
         foreach ($stripePrice->tiers as $tier) {
             /** @var StripeObject $tierObj */
             $tierObj = $tier;
-            $tiers[] = StripeProductTier::make(
+            $tiers[] = (new StripeBuilder())->tier()->build(
                 upTo: $tierObj->up_to ?? null,
                 unitAmount: $tierObj->unit_amount ?? null,
                 unitAmountDecimal: $tierObj->unit_amount_decimal ?? null,
@@ -172,7 +173,7 @@ class StripePrice
         /** @var StripeObject $customUnitAmountObj */
         $customUnitAmountObj = $stripePrice->custom_unit_amount;
 
-        return StripeCustomUnitAmount::make(
+        return (new StripeBuilder())->customUnitAmount()->build(
             minimum: $customUnitAmountObj->minimum ?? null,
             maximum: $customUnitAmountObj->maximum ?? null,
             preset: $customUnitAmountObj->preset ?? null
