@@ -8,9 +8,13 @@
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
 use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
+use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeCustomUnitAmount;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProductTierCollection;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeRecurring;
 use Stripe\Util\Util;
 
 test("can create StripePrice using make method", function (): void {
@@ -60,9 +64,11 @@ test("can create StripePrice from Stripe object with recurring", function (): vo
         ->and($price->product)->toBe("prod_123")
         ->and($price->type)->toBe(PriceType::Recurring)
         ->and($price->billingScheme)->toBe(BillingScheme::PerUnit)
-        ->and($price->recurring)->toBeArray()
-        ->and($price->recurring["interval"])->toBe(RecurringInterval::Month)
-        ->and($price->recurring["interval_count"])->toBe(1)
+        ->and($price->recurring)->toBeInstanceOf(StripeRecurring::class)
+        ->and($price->recurring->interval)->toBe(RecurringInterval::Month)
+        ->and($price->recurring->intervalCount)->toBe(1)
+        ->and($price->recurring->trialPeriodDays)->toBe(14)
+        ->and($price->recurring->usageType)->toBe(RecurringUsageType::Licensed)
         ->and($price->taxBehavior)->toBe(TaxBehavior::Exclusive);
 });
 
@@ -90,10 +96,10 @@ test("toArray converts recurring enums to values", function (): void {
         currency: "usd",
         type: PriceType::Recurring,
         billingScheme: BillingScheme::PerUnit,
-        recurring: [
-            "interval" => RecurringInterval::Month,
-            "interval_count" => 1,
-        ]
+        recurring: StripeRecurring::make(
+            interval: RecurringInterval::Month,
+            intervalCount: 1
+        )
     );
 
     $array = $price->toArray();
@@ -146,7 +152,7 @@ test("fromStripeObject handles tiers", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->tiers)->toBeArray()
+    expect($price->tiers)->toBeInstanceOf(StripeProductTierCollection::class)
         ->and($price->tiers)->toHaveCount(2)
         ->and($price->tiersMode)->toBe(TiersMode::Graduated);
 });
@@ -167,8 +173,8 @@ test("fromStripeObject handles custom unit amount", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->customUnitAmount)->toBeArray()
-        ->and($price->customUnitAmount["minimum"])->toBe(500)
-        ->and($price->customUnitAmount["maximum"])->toBe(5000)
-        ->and($price->customUnitAmount["preset"])->toBe(1000);
+    expect($price->customUnitAmount)->toBeInstanceOf(StripeCustomUnitAmount::class)
+        ->and($price->customUnitAmount->minimum)->toBe(500)
+        ->and($price->customUnitAmount->maximum)->toBe(5000)
+        ->and($price->customUnitAmount->preset)->toBe(1000);
 });

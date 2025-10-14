@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./vendor/bin/pest --stop-on-failure)",
+      "Bash(./vendor/bin/pest:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -24,7 +24,7 @@ Before diving into the code, it's important to understand Stripe's product/price
 
 ```php
 // Example: A SaaS subscription product
-$product = StripeProduct::make(
+$product = Stripe::product(
     name: 'Premium Subscription',
     description: 'Access to premium features and priority support'
 );
@@ -42,19 +42,16 @@ The `StripeProductService` provides all standard CRUD operations plus special me
 ### Creating Products
 
 ```php
-use EncoreDigitalGroup\Stripe\Services\StripeProductService;
-use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
-
-$service = StripeProductService::make();
+use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple product
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Basic Widget',
     description: 'A basic widget for everyday use'
 ));
 
 // Product with rich metadata
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Premium Software License',
     description: 'Enterprise software with full support',
     active: true,
@@ -73,7 +70,7 @@ echo $product->id; // "prod_abc123..."
 
 ```php
 // Get by ID
-$product = $service->get('prod_abc123');
+$product = Stripe::products()->get('prod_abc123');
 
 // Access all properties with full type safety
 echo $product->name;        // "Premium Software License"
@@ -89,7 +86,7 @@ echo $product->metadata['category']; // "software"
 
 ```php
 // Update specific fields
-$updatedProduct = $service->update('prod_abc123', StripeProduct::make(
+$updatedProduct = Stripe::products()->update('prod_abc123', Stripe::product(
     description: 'Updated: Enterprise software with 24/7 support',
     metadata: [
         'category' => 'software',
@@ -107,7 +104,7 @@ echo $updatedProduct->description;  // "Updated: Enterprise software..."
 
 ```php
 // Hard delete (rarely used - prefer archiving)
-$deleted = $service->delete('prod_abc123');
+$deleted = Stripe::products()->delete('prod_abc123');
 
 if ($deleted) {
     echo "Product permanently deleted";
@@ -120,16 +117,16 @@ if ($deleted) {
 
 ```php
 // Get all products
-$products = $service->list();
+$products = Stripe::products()->list();
 
 // With filters
-$activeProducts = $service->list([
+$activeProducts = Stripe::products()->list([
     'active' => true,
     'limit' => 50
 ]);
 
 // By creation date
-$recentProducts = $service->list([
+$recentProducts = Stripe::products()->list([
     'created' => [
         'gte' => strtotime('-30 days')
     ]
@@ -151,7 +148,7 @@ The `StripeProduct` class represents all product data with full type safety and 
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 
-$product = StripeProduct::make(
+$product = Stripe::product(
     id: 'prod_123',                    // string|null - Stripe product ID (read-only on create)
     name: 'Product Name',              // string|null - Product name (required for create)
     description: 'Product description', // string|null - Detailed description
@@ -174,7 +171,7 @@ $product = StripeProduct::make(
 Metadata allows you to store arbitrary key-value pairs with products:
 
 ```php
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Custom Widget',
     metadata: [
         'category' => 'widgets',
@@ -189,7 +186,7 @@ $product = $service->create(StripeProduct::make(
 $category = $product->metadata['category']; // 'widgets'
 
 // Update metadata (merges with existing)
-$service->update($product->id, StripeProduct::make(
+Stripe::products()->update($product->id, Stripe::product(
     metadata: [
         'category' => 'premium-widgets',  // Updated
         'color' => 'blue'                // Added
@@ -201,7 +198,7 @@ $service->update($product->id, StripeProduct::make(
 ### Images and Media
 
 ```php
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Stylish Shoes',
     description: 'Comfortable and fashionable footwear',
     images: [
@@ -222,7 +219,7 @@ foreach ($product->images as $imageUrl) {
 For physical products that require shipping:
 
 ```php
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Laptop Computer',
     shippable: true,
     packageDimensions: [
@@ -246,7 +243,7 @@ Stripe supports tax codes for automatic tax calculation:
 
 ```php
 // Product with tax code
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Digital Software',
     taxCode: 'txcd_10000000',  // Software - downloaded
     description: 'Downloadable productivity software'
@@ -261,7 +258,7 @@ $product = $service->create(StripeProduct::make(
 For usage-based or per-unit products:
 
 ```php
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'API Calls',
     unitLabel: 'request',     // Singular form
     description: 'Pay per API request'
@@ -276,7 +273,7 @@ $product = $service->create(StripeProduct::make(
 Link products to your website or documentation:
 
 ```php
-$product = $service->create(StripeProduct::make(
+$product = Stripe::products()->create(Stripe::product(
     name: 'Premium Plan',
     url: 'https://myapp.com/plans/premium',
     description: 'Full access to all premium features'
@@ -291,7 +288,7 @@ Unlike customers, Stripe products follow a soft-delete pattern called "archiving
 
 ```php
 // Archive a product (sets active = false)
-$archivedProduct = $service->archive('prod_abc123');
+$archivedProduct = Stripe::products()->archive('prod_abc123');
 
 echo $archivedProduct->active; // false
 
@@ -306,7 +303,7 @@ echo $archivedProduct->active; // false
 
 ```php
 // Reactivate an archived product
-$activeProduct = $service->reactivate('prod_abc123');
+$activeProduct = Stripe::products()->reactivate('prod_abc123');
 
 echo $activeProduct->active; // true
 
@@ -320,10 +317,10 @@ echo $activeProduct->active; // true
 
 ```php
 // ❌ Don't do this (unless you're absolutely sure)
-$service->delete('prod_abc123');
+Stripe::products()->delete('prod_abc123');
 
 // ✅ Do this instead
-$service->archive('prod_abc123');
+Stripe::products()->archive('prod_abc123');
 ```
 
 Reasons to prefer archiving:
@@ -337,13 +334,13 @@ Reasons to prefer archiving:
 
 ```php
 // Get only active products (default behavior)
-$activeProducts = $service->list(['active' => true]);
+$activeProducts = Stripe::products()->list(['active' => true]);
 
 // Get only archived products
-$archivedProducts = $service->list(['active' => false]);
+$archivedProducts = Stripe::products()->list(['active' => false]);
 
 // Get all products (active and archived)
-$allProducts = $service->list();
+$allProducts = Stripe::products()->list();
 ```
 
 ## Testing Product Operations
@@ -366,8 +363,7 @@ test('can create a product', function () {
         ])
     ]);
 
-    $service = StripeProductService::make();
-    $product = $service->create(StripeProduct::make(
+    $product = Stripe::products()->create(Stripe::product(
         name: 'Test Product',
         description: 'A test product'
     ));
@@ -395,8 +391,7 @@ test('creates product with metadata', function () {
         ])
     ]);
 
-    $service = StripeProductService::make();
-    $product = $service->create(StripeProduct::make(
+    $product = Stripe::products()->create(Stripe::product(
         name: 'Product with Metadata',
         metadata: [
             'category' => 'widgets',
@@ -421,14 +416,12 @@ test('can archive and reactivate products', function () {
         ])
     ]);
 
-    $service = StripeProductService::make();
-
     // Archive
-    $archived = $service->archive('prod_123');
+    $archived = Stripe::products()->archive('prod_123');
     expect($archived->active)->toBeFalse();
 
     // Reactivate
-    $active = $service->reactivate('prod_123');
+    $active = Stripe::products()->reactivate('prod_123');
     expect($active->active)->toBeTrue();
 
     expect($fake)->toHaveCalledStripeMethodTimes('products.update', 2);
@@ -443,15 +436,14 @@ test('create removes read-only fields from payload', function () {
         'products.create' => StripeFixtures::product(['id' => 'prod_new'])
     ]);
 
-    $product = StripeProduct::make(
+    $product = Stripe::product(
         id: 'should_be_removed',
         name: 'Test Product',
         created: 1234567890,
         updated: 1234567890
     );
 
-    $service = StripeProductService::make();
-    $service->create($product);
+    Stripe::products()->create($product);
 
     $params = $fake->getCall('products.create');
 
@@ -473,8 +465,7 @@ test('can search products', function () {
         ])
     ]);
 
-    $service = StripeProductService::make();
-    $products = $service->search('name:"Searchable Product"');
+    $products = Stripe::products()->search('name:"Searchable Product"');
 
     expect($products)
         ->toHaveCount(1)
@@ -492,13 +483,12 @@ Here are some real-world patterns for working with products in Laravel applicati
 ```php
 class ProductCatalogService
 {
-    public function __construct(
-        private StripeProductService $stripeProductService
-    ) {}
+    public function __construct()
+    {}
 
     public function createProduct(array $productData): StripeProduct
     {
-        return $this->stripeProductService->create(StripeProduct::make(
+        return Stripe::products()->create(Stripe::product(
             name: $productData['name'],
             description: $productData['description'],
             active: $productData['active'] ?? true,
@@ -531,7 +521,7 @@ class ProductCatalogService
 
     public function getActiveProducts(): Collection
     {
-        return $this->stripeProductService->list(['active' => true]);
+        return Stripe::products()->list(['active' => true]);
     }
 }
 ```
@@ -541,14 +531,13 @@ class ProductCatalogService
 ```php
 class ProductLifecycleService
 {
-    public function __construct(
-        private StripeProductService $stripeProductService
-    ) {}
+    public function __construct()
+    {}
 
     public function discontinueProduct(string $productId, string $reason = null): StripeProduct
     {
         // Archive in Stripe
-        $product = $this->stripeProductService->archive($productId);
+        $product = Stripe::products()->archive($productId);
 
         // Update local database
         Product::where('stripe_product_id', $productId)->update([
@@ -570,7 +559,7 @@ class ProductLifecycleService
     public function relaunchProduct(string $productId): StripeProduct
     {
         // Reactivate in Stripe
-        $product = $this->stripeProductService->reactivate($productId);
+        $product = Stripe::products()->reactivate($productId);
 
         // Update local database
         Product::where('stripe_product_id', $productId)->update([
@@ -585,9 +574,9 @@ class ProductLifecycleService
     public function updateProductMetadata(string $productId, array $metadata): StripeProduct
     {
         // Get current product to merge metadata
-        $currentProduct = $this->stripeProductService->get($productId);
+        $currentProduct = Stripe::products()->get($productId);
 
-        return $this->stripeProductService->update($productId, StripeProduct::make(
+        return Stripe::products()->update($productId, Stripe::product(
             metadata: array_merge($currentProduct->metadata ?? [], $metadata)
         ));
     }
@@ -599,19 +588,18 @@ class ProductLifecycleService
 ```php
 class ProductAnalyticsService
 {
-    public function __construct(
-        private StripeProductService $stripeProductService
-    ) {}
+    public function __construct()
+    {}
 
     public function getProductsByCategory(string $category): Collection
     {
-        return $this->stripeProductService->search("metadata['category']:'{$category}'");
+        return Stripe::products()->search("metadata['category']:'{$category}'");
     }
 
     public function getRecentProducts(int $days = 30): Collection
     {
         $timestamp = strtotime("-{$days} days");
-        return $this->stripeProductService->list([
+        return Stripe::products()->list([
             'created' => ['gte' => $timestamp],
             'limit' => 100
         ]);
@@ -619,7 +607,7 @@ class ProductAnalyticsService
 
     public function getProductStatistics(): array
     {
-        $allProducts = $this->stripeProductService->list(['limit' => 100]);
+        $allProducts = Stripe::products()->list(['limit' => 100]);
 
         $stats = [
             'total' => $allProducts->count(),
@@ -643,7 +631,7 @@ class ProductAnalyticsService
 
     public function findProductsNeedingAttention(): Collection
     {
-        $products = $this->stripeProductService->list(['limit' => 100]);
+        $products = Stripe::products()->list(['limit' => 100]);
 
         return $products->filter(function ($product) {
             // Products without descriptions
@@ -677,9 +665,7 @@ class SafeProductService
     public function createProductSafely(array $productData): ?StripeProduct
     {
         try {
-            $service = StripeProductService::make();
-
-            return $service->create(StripeProduct::make(
+            return Stripe::products()->create(Stripe::product(
                 name: $productData['name'],
                 description: $productData['description'] ?? null,
                 active: $productData['active'] ?? true,

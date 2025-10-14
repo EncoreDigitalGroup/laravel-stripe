@@ -33,7 +33,7 @@ method and provides similar capabilities for Stripe API calls.
 
 ```php
 // Your service code
-$customer = $customerService->create(StripeCustomer::make(
+$customer = Stripe::customers()->create(Stripe::customer(
     email: 'test@example.com',
     name: 'Test Customer'
 ));
@@ -52,8 +52,6 @@ Here's a complete test example to understand the basics:
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\{StripeFixtures, StripeMethod};
-use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
-use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 
 test('can create a customer', function () {
     // 1. Set up fake responses
@@ -66,8 +64,7 @@ test('can create a customer', function () {
     ]);
 
     // 2. Execute the code under test
-    $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = Stripe::customers()->create(Stripe::customer(
         email: 'test@example.com',
         name: 'Test Customer'
     ));
@@ -159,7 +156,7 @@ $fake = Stripe::fake([...]); // Returns FakeStripeClient instance
 app()->bind(StripeClient::class, fn() => $fake);
 
 // 2. Services automatically use the fake
-$service = StripeCustomerService::make(); // Gets fake client
+$service = Stripe::customers(); // Gets fake client
 
 // 3. API calls are intercepted and faked
 $customer = $service->create($customerData); // No network call
@@ -311,8 +308,7 @@ expect($fake)
 test('sends correct parameters', function () {
     $fake = Stripe::fake(['customers.create' => StripeFixtures::customer()]);
 
-    $service = StripeCustomerService::make();
-    $service->create(StripeCustomer::make(
+    Stripe::customers()->create(Stripe::customer(
         email: 'test@example.com',
         name: 'Test User'
     ));
@@ -341,9 +337,7 @@ test('handles API errors gracefully', function () {
         }
     ]);
 
-    $service = StripeCustomerService::make();
-
-    expect(fn() => $service->create(StripeCustomer::make(email: 'test@example.com')))
+    expect(fn() => Stripe::customers()->create(Stripe::customer(email: 'test@example.com')))
         ->toThrow(\Stripe\Exception\CardException::class, 'Your card was declined.');
 });
 ```
@@ -363,17 +357,15 @@ test('handles multiple API calls', function () {
     ]);
 
     // Create product
-    $productService = StripeProductService::make();
-    $product = $productService->create(StripeProduct::make(name: 'Test Product'));
+    $product = Stripe::products()->create(Stripe::product(name: 'Test Product'));
 
     // Create prices for the product
-    $priceService = StripePriceService::make();
-    $monthlyPrice = $priceService->create(StripePrice::make(
+    $monthlyPrice = Stripe::prices()->create(Stripe::price(
         product: $product->id,
         unitAmount: 999,
         currency: 'usd',
         type: PriceType::Recurring,
-        recurring: ['interval' => RecurringInterval::Month]
+        recurring: Stripe::recurring(interval: RecurringInterval::Month)
     ));
 
     expect($fake)
@@ -396,10 +388,9 @@ test('converts between DTOs and API format correctly', function () {
         ])
     ]);
 
-    $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = Stripe::customers()->create(Stripe::customer(
         email: 'test@example.com',
-        address: StripeAddress::make(
+        address: Stripe::address(
             line1: '123 Test St',
             postalCode: '12345'
         )
@@ -423,8 +414,7 @@ test('services use injected Stripe client', function () {
     $fake = Stripe::fake(['customers.create' => StripeFixtures::customer()]);
 
     // Test with dependency injection
-    $service = new StripeCustomerService($fake);
-    $customer = $service->create(StripeCustomer::make(email: 'test@example.com'));
+    $customer = Stripe::customers()->create(Stripe::customer(email: 'test@example.com'));
 
     expect($fake)->toHaveCalledStripeMethod('customers.create');
 });
@@ -441,8 +431,7 @@ describe('Customer CRUD operations', function () {
             'customers.create' => StripeFixtures::customer(['id' => 'cus_new'])
         ]);
 
-        $service = StripeCustomerService::make();
-        $customer = $service->create(StripeCustomer::make(
+        $customer = Stripe::customers()->create(Stripe::customer(
             email: 'create@example.com'
         ));
 
@@ -455,8 +444,7 @@ describe('Customer CRUD operations', function () {
             'customers.retrieve' => StripeFixtures::customer(['id' => 'cus_existing'])
         ]);
 
-        $service = StripeCustomerService::make();
-        $customer = $service->get('cus_existing');
+        $customer = Stripe::customers()->get('cus_existing');
 
         expect($customer->id)->toBe('cus_existing')
             ->and($fake)->toHaveCalledStripeMethod('customers.retrieve');
@@ -470,8 +458,7 @@ describe('Customer CRUD operations', function () {
             ])
         ]);
 
-        $service = StripeCustomerService::make();
-        $customer = $service->update('cus_123', StripeCustomer::make(
+        $customer = Stripe::customers()->update('cus_123', Stripe::customer(
             name: 'Updated Name'
         ));
 
@@ -484,8 +471,7 @@ describe('Customer CRUD operations', function () {
             'customers.delete' => StripeFixtures::deleted('cus_123', 'customer')
         ]);
 
-        $service = StripeCustomerService::make();
-        $deleted = $service->delete('cus_123');
+        $deleted = Stripe::customers()->delete('cus_123');
 
         expect($deleted)->toBeTrue()
             ->and($fake)->toHaveCalledStripeMethod('customers.delete');
@@ -505,14 +491,13 @@ describe('Complex pricing scenarios', function () {
             ])
         ]);
 
-        $service = StripePriceService::make();
-        $price = $service->create(StripePrice::make(
+        $price = Stripe::prices()->create(Stripe::price(
             product: 'prod_123',
             currency: 'usd',
             type: PriceType::Recurring,
             billingScheme: BillingScheme::Tiered,
             tiersMode: TiersMode::Graduated,
-            recurring: ['interval' => RecurringInterval::Month],
+            recurring: Stripe::recurring(interval: RecurringInterval::Month),
             tiers: [
                 ['up_to' => 1000, 'unit_amount' => 100],
                 ['up_to' => 'inf', 'unit_amount' => 80]
@@ -537,17 +522,16 @@ describe('Complex pricing scenarios', function () {
             ])
         ]);
 
-        $service = StripePriceService::make();
-        $price = $service->create(StripePrice::make(
+        $price = Stripe::prices()->create(Stripe::price(
             product: 'prod_api',
             unitAmount: 1,
             currency: 'usd',
             type: PriceType::Recurring,
-            recurring: [
-                'interval' => RecurringInterval::Month,
-                'usage_type' => RecurringUsageType::Metered,
-                'aggregate_usage' => RecurringAggregateUsage::Sum
-            ]
+            recurring: Stripe::recurring(
+                interval: RecurringInterval::Month,
+                usageType: RecurringUsageType::Metered,
+                aggregateUsage: RecurringAggregateUsage::Sum
+            )
         ));
 
         $params = $fake->getCall('prices.create');
@@ -660,8 +644,7 @@ test('handles empty metadata correctly', function () {
         'customers.create' => StripeFixtures::customer(['metadata' => []])
     ]);
 
-    $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = Stripe::customers()->create(Stripe::customer(
         email: 'test@example.com',
         metadata: []
     ));
@@ -674,8 +657,7 @@ test('handles null address gracefully', function () {
         'customers.create' => StripeFixtures::customer(['address' => null])
     ]);
 
-    $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = Stripe::customers()->create(Stripe::customer(
         email: 'test@example.com',
         address: null
     ));

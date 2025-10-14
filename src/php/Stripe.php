@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeRecurring;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
@@ -18,6 +19,7 @@ use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use Stripe\StripeClient;
@@ -43,6 +45,12 @@ class Stripe
         return StripePrice::make(...$params);
     }
 
+    public static function recurring(mixed ...$params): StripeRecurring
+    {
+        return StripeRecurring::make(...$params);
+    }
+
+
     public static function subscription(mixed ...$params): StripeSubscription
     {
         return StripeSubscription::make(...$params);
@@ -61,6 +69,15 @@ class Stripe
     public static function webhook(mixed ...$params): StripeWebhook
     {
         return StripeWebhook::make(...$params);
+    }
+
+    #endregion
+
+    #region Builder Methods - Access fluent builders
+
+    public static function builder(): StripeBuilder
+    {
+        return new StripeBuilder();
     }
 
     #endregion
