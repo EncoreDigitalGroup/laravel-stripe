@@ -52,7 +52,8 @@
     "scripts": {
         "post-autoload-dump": [
             "PHPGenesis\\Common\\Composer\\Scripts::postAutoloadDump"
-        ]
+        ],
+        "test": "vendor/bin/pest --parallel"
     },
     "extra": {
         "laravel": {

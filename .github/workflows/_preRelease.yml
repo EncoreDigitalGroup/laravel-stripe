@@ -7,14 +7,15 @@ on:
             - '!v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-    CreateRelease:
-        name: Create Release
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/github_createRelease.yml@v2
+    CreatePreRelease:
+        name: Create Pre-Release
+        uses: EncoreDigitalGroup/ci-workflows/actions/github/createRelease@v3
         permissions:
             contents: write
         with:
             generateReleaseNotes: true
             isDraft: false
             preRelease: true
-        secrets:
+            repository: ${{ github.repository }}
+            tagName: ${{ github.head_ref }}
             token: ${{ secrets.GITHUB_TOKEN }}
