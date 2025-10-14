@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 
 test("can create empty StripeBankAccountConnectedPayload", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
 
     expect($payload)->toBeInstanceOf(StripeBankAccountConnectedPayload::class)
         ->and($payload->getStripeCustomerId())->toBeNull()
@@ -18,7 +18,7 @@ test("can create empty StripeBankAccountConnectedPayload", function (): void {
 });
 
 test("can set and get stripe customer id", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $result = $payload->setStripeCustomerId("cus_test123");
 
     expect($result)->toBe($payload)
@@ -26,10 +26,10 @@ test("can set and get stripe customer id", function (): void {
 });
 
 test("can set and get security keys from array", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $result = $payload->setSecurityKeys([
         "publicKey" => "pub_key_abc",
-        "privateKey" => "priv_key_xyz"
+        "privateKey" => "priv_key_xyz",
     ]);
 
     expect($result)->toBe($payload)
@@ -39,10 +39,10 @@ test("can set and get security keys from array", function (): void {
 });
 
 test("can set accounts array", function (): void {
-    $bankAccount = new StripeBankAccount();
+    $bankAccount = new StripeBankAccount;
     $bankAccount->id = "ba_test123";
 
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->accounts = [$bankAccount];
 
     expect($payload->accounts)->toBeArray()
@@ -52,13 +52,13 @@ test("can set accounts array", function (): void {
 });
 
 test("can chain setters", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
 
     $result = $payload
         ->setStripeCustomerId("cus_chain123")
         ->setSecurityKeys([
             "publicKey" => "pub_chain",
-            "privateKey" => "priv_chain"
+            "privateKey" => "priv_chain",
         ]);
 
     expect($result)->toBe($payload)
@@ -67,18 +67,18 @@ test("can chain setters", function (): void {
 });
 
 test("setSecurityKeys creates new SecurityKeyPair instance", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
 
     $payload->setSecurityKeys([
         "publicKey" => "pub_1",
-        "privateKey" => "priv_1"
+        "privateKey" => "priv_1",
     ]);
 
     $firstKeys = $payload->getSecurityKeys();
 
     $payload->setSecurityKeys([
         "publicKey" => "pub_2",
-        "privateKey" => "priv_2"
+        "privateKey" => "priv_2",
     ]);
 
     $secondKeys = $payload->getSecurityKeys();
@@ -89,16 +89,16 @@ test("setSecurityKeys creates new SecurityKeyPair instance", function (): void {
 });
 
 test("accounts array can contain multiple bank accounts", function (): void {
-    $bankAccount1 = new StripeBankAccount();
+    $bankAccount1 = new StripeBankAccount;
     $bankAccount1->id = "ba_1";
 
-    $bankAccount2 = new StripeBankAccount();
+    $bankAccount2 = new StripeBankAccount;
     $bankAccount2->id = "ba_2";
 
-    $bankAccount3 = new StripeBankAccount();
+    $bankAccount3 = new StripeBankAccount;
     $bankAccount3->id = "ba_3";
 
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->accounts = [$bankAccount1, $bankAccount2, $bankAccount3];
 
     expect($payload->accounts)->toHaveCount(3)

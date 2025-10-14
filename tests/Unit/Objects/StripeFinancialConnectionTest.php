@@ -49,8 +49,8 @@ test("toArray returns correct structure", function (): void {
     expect($array)->toBe([
         "account_holder" => [
             "type" => "customer",
-            "customer" => "cus_test123"
+            "customer" => "cus_test123",
         ],
-        "permissions" => ["transactions", "payment_method"]
+        "permissions" => ["transactions", "payment_method"],
     ]);
 });

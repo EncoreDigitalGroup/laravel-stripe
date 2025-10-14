@@ -9,7 +9,7 @@ use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
 test("can add fakes dynamically with fake method", function (): void {
-    $client = new FakeStripeClient();
+    $client = new FakeStripeClient;
 
     $client->fake("customers.create", ["id" => "cus_dynamic"]);
 
@@ -20,11 +20,11 @@ test("can add fakes dynamically with fake method", function (): void {
 });
 
 test("can add multiple fakes with fakeMany", function (): void {
-    $client = new FakeStripeClient();
+    $client = new FakeStripeClient;
 
     $client->fakeMany([
         "customers.create" => ["id" => "cus_1"],
-        "products.create" => ["id" => "prod_1"]
+        "products.create" => ["id" => "prod_1"],
     ]);
 
     $customerResult = $client->customers->create(["email" => "test@example.com"]);
@@ -36,7 +36,7 @@ test("can add multiple fakes with fakeMany", function (): void {
 
 test("can check if method was called", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => ["id" => "cus_test"]
+        "customers.create" => ["id" => "cus_test"],
     ]);
 
     expect($client->wasCalled("customers.create"))->toBeFalse();
@@ -48,7 +48,7 @@ test("can check if method was called", function (): void {
 
 test("can get call count for method", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => ["id" => "cus_test"]
+        "customers.create" => ["id" => "cus_test"],
     ]);
 
     expect($client->callCount("customers.create"))->toBe(0);
@@ -61,7 +61,7 @@ test("can get call count for method", function (): void {
 
 test("can get specific call parameters", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => ["id" => "cus_test"]
+        "customers.create" => ["id" => "cus_test"],
     ]);
 
     $client->customers->create(["email" => "first@example.com"]);
@@ -76,7 +76,7 @@ test("can get specific call parameters", function (): void {
 
 test("getCall returns null for non-existent call", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => ["id" => "cus_test"]
+        "customers.create" => ["id" => "cus_test"],
     ]);
 
     $call = $client->getCall("customers.create", 5);
@@ -86,7 +86,7 @@ test("getCall returns null for non-existent call", function (): void {
 
 test("can clear recorded calls", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => ["id" => "cus_test"]
+        "customers.create" => ["id" => "cus_test"],
     ]);
 
     $client->customers->create(["email" => "test@example.com"]);
@@ -100,7 +100,7 @@ test("can clear recorded calls", function (): void {
 
 test("accepts BackedEnum as fake key in constructor", function (): void {
     $client = new FakeStripeClient([
-        StripeMethod::CustomersCreate->value => ["id" => "cus_enum"]
+        StripeMethod::CustomersCreate->value => ["id" => "cus_enum"],
     ]);
 
     $result = $client->customers->create(["email" => "test@example.com"]);
@@ -109,7 +109,7 @@ test("accepts BackedEnum as fake key in constructor", function (): void {
 });
 
 test("fake method accepts BackedEnum", function (): void {
-    $client = new FakeStripeClient();
+    $client = new FakeStripeClient;
 
     $client->fake(StripeMethod::CustomersCreate, ["id" => "cus_enum_dynamic"]);
 
@@ -120,7 +120,7 @@ test("fake method accepts BackedEnum", function (): void {
 
 test("handles wildcard patterns", function (): void {
     $client = new FakeStripeClient([
-        "customers.*" => ["id" => "cus_wildcard"]
+        "customers.*" => ["id" => "cus_wildcard"],
     ]);
 
     $createResult = $client->customers->create(["email" => "test@example.com"]);
@@ -135,9 +135,9 @@ test("callable responses receive params", function (): void {
         "customers.create" => function (array $params): array {
             return [
                 "id" => "cus_callable",
-                "email" => $params["email"]
+                "email" => $params["email"],
             ];
-        }
+        },
     ]);
 
     $result = $client->customers->create(["email" => "dynamic@example.com"]);
@@ -146,15 +146,15 @@ test("callable responses receive params", function (): void {
 });
 
 test("throws exception when no fake registered", function (): void {
-    $client = new FakeStripeClient();
+    $client = new FakeStripeClient;
 
-    expect(fn() => $client->customers->create(["email" => "test@example.com"]))
+    expect(fn () => $client->customers->create(["email" => "test@example.com"]))
         ->toThrow(RuntimeException::class, "No fake registered for Stripe method [customers.create]");
 });
 
 test("handles method calls with id parameter", function (): void {
     $client = new FakeStripeClient([
-        "customers.retrieve" => ["id" => "cus_retrieved"]
+        "customers.retrieve" => ["id" => "cus_retrieved"],
     ]);
 
     $result = $client->customers->retrieve("cus_123");
@@ -164,7 +164,7 @@ test("handles method calls with id parameter", function (): void {
 
 test("records call with id and params separately", function (): void {
     $client = new FakeStripeClient([
-        "customers.update" => ["id" => "cus_updated"]
+        "customers.update" => ["id" => "cus_updated"],
     ]);
 
     $client->customers->update("cus_123", ["name" => "New Name"]);

@@ -101,7 +101,7 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
@@ -115,6 +115,6 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn ($stripeProduct): \EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }

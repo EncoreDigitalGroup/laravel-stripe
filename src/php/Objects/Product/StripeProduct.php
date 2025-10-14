@@ -7,8 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 use Stripe\Product;
 
 class StripeProduct
@@ -19,17 +19,17 @@ class StripeProduct
         public ?string $id = null,
         public ?string $name = null,
         public ?string $description = null,
-        public ?bool   $active = null,
-        public ?array  $images = null,
-        public ?array  $metadata = null,
+        public ?bool $active = null,
+        public ?array $images = null,
+        public ?array $metadata = null,
         public ?string $defaultPrice = null,
         public ?string $taxCode = null,
         public ?string $unitLabel = null,
         public ?string $url = null,
-        public ?bool   $shippable = null,
-        public ?array  $packageDimensions = null,
-        public ?int    $created = null,
-        public ?int    $updated = null
+        public ?bool $shippable = null,
+        public ?array $packageDimensions = null,
+        public ?int $created = null,
+        public ?int $updated = null
     ) {}
 
     /**

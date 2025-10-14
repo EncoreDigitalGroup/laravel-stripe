@@ -11,22 +11,22 @@ use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 
 test("can normalize StripeBankAccountConnectedPayload to array", function (): void {
-    $securityKeys = new SecurityKeyPair();
+    $securityKeys = new SecurityKeyPair;
     $securityKeys->publicKey = "pub_key_123";
     $securityKeys->privateKey = "priv_key_123";
 
-    $bankAccount = new StripeBankAccount();
+    $bankAccount = new StripeBankAccount;
     $bankAccount->id = "ba_123";
 
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->setStripeCustomerId("cus_123");
     $payload->setSecurityKeys([
         "publicKey" => "pub_key_123",
-        "privateKey" => "priv_key_123"
+        "privateKey" => "priv_key_123",
     ]);
     $payload->accounts = [$bankAccount];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->normalize($payload);
 
     expect($result)->toHaveKey("stripeCustomerId")
@@ -36,11 +36,11 @@ test("can normalize StripeBankAccountConnectedPayload to array", function (): vo
 });
 
 test("normalize handles payload without security keys", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->setStripeCustomerId("cus_456");
     $payload->accounts = [];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->normalize($payload);
 
     expect($result["stripeCustomerId"])->toBe("cus_456")
@@ -48,9 +48,9 @@ test("normalize handles payload without security keys", function (): void {
 });
 
 test("normalize throws exception for invalid type", function (): void {
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
 
-    expect(fn(): array => $normalizer->normalize(new stdClass()))
+    expect(fn (): array => $normalizer->normalize(new stdClass))
         ->toThrow(InvalidArgumentException::class, "The object must be an instance of StripeBankAccountConnectedPayload");
 });
 
@@ -59,17 +59,17 @@ test("can denormalize array to StripeBankAccountConnectedPayload", function (): 
         "stripeCustomerId" => "cus_789",
         "securityKeys" => [
             "publicKey" => "pub_789",
-            "privateKey" => "priv_789"
+            "privateKey" => "priv_789",
         ],
         "accounts" => [
             [
                 "id" => "ba_789",
-                "display_name" => "Test Bank"
-            ]
-        ]
+                "display_name" => "Test Bank",
+            ],
+        ],
     ];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->denormalize($data, StripeBankAccountConnectedPayload::class);
 
     expect($result)->toBeInstanceOf(StripeBankAccountConnectedPayload::class)
@@ -81,11 +81,11 @@ test("can denormalize array to StripeBankAccountConnectedPayload", function (): 
 });
 
 test("denormalize handles payload that is already correct type", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->setStripeCustomerId("cus_existing");
     $payload->accounts = [];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->denormalize($payload, StripeBankAccountConnectedPayload::class);
 
     expect($result)->toBeInstanceOf(StripeBankAccountConnectedPayload::class)
@@ -95,10 +95,10 @@ test("denormalize handles payload that is already correct type", function (): vo
 test("denormalize handles payload without security keys", function (): void {
     $data = [
         "stripeCustomerId" => "cus_no_keys",
-        "accounts" => []
+        "accounts" => [],
     ];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->denormalize($data, StripeBankAccountConnectedPayload::class);
 
     expect($result->getStripeCustomerId())->toBe("cus_no_keys")
@@ -106,15 +106,15 @@ test("denormalize handles payload without security keys", function (): void {
 });
 
 test("supports normalization for StripeBankAccountConnectedPayload", function (): void {
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
-    $payload = new StripeBankAccountConnectedPayload();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
+    $payload = new StripeBankAccountConnectedPayload;
 
     expect($normalizer->supportsNormalization($payload))->toBeTrue()
-        ->and($normalizer->supportsNormalization(new stdClass()))->toBeFalse();
+        ->and($normalizer->supportsNormalization(new stdClass))->toBeFalse();
 });
 
 test("supports denormalization for StripeBankAccountConnectedPayload class", function (): void {
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
 
     expect($normalizer->supportsDenormalization([], StripeBankAccountConnectedPayload::class))->toBeTrue()
         ->and($normalizer->supportsDenormalization([], StripeBankAccountConnectedPayload::class . "[]"))->toBeTrue()
@@ -122,7 +122,7 @@ test("supports denormalization for StripeBankAccountConnectedPayload class", fun
 });
 
 test("getSupportedTypes returns correct types", function (): void {
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $types = $normalizer->getSupportedTypes(null);
 
     expect($types)->toHaveKey(StripeBankAccountConnectedPayload::class)
@@ -131,15 +131,15 @@ test("getSupportedTypes returns correct types", function (): void {
 });
 
 test("denormalize handles payload instance with security keys", function (): void {
-    $payload = new StripeBankAccountConnectedPayload();
+    $payload = new StripeBankAccountConnectedPayload;
     $payload->setStripeCustomerId("cus_from_instance");
     $payload->setSecurityKeys([
         "publicKey" => "pub_instance",
-        "privateKey" => "priv_instance"
+        "privateKey" => "priv_instance",
     ]);
     $payload->accounts = [];
 
-    $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
+    $normalizer = new StripeBankAccountConnectedPayloadNormalizer;
     $result = $normalizer->denormalize($payload, StripeBankAccountConnectedPayload::class);
 
     expect($result)->toBeInstanceOf(StripeBankAccountConnectedPayload::class)

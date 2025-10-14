@@ -7,8 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Support;
 
-use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
+use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use Stripe\StripeClient;
 
 trait HasStripe

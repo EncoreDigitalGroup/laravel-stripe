@@ -10,10 +10,10 @@ use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefr
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeBankAccountNormalizer;
 
 test("can normalize StripeBankAccount to array", function (): void {
-    $transactionRefresh = new StripeTransactionRefresh();
+    $transactionRefresh = new StripeTransactionRefresh;
     $transactionRefresh->id = "txn_ref_123";
 
-    $bankAccount = new StripeBankAccount();
+    $bankAccount = new StripeBankAccount;
     $bankAccount->id = "ba_123";
     $bankAccount->category = "cash";
     $bankAccount->created = 1234567890;
@@ -26,7 +26,7 @@ test("can normalize StripeBankAccount to array", function (): void {
     $bankAccount->supportedPaymentMethodTypes = ["us_bank_account"];
     $bankAccount->transactionRefresh = $transactionRefresh;
 
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->normalize($bankAccount);
 
     expect($result)->toMatchArray([
@@ -39,14 +39,14 @@ test("can normalize StripeBankAccount to array", function (): void {
         "livemode" => true,
         "permissions" => ["transactions"],
         "subscriptions" => ["sub_1"],
-        "supported_payment_method_types" => ["us_bank_account"]
+        "supported_payment_method_types" => ["us_bank_account"],
     ]);
 });
 
 test("normalize throws exception for invalid type", function (): void {
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
 
-    expect(fn(): array => $normalizer->normalize(new stdClass()))
+    expect(fn (): array => $normalizer->normalize(new stdClass))
         ->toThrow(InvalidArgumentException::class, "The object must be an instance of StripeBankAccount");
 });
 
@@ -61,10 +61,10 @@ test("can denormalize array to StripeBankAccount", function (): void {
         "livemode" => false,
         "permissions" => ["balances", "transactions"],
         "subscriptions" => [],
-        "supported_payment_method_types" => ["ach"]
+        "supported_payment_method_types" => ["ach"],
     ];
 
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->denormalize($data, StripeBankAccount::class);
 
     expect($result)->toBeInstanceOf(StripeBankAccount::class)
@@ -82,11 +82,11 @@ test("denormalize handles transaction_refresh", function (): void {
             "id" => "txn_ref_789",
             "status" => "pending",
             "last_attempted_at" => 1234567890,
-            "next_refresh_available_at" => 1234567900
-        ]
+            "next_refresh_available_at" => 1234567900,
+        ],
     ];
 
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->denormalize($data, StripeBankAccount::class);
 
     expect($result->transactionRefresh)->toBeInstanceOf(StripeTransactionRefresh::class)
@@ -95,32 +95,32 @@ test("denormalize handles transaction_refresh", function (): void {
 });
 
 test("denormalize returns object if already correct type", function (): void {
-    $bankAccount = new StripeBankAccount();
+    $bankAccount = new StripeBankAccount;
     $bankAccount->id = "ba_existing";
 
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->denormalize($bankAccount, StripeBankAccount::class);
 
     expect($result)->toBe($bankAccount);
 });
 
 test("denormalize throws exception for non-array data", function (): void {
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
 
-    expect(fn(): \EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
+    expect(fn (): \EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
         ->toThrow(InvalidArgumentException::class, "Data must be an array for denormalization");
 });
 
 test("supports normalization for StripeBankAccount", function (): void {
-    $normalizer = new StripeBankAccountNormalizer();
-    $bankAccount = new StripeBankAccount();
+    $normalizer = new StripeBankAccountNormalizer;
+    $bankAccount = new StripeBankAccount;
 
     expect($normalizer->supportsNormalization($bankAccount))->toBeTrue()
-        ->and($normalizer->supportsNormalization(new stdClass()))->toBeFalse();
+        ->and($normalizer->supportsNormalization(new stdClass))->toBeFalse();
 });
 
 test("supports denormalization for StripeBankAccount class", function (): void {
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
 
     expect($normalizer->supportsDenormalization([], StripeBankAccount::class))->toBeTrue()
         ->and($normalizer->supportsDenormalization([], StripeBankAccount::class . "[]"))->toBeTrue()
@@ -128,7 +128,7 @@ test("supports denormalization for StripeBankAccount class", function (): void {
 });
 
 test("getSupportedTypes returns correct types", function (): void {
-    $normalizer = new StripeBankAccountNormalizer();
+    $normalizer = new StripeBankAccountNormalizer;
     $types = $normalizer->getSupportedTypes(null);
 
     expect($types)->toHaveKey(StripeBankAccount::class)

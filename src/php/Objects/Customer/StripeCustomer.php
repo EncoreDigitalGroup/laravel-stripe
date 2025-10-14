@@ -7,9 +7,9 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
+use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
-use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Stripe\Customer;
 
 class StripeCustomer
@@ -17,12 +17,12 @@ class StripeCustomer
     use HasMake;
 
     public function __construct(
-        public ?string         $id = null,
-        public ?StripeAddress  $address = null,
-        public ?string         $description = null,
-        public ?string         $email = null,
-        public ?string         $name = null,
-        public ?string         $phone = null,
+        public ?string $id = null,
+        public ?StripeAddress $address = null,
+        public ?string $description = null,
+        public ?string $email = null,
+        public ?string $name = null,
+        public ?string $phone = null,
         public ?StripeShipping $shipping = null
     ) {}
 

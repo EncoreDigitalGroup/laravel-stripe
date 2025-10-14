@@ -16,8 +16,8 @@ class StripeShipping
 
     public function __construct(
         public StripeAddress $address,
-        public string        $name,
-        public ?string       $phone = null
+        public string $name,
+        public ?string $phone = null
     ) {}
 
     public function toArray(): array

@@ -7,10 +7,10 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
+use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
-use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -32,7 +32,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
+            fn ($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
             $data->accounts
         );
 

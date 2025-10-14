@@ -68,7 +68,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->all($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
@@ -82,6 +82,6 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->search($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn ($stripeCustomer): \EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 }

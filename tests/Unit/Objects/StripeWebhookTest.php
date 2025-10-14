@@ -28,7 +28,7 @@ test("toArray returns correct structure", function (): void {
 
     expect($array)->toBe([
         "enabled_events" => ["customer.created"],
-        "url" => "https://example.com/webhook"
+        "url" => "https://example.com/webhook",
     ]);
 });
 
@@ -48,9 +48,9 @@ test("fromRequest constructs event from webhook payload", function (): void {
         "data" => [
             "object" => [
                 "id" => "cus_test",
-                "email" => "test@example.com"
-            ]
-        ]
+                "email" => "test@example.com",
+            ],
+        ],
     ]);
 
     $secret = "whsec_test";

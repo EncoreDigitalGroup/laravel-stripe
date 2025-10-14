@@ -11,7 +11,7 @@ use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use Stripe\StripeClient;
 
 test("HasStripe accepts injected client", function (): void {
-    $mockClient = new FakeStripeClient();
+    $mockClient = new FakeStripeClient;
 
     $service = new StripeCustomerService($mockClient);
 
@@ -20,11 +20,11 @@ test("HasStripe accepts injected client", function (): void {
 
 test("HasStripe resolves from container when bound", function (): void {
     // Bind a fake client to container
-    $fakeClient = new FakeStripeClient();
+    $fakeClient = new FakeStripeClient;
     app()->instance(StripeClient::class, $fakeClient);
 
     // Create service without injection
-    $service = new StripeCustomerService();
+    $service = new StripeCustomerService;
 
     expect($service)->toBeInstanceOf(StripeCustomerService::class);
 });
@@ -38,12 +38,12 @@ test("HasStripe throws exception when no API key configured", function (): void 
     // Clear any config
     config(["stripe.secret_key" => null]);
 
-    expect(fn(): \EncoreDigitalGroup\Stripe\Services\StripeCustomerService => new StripeCustomerService())
+    expect(fn (): \EncoreDigitalGroup\Stripe\Services\StripeCustomerService => new StripeCustomerService)
         ->toThrow(\EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException::class);
 });
 
 test("HasStripe make method creates new instance with injected client", function (): void {
-    $fakeClient = new FakeStripeClient();
+    $fakeClient = new FakeStripeClient;
 
     $service = StripeCustomerService::make($fakeClient);
 
@@ -51,7 +51,7 @@ test("HasStripe make method creates new instance with injected client", function
 });
 
 test("HasStripe make method accepts client parameter", function (): void {
-    $fakeClient = new FakeStripeClient();
+    $fakeClient = new FakeStripeClient;
 
     $service = StripeCustomerService::make($fakeClient);
 
@@ -66,7 +66,7 @@ test("HasStripe config method returns StripeConfig", function (): void {
 
 test("HasStripe client method returns StripeClient", function (): void {
     // Use fake to avoid needing real API key
-    $fakeClient = new FakeStripeClient();
+    $fakeClient = new FakeStripeClient;
     app()->instance(StripeClient::class, $fakeClient);
 
     $client = StripeCustomerService::client();

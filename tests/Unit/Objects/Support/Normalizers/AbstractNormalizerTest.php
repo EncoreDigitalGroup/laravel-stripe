@@ -9,7 +9,7 @@ use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 test("can instantiate AbstractNormalizer with default ObjectNormalizer", function (): void {
-    $normalizer = new AbstractNormalizer();
+    $normalizer = new AbstractNormalizer;
 
     $reflection = new ReflectionClass($normalizer);
     $property = $reflection->getProperty("objectNormalizer");
@@ -19,7 +19,7 @@ test("can instantiate AbstractNormalizer with default ObjectNormalizer", functio
 });
 
 test("can instantiate AbstractNormalizer with custom ObjectNormalizer", function (): void {
-    $customNormalizer = new ObjectNormalizer();
+    $customNormalizer = new ObjectNormalizer;
     $normalizer = new AbstractNormalizer($customNormalizer);
 
     $reflection = new ReflectionClass($normalizer);

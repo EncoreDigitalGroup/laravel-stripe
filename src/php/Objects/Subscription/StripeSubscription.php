@@ -7,10 +7,10 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription;
 
+use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
-use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Stripe\Subscription;
 
 class StripeSubscription
@@ -18,24 +18,24 @@ class StripeSubscription
     use HasMake;
 
     public function __construct(
-        public ?string             $id = null,
-        public ?string             $customer = null,
+        public ?string $id = null,
+        public ?string $customer = null,
         public ?SubscriptionStatus $status = null,
-        public ?int                $currentPeriodStart = null,
-        public ?int                $currentPeriodEnd = null,
-        public ?int                $cancelAt = null,
-        public ?int                $canceledAt = null,
-        public ?int                $trialStart = null,
-        public ?int                $trialEnd = null,
-        public ?array              $items = null,
-        public ?string             $defaultPaymentMethod = null,
-        public ?array              $metadata = null,
-        public ?string             $currency = null,
-        public ?CollectionMethod   $collectionMethod = null,
-        public ?int                $billingCycleAnchor = null,
-        public ?bool               $cancelAtPeriodEnd = null,
-        public ?int                $daysUntilDue = null,
-        public ?string             $description = null
+        public ?int $currentPeriodStart = null,
+        public ?int $currentPeriodEnd = null,
+        public ?int $cancelAt = null,
+        public ?int $canceledAt = null,
+        public ?int $trialStart = null,
+        public ?int $trialEnd = null,
+        public ?array $items = null,
+        public ?string $defaultPaymentMethod = null,
+        public ?array $metadata = null,
+        public ?string $currency = null,
+        public ?CollectionMethod $collectionMethod = null,
+        public ?int $billingCycleAnchor = null,
+        public ?bool $cancelAtPeriodEnd = null,
+        public ?int $daysUntilDue = null,
+        public ?string $description = null
     ) {}
 
     /**

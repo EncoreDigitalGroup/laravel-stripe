@@ -16,7 +16,7 @@ class StripeFinancialConnection
 
     public function __construct(
         public StripeCustomer $customer,
-        public array          $permissions = ["transactions"]
+        public array $permissions = ["transactions"]
     ) {}
 
     public function toArray(): array

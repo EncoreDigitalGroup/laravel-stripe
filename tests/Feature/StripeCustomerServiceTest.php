@@ -178,7 +178,7 @@ test("throws exception when no fake is registered", function (): void {
     // Act & Assert: Should throw exception
     $service = StripeCustomerService::make();
 
-    expect(fn(): StripeCustomer => $service->get("cus_123"))
+    expect(fn (): StripeCustomer => $service->get("cus_123"))
         ->toThrow(RuntimeException::class, "No fake registered for Stripe method");
 });
 

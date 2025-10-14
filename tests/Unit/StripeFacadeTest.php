@@ -94,7 +94,7 @@ test("fake method returns fake that can be used for assertions", function (): vo
 test("fake method throws exception when FakeStripeClient not available", function (): void {
     // This test would only fail if the class doesn't exist, which it does in our test environment
     // So we're just verifying the method exists and works
-    expect(fn(): \EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
+    expect(fn (): \EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
 });
 
 test("can create product object via static method", function (): void {
@@ -127,7 +127,7 @@ test("can create subscription object via static method", function (): void {
     $subscription = Stripe::subscription(
         customer: "cus_123",
         items: [
-            ["price" => "price_123", "quantity" => 1]
+            ["price" => "price_123", "quantity" => 1],
         ]
     );
 
@@ -135,7 +135,7 @@ test("can create subscription object via static method", function (): void {
         ->toBeInstanceOf(StripeSubscription::class)
         ->and($subscription->customer)->toBe("cus_123")
         ->and($subscription->items)->toBe([
-            ["price" => "price_123", "quantity" => 1]
+            ["price" => "price_123", "quantity" => 1],
         ]);
 });
 
