@@ -104,7 +104,14 @@ jobs:
                 shell: bash
                 run: $GITHUB_WORKSPACE/scripts/ci_build.sh
 
-    AutoMerge:
-        needs: [ StaticAnalysis, Tests, BundleAsset ]
+    AutoMergeWithoutTypeScript:
+        needs: [ StaticAnalysis, Tests ]
+        if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'false'
         name: Auto-Merge
-        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v2
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v3
+
+    AutoMergeWithTypeScript:
+        needs: [ StaticAnalysis, Tests, BundleAsset ]
+        if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'true'
+        name: Auto-Merge
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v3
