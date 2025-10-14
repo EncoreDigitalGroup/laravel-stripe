@@ -30,7 +30,7 @@
         "friendsofphp/php-cs-fixer": "^3.9",
         "larastan/larastan": "^3.0",
         "neronmoon/scriptsdev": "^0.1.9",
-        "orchestra/testbench": "^9.1",
+        "orchestra/testbench": "^9.1 || ^10.0",
         "pestphp/pest": "^4",
         "pestphp/pest-plugin-laravel": "^4",
         "phpgenesis/devutilities": "^1",
