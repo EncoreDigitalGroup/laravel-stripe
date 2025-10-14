@@ -90,6 +90,7 @@ test("can clear recorded calls", function (): void {
     ]);
 
     $client->customers->create(["email" => "test@example.com"]);
+
     expect($client->callCount("customers.create"))->toBe(1);
 
     $client->clearRecorded();
@@ -131,7 +132,7 @@ test("handles wildcard patterns", function (): void {
 
 test("callable responses receive params", function (): void {
     $client = new FakeStripeClient([
-        "customers.create" => function ($params) {
+        "customers.create" => function (array $params): array {
             return [
                 "id" => "cus_callable",
                 "email" => $params["email"]

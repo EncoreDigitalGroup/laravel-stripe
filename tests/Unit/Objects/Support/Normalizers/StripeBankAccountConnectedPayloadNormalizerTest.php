@@ -50,7 +50,7 @@ test("normalize handles payload without security keys", function (): void {
 test("normalize throws exception for invalid type", function (): void {
     $normalizer = new StripeBankAccountConnectedPayloadNormalizer();
 
-    expect(fn() => $normalizer->normalize(new stdClass()))
+    expect(fn(): array => $normalizer->normalize(new stdClass()))
         ->toThrow(InvalidArgumentException::class, "The object must be an instance of StripeBankAccountConnectedPayload");
 });
 

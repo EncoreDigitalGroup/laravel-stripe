@@ -36,9 +36,9 @@ test("HasStripe throws exception when no API key configured", function (): void 
     }
 
     // Clear any config
-    config(['stripe.secret_key' => null]);
+    config(["stripe.secret_key" => null]);
 
-    expect(fn() => new StripeCustomerService())
+    expect(fn(): \EncoreDigitalGroup\Stripe\Services\StripeCustomerService => new StripeCustomerService())
         ->toThrow(\EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException::class);
 });
 
