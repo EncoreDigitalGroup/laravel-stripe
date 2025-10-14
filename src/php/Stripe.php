@@ -26,7 +26,7 @@ class Stripe
 {
     use HasStripe;
 
-    // Factory Methods - Create data objects
+    #region Factory Methods - Create data objects
 
     public static function customer(mixed ...$params): StripeCustomer
     {
@@ -63,7 +63,9 @@ class Stripe
         return StripeWebhook::make(...$params);
     }
 
-    // Service Accessor Methods - Get service instances
+    #endregion
+
+    #region Service Accessor Methods - Get service instances
 
     public static function customers(): StripeCustomerService
     {
@@ -85,7 +87,9 @@ class Stripe
         return StripeSubscriptionService::make();
     }
 
-    // Testing Method
+    #endregion
+
+    #region Testing Method
 
     public static function fake(array $fakes = []): FakeStripeClient
     {
@@ -97,4 +101,6 @@ class Stripe
 
         return $fake;
     }
+
+    #endregion
 }
