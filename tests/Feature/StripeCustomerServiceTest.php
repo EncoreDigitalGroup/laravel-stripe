@@ -214,3 +214,23 @@ test("can get call count for a method", function (): void {
     // Assert
     expect($fake)->toHaveCalledStripeMethodTimes("customers.create", 3);
 });
+
+test("can search customers using faked stripe client", function (): void {
+    // Arrange
+    $fake = Stripe::fake([
+        "customers.search" => StripeFixtures::customerList([
+            StripeFixtures::customer(["id" => "cus_1", "email" => "search1@example.com"]),
+            StripeFixtures::customer(["id" => "cus_2", "email" => "search2@example.com"]),
+        ]),
+    ]);
+
+    // Act
+    $service = StripeCustomerService::make();
+    $customers = $service->search("email~'@example.com'");
+
+    // Assert
+    expect($customers)
+        ->toHaveCount(2)
+        ->and($customers->first())->toBeInstanceOf(StripeCustomer::class)
+        ->and($fake)->toHaveCalledStripeMethod("customers.search");
+});
