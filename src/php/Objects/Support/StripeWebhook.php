@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support;
+namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Str;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 use Illuminate\Support\Facades\Request;
 use Stripe\Event as StripeEvent;
 use Stripe\Webhook;

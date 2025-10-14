@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
+namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;

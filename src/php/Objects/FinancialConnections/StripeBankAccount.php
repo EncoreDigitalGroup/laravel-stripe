@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections;
+namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
 class StripeBankAccount
 {

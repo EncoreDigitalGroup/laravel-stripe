@@ -5,19 +5,33 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Support;
+namespace EncoreDigitalGroup\Stripe\Support;
 
-use EncoreDigitalGroup\Common\Stripe\Stripe;
-use EncoreDigitalGroup\Common\Stripe\Support\Config\StripeConfig;
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
+use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use Stripe\StripeClient;
 
 trait HasStripe
 {
-    private StripeClient $stripe;
+    protected StripeClient $stripe;
 
-    public function __construct()
+    public function __construct(?StripeClient $client = null)
     {
+        // Allow dependency injection of StripeClient (useful for testing)
+        if ($client instanceof \Stripe\StripeClient) {
+            $this->stripe = $client;
+
+            return;
+        }
+
+        // Try to resolve from container (Laravel)
+        if (function_exists("app") && app()->bound(StripeClient::class)) {
+            $this->stripe = app(StripeClient::class);
+
+            return;
+        }
+
+        // Default behavior: create new client with API key
         $config = self::config();
 
         if (is_null($config->authentication->secretKey)) {
@@ -27,9 +41,9 @@ trait HasStripe
         $this->stripe = new StripeClient($config->authentication->secretKey);
     }
 
-    public static function make(): Stripe
+    public static function make(?StripeClient $client = null): static
     {
-        return new self;
+        return new static($client);
     }
 
     public static function config(): StripeConfig

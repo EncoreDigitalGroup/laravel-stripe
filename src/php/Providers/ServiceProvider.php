@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Providers;
+namespace EncoreDigitalGroup\Stripe\Providers;
 
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;

@@ -21,7 +21,7 @@ jobs:
         steps:
             -   name: PHP GitStatusCheck
                 id: GitStatusCheck
-                uses: EncoreDigitalGroup/ci-workflows/actions/php/gitStatusCheck@v2
+                uses: EncoreDigitalGroup/ci-workflows/actions/php/gitStatusCheck@v3
 
     TypeScriptGitStatusCheck:
         name: TypeScript GitStatusCheck
@@ -31,14 +31,14 @@ jobs:
         steps:
             -   name: TypeScript GitStatusCheck
                 id: GitStatusCheck
-                uses: EncoreDigitalGroup/ci-workflows/actions/ts/gitStatusCheck@v2
+                uses: EncoreDigitalGroup/ci-workflows/actions/ts/gitStatusCheck@v3
 
     FormatTitle:
         name: FormatTitle
         runs-on: ubuntu-latest
         steps:
             -   name: FormatTitle
-                uses: EncoreDigitalGroup/ci-workflows/actions/github/formatPullRequestTitle@v2
+                uses: EncoreDigitalGroup/ci-workflows/actions/github/formatPullRequestTitle@v3
                 with:
                     branch: ${{ github.head_ref }}
                     pullRequestNumber: ${{ github.event.number }}
@@ -52,7 +52,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: CodeStyle
-                uses: EncoreSoftware/ci-pipelines/actions/php/codeStyle@v2
+                uses: EncoreSoftware/ci-pipelines/actions/php/codeStyle@v3
                 with:
                     branch: "${{ github.head_ref }}"
                     repository: "${{ github.repository }}"
@@ -61,15 +61,24 @@ jobs:
     StaticAnalysis:
         needs: CodeStyle
         name: StaticAnalysis
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_staticAnalysis.yml@v2
+        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_staticAnalysis.yml@v3
         with:
             composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
             phpVersion: '8.3'
             path: 'src/'
             branch: ${{ github.head_ref }}
 
+    Tests:
+        needs: CodeStyle
+        name: Tests
+        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_test.yml@v3
+        with:
+            composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
+            phpVersion: '8.3'
+            branch: ${{ github.head_ref }}
+
     BundleAsset:
-        needs: StaticAnalysis
+        needs: [ StaticAnalysis, Tests ]
         name: BundleAsset
         if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'true'
         runs-on: ubuntu-latest
@@ -96,6 +105,6 @@ jobs:
                 run: $GITHUB_WORKSPACE/scripts/ci_build.sh
 
     AutoMerge:
-        needs: [ StaticAnalysis, BundleAsset ]
+        needs: [ StaticAnalysis, Tests, BundleAsset ]
         name: Auto-Merge
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v2

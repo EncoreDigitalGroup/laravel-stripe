@@ -5,10 +5,10 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Customer;
+namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeAddress;
-use EncoreDigitalGroup\Common\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Support\HasMake;
 
 class StripeShipping
 {

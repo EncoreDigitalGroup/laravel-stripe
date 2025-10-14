@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Views;
+namespace EncoreDigitalGroup\Stripe\Views;
 
 use Closure;
 use Illuminate\Contracts\View\View;

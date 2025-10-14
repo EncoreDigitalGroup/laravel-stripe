@@ -1,16 +1,10 @@
 {
-    "name": "encoredigitalgroup/common-stripe",
+    "name": "encoredigitalgroup/stripe",
     "type": "library",
     "authors": [
         {
             "name": "Marc Beinder",
             "email": "marc.beinder@encoredigitalgroup.com"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.encoredigitalgroup.com"
         }
     ],
     "config": {
@@ -37,8 +31,8 @@
         "larastan/larastan": "^3.0",
         "neronmoon/scriptsdev": "^0.1.9",
         "orchestra/testbench": "^9.1",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-laravel": "^2",
+        "pestphp/pest": "^4",
+        "pestphp/pest-plugin-laravel": "^4",
         "phpgenesis/devutilities": "^1",
         "phpstan/extension-installer": "^1.3",
         "rector/rector": "^2.0",
@@ -47,24 +41,32 @@
     },
     "autoload": {
         "psr-4": {
-            "EncoreDigitalGroup\\Common\\Stripe\\": "src/php/"
+            "EncoreDigitalGroup\\Stripe\\": "src/php/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "scripts": {
         "post-autoload-dump": [
             "PHPGenesis\\Common\\Composer\\Scripts::postAutoloadDump"
-        ]
+        ],
+        "test": "vendor/bin/pest --parallel"
     },
     "extra": {
         "laravel": {
             "providers": [
-                "EncoreDigitalGroup\\Common\\Stripe\\Providers\\ServiceProvider"
+                "EncoreDigitalGroup\\Stripe\\Providers\\ServiceProvider"
             ],
             "dont-discover": []
         },
         "scripts-dev": {
-            "post-update-cmd": [],
-            "post-autoload-dump": []
+            "post-autoload-dump": [
+                "vendor/bin/testbench package:discover"
+            ],
+            "post-update-cmd": []
         }
     }
 }

@@ -5,12 +5,12 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
+namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
-use EncoreDigitalGroup\Common\Stripe\Objects\FinancialConnections\StripeBankAccount;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\SecurityKeyPair;
-use EncoreDigitalGroup\Common\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 use EncoreDigitalGroup\StdLib\Exceptions\ImproperBooleanReturnedException;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
+use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeBankAccountConnectedPayload;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;

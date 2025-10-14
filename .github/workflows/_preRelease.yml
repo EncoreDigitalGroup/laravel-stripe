@@ -6,15 +6,20 @@ on:
             - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'
             - '!v[0-9]+.[0-9]+.[0-9]+'
 
+permissions:
+    contents: write
+
 jobs:
-    CreateRelease:
-        name: Create Release
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/github_createRelease.yml@v2
-        permissions:
-            contents: write
-        with:
-            generateReleaseNotes: true
-            isDraft: false
-            preRelease: true
-        secrets:
-            token: ${{ secrets.GITHUB_TOKEN }}
+    CreatePreRelease:
+        name: Create Pre-Release
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Create Pre-Release
+                uses: EncoreDigitalGroup/ci-workflows/actions/github/createRelease@v3
+                with:
+                    generateReleaseNotes: true
+                    isDraft: false
+                    preRelease: true
+                    repository: ${{ github.repository }}
+                    tagName: ${{ github.head_ref }}
+                    token: ${{ secrets.GITHUB_TOKEN }}

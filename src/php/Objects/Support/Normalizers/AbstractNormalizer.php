@@ -5,7 +5,7 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Common\Stripe\Objects\Support\Normalizers;
+namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
