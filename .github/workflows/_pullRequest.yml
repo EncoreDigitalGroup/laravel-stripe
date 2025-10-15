@@ -52,18 +52,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: CodeStyle
-                uses: EncoreSoftware/ci-pipelines/actions/php/codeStyle@v3
+                uses: EncoreDigitalGroup/ci-workflows/actions/php/codeStyle@v3
                 with:
                     branch: "${{ github.head_ref }}"
                     repository: "${{ github.repository }}"
-                    composerAuthJson: "${{ vars.COMPOSER_AUTH_JSON }}"
 
     StaticAnalysis:
         needs: CodeStyle
         name: StaticAnalysis
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_staticAnalysis.yml@v3
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_staticAnalysis.yml@v3
         with:
-            composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
             phpVersion: '8.3'
             path: 'src/'
             branch: ${{ github.head_ref }}
@@ -71,9 +69,8 @@ jobs:
     Tests:
         needs: CodeStyle
         name: Tests
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_test.yml@v3
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_test.yml@v3
         with:
-            composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
             phpVersion: '8.3'
             branch: ${{ github.head_ref }}
 
@@ -107,11 +104,11 @@ jobs:
     AutoMergeWithoutTypeScript:
         needs: [ StaticAnalysis, Tests ]
         if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'false'
-        name: Auto-Merge
+        name: AutoMergeWithoutTypeScript
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v3
 
     AutoMergeWithTypeScript:
         needs: [ StaticAnalysis, Tests, BundleAsset ]
         if: needs.TypeScriptGitStatusCheck.outputs.shouldRun == 'true'
-        name: Auto-Merge
+        name: AutoMergeWithTypeScript
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/github_dependabotAutoMerge.yml@v3
