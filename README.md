@@ -133,29 +133,10 @@ echo "Created customer {$customer->id} with product {$product->id} priced at {$p
 
 ## Contributing
 
-This library follows strict coding standards:
-
-- **PSR-12** code style via PHP-CS-Fixer
-- **PHPStan Level 8** static analysis
-- **Pest v4** for testing
-- **Cognitive complexity** limits (function: 10, class: 50)
-
-Run the development commands:
-
-```bash
-# Run tests
-./vendor/bin/pest
-
-# Static analysis
-./vendor/bin/phpstan analyse
-
-# Fix code style
-./vendor/bin/duster fix
-
-# Refactoring
-./vendor/bin/rector process
-```
+Contributions to this repository are governed by the Encore Digital Group [Contribution Terms](https://docs.encoredigitalgroup.com/Contributing/Terms/).
+Additional details on how to contribute are available [here](https://docs.encoredigitalgroup.com/Contributing/).
 
 ## License
 
-Copyright (c) 2025 Encore Digital Group. All Rights Reserved.
+This repository is licensed using a modified version of the BSD 3-Clause License.
+The license is available for review [here](https://github.com/EncoreDigitalGroup/.github/blob/main/LICENSE.md).
