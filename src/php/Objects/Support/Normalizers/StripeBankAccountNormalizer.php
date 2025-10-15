@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use InvalidArgumentException;
@@ -24,7 +25,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         return [
             "id" => $data->id,
             "category" => $data->category,
-            "created" => $data->created,
+            "created" => $data->created?->timestamp,
             "display_name" => $data->displayName,
             "institution_name" => $data->institutionName,
             "last4" => $data->last4,
@@ -50,7 +51,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
 
         $bankAccount->id = $data["id"] ?? null;
         $bankAccount->category = $data["category"] ?? null;
-        $bankAccount->created = $data["created"] ?? null;
+        $bankAccount->created = isset($data["created"]) ? CarbonImmutable::createFromTimestamp($data["created"]) : null;
         $bankAccount->displayName = $data["display_name"] ?? null;
         $bankAccount->institutionName = $data["institution_name"] ?? null;
         $bankAccount->last4 = $data["last4"] ?? null;

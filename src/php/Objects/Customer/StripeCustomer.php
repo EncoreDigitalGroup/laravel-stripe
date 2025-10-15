@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
 use Stripe\Customer;
 
@@ -35,7 +36,7 @@ class StripeCustomer
         if (isset($stripeCustomer->address)) {
             /** @var \Stripe\StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
-            $address = StripeAddress::make(
+            $address = (new StripeBuilder)->address()->build(
                 line1: $stripeAddress->line1 ?? null,
                 line2: $stripeAddress->line2 ?? null,
                 city: $stripeAddress->city ?? null,
@@ -53,7 +54,7 @@ class StripeCustomer
             if (isset($stripeShipping->address)) {
                 /** @var \Stripe\StripeObject $shippingAddressObj */
                 $shippingAddressObj = $stripeShipping->address;
-                $shippingAddress = StripeAddress::make(
+                $shippingAddress = (new StripeBuilder)->address()->build(
                     line1: $shippingAddressObj->line1 ?? null,
                     line2: $shippingAddressObj->line2 ?? null,
                     city: $shippingAddressObj->city ?? null,
@@ -65,7 +66,7 @@ class StripeCustomer
 
             // Only create shipping if we have the required fields (address and name)
             if ($shippingAddress instanceof \EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress && isset($stripeShipping->name)) {
-                $shipping = StripeShipping::make(
+                $shipping = (new StripeBuilder)->shipping()->build(
                     address: $shippingAddress,
                     name: $stripeShipping->name,
                     phone: $stripeShipping->phone ?? null

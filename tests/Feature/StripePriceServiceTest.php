@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Stripe;
@@ -205,7 +206,7 @@ test("create removes id and created from payload", function (): void {
         product: "prod_test",
         unitAmount: 1000,
         currency: "usd",
-        created: 1234567890
+        created: CarbonImmutable::createFromTimestamp(1234567890)
     );
 
     $service = StripePriceService::make();

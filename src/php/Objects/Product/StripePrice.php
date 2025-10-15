@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
@@ -15,13 +16,16 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Price;
 use Stripe\StripeObject;
 
 class StripePrice
 {
     use HasMake;
+    use HasTimestamps;
 
     public function __construct(
         public ?string $id = null,
@@ -32,17 +36,32 @@ class StripePrice
         public ?string $unitAmountDecimal = null,
         public ?PriceType $type = null,
         public ?BillingScheme $billingScheme = null,
-        public ?array $recurring = null,
+        public ?StripeRecurring $recurring = null,
         public ?string $nickname = null,
         public ?array $metadata = null,
         public ?string $lookupKey = null,
-        public ?array $tiers = null,
+        public ?StripeProductTierCollection $tiers = null,
         public ?TiersMode $tiersMode = null,
         public ?int $transformQuantity = null,
-        public ?array $customUnitAmount = null,
+        public ?StripeCustomUnitAmount $customUnitAmount = null,
         public ?TaxBehavior $taxBehavior = null,
-        public ?int $created = null
+        public ?CarbonImmutable $created = null
     ) {}
+
+    public static function make(mixed ...$params): static
+    {
+        // Handle tiers parameter conversion from array to collection
+        if (isset($params["tiers"]) && !($params["tiers"] instanceof StripeProductTierCollection)) {
+            $params["tiers"] = new StripeProductTierCollection($params["tiers"]);
+        }
+
+        // Handle customUnitAmount parameter conversion from array to DTO
+        if (isset($params["customUnitAmount"]) && !($params["customUnitAmount"] instanceof StripeCustomUnitAmount)) {
+            $params["customUnitAmount"] = (new StripeBuilder)->customUnitAmount()->build(...$params["customUnitAmount"]);
+        }
+
+        return new static(...$params);
+    }
 
     public static function fromStripeObject(Price $stripePrice): self
     {
@@ -89,11 +108,11 @@ class StripePrice
             transformQuantity: $stripePrice->transform_quantity ?? null,
             customUnitAmount: $customUnitAmount,
             taxBehavior: $taxBehavior,
-            created: $stripePrice->created ?? null
+            created: self::timestampToCarbon($stripePrice->created ?? null)
         );
     }
 
-    private static function extractRecurring(Price $stripePrice): ?array
+    private static function extractRecurring(Price $stripePrice): ?StripeRecurring
     {
         if (!isset($stripePrice->recurring)) {
             return null;
@@ -117,16 +136,16 @@ class StripePrice
             $aggregateUsage = RecurringAggregateUsage::from($recurringObj->aggregate_usage);
         }
 
-        return [
-            "interval" => $interval,
-            "interval_count" => $recurringObj->interval_count ?? null,
-            "trial_period_days" => $recurringObj->trial_period_days ?? null,
-            "usage_type" => $usageType,
-            "aggregate_usage" => $aggregateUsage,
-        ];
+        return (new StripeBuilder)->recurring()->build(
+            interval: $interval,
+            intervalCount: $recurringObj->interval_count ?? null,
+            trialPeriodDays: $recurringObj->trial_period_days ?? null,
+            usageType: $usageType,
+            aggregateUsage: $aggregateUsage
+        );
     }
 
-    private static function extractTiers(Price $stripePrice): ?array
+    private static function extractTiers(Price $stripePrice): ?StripeProductTierCollection
     {
         if (!isset($stripePrice->tiers)) {
             return null;
@@ -136,19 +155,19 @@ class StripePrice
         foreach ($stripePrice->tiers as $tier) {
             /** @var StripeObject $tierObj */
             $tierObj = $tier;
-            $tiers[] = [
-                "up_to" => $tierObj->up_to ?? null,
-                "unit_amount" => $tierObj->unit_amount ?? null,
-                "unit_amount_decimal" => $tierObj->unit_amount_decimal ?? null,
-                "flat_amount" => $tierObj->flat_amount ?? null,
-                "flat_amount_decimal" => $tierObj->flat_amount_decimal ?? null,
-            ];
+            $tiers[] = (new StripeBuilder)->tier()->build(
+                upTo: $tierObj->up_to ?? null,
+                unitAmount: $tierObj->unit_amount ?? null,
+                unitAmountDecimal: $tierObj->unit_amount_decimal ?? null,
+                flatAmount: $tierObj->flat_amount ?? null,
+                flatAmountDecimal: $tierObj->flat_amount_decimal ?? null
+            );
         }
 
-        return $tiers;
+        return new StripeProductTierCollection($tiers);
     }
 
-    private static function extractCustomUnitAmount(Price $stripePrice): ?array
+    private static function extractCustomUnitAmount(Price $stripePrice): ?StripeCustomUnitAmount
     {
         if (!isset($stripePrice->custom_unit_amount)) {
             return null;
@@ -157,17 +176,15 @@ class StripePrice
         /** @var StripeObject $customUnitAmountObj */
         $customUnitAmountObj = $stripePrice->custom_unit_amount;
 
-        return [
-            "maximum" => $customUnitAmountObj->maximum ?? null,
-            "minimum" => $customUnitAmountObj->minimum ?? null,
-            "preset" => $customUnitAmountObj->preset ?? null,
-        ];
+        return (new StripeBuilder)->customUnitAmount()->build(
+            minimum: $customUnitAmountObj->minimum ?? null,
+            maximum: $customUnitAmountObj->maximum ?? null,
+            preset: $customUnitAmountObj->preset ?? null
+        );
     }
 
     public function toArray(): array
     {
-        $recurring = $this->normalizeRecurring($this->recurring);
-
         $array = [
             "id" => $this->id,
             "product" => $this->product,
@@ -177,55 +194,18 @@ class StripePrice
             "unit_amount_decimal" => $this->unitAmountDecimal,
             "type" => $this->type?->value,
             "billing_scheme" => $this->billingScheme?->value,
-            "recurring" => $recurring,
+            "recurring" => $this->recurring?->toArray(),
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers,
+            "tiers" => $this->tiers?->toArray(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
-            "custom_unit_amount" => $this->customUnitAmount,
+            "custom_unit_amount" => $this->customUnitAmount?->toArray(),
             "tax_behavior" => $this->taxBehavior?->value,
+            "created" => self::carbonToTimestamp($this->created),
         ];
 
         return Arr::whereNotNull($array);
-    }
-
-    private function normalizeRecurring(?array $recurring): ?array
-    {
-        if ($recurring === null || $recurring === []) {
-            return $recurring;
-        }
-
-        $interval = $this->normalizeRecurringField(
-            $recurring["interval"] ?? null
-        );
-
-        $usageType = $this->normalizeRecurringField(
-            $recurring["usage_type"] ?? null
-        );
-
-        $aggregateUsage = $this->normalizeRecurringField(
-            $recurring["aggregate_usage"] ?? null
-        );
-
-        $normalized = [
-            "interval" => $interval,
-            "interval_count" => $recurring["interval_count"] ?? null,
-            "trial_period_days" => $recurring["trial_period_days"] ?? null,
-            "usage_type" => $usageType,
-            "aggregate_usage" => $aggregateUsage,
-        ];
-
-        return Arr::whereNotNull($normalized);
-    }
-
-    private function normalizeRecurringField(mixed $field): ?string
-    {
-        if ($field instanceof RecurringInterval || $field instanceof RecurringUsageType || $field instanceof RecurringAggregateUsage) {
-            return $field->value;
-        }
-
-        return $field;
     }
 }

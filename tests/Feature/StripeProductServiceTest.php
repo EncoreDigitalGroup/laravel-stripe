@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Stripe;
@@ -171,8 +172,8 @@ test("create removes id and timestamps from payload", function (): void {
     $product = StripeProduct::make(
         id: "should_be_removed",
         name: "Test Product",
-        created: 1234567890,
-        updated: 1234567890
+        created: CarbonImmutable::createFromTimestamp(1234567890),
+        updated: CarbonImmutable::createFromTimestamp(1234567890)
     );
 
     $service = StripeProductService::make();
@@ -194,8 +195,8 @@ test("update removes id and timestamps from payload", function (): void {
     $product = StripeProduct::make(
         id: "should_be_removed",
         name: "Updated Product",
-        created: 1234567890,
-        updated: 1234567890
+        created: CarbonImmutable::createFromTimestamp(1234567890),
+        updated: CarbonImmutable::createFromTimestamp(1234567890)
     );
 
     $service = StripeProductService::make();

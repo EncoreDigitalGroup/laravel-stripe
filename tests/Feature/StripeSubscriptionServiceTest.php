@@ -5,6 +5,9 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Stripe;
@@ -205,4 +208,91 @@ test("update removes id from payload", function (): void {
 
     expect($params)->not->toHaveKey("id")
         ->and($params)->toHaveKey("description");
+});
+
+test("create sends billing_cycle_anchor_config when set", function (): void {
+    $fake = Stripe::fake([
+        "subscriptions.create" => StripeFixtures::subscription([
+            "id" => "sub_new",
+            "billing_cycle_anchor_config" => [
+                "day_of_month" => 15,
+                "hour" => 0,
+                "minute" => 0,
+                "second" => 0,
+            ],
+        ]),
+    ]);
+
+    $config = StripeBillingCycleAnchorConfig::make(
+        dayOfMonth: 15,
+        hour: 0,
+        minute: 0,
+        second: 0
+    );
+
+    $subscription = StripeSubscription::make(
+        customer: "cus_test",
+        items: [["price" => "price_test"]],
+        billingCycleAnchorConfig: $config
+    );
+
+    $service = StripeSubscriptionService::make();
+    $service->create($subscription);
+
+    $params = $fake->getCall("subscriptions.create");
+
+    expect($params)->toHaveKey("billing_cycle_anchor_config")
+        ->and($params["billing_cycle_anchor_config"])->toBeArray()
+        ->and($params["billing_cycle_anchor_config"]["day_of_month"])->toBe(15)
+        ->and($params["billing_cycle_anchor_config"]["hour"])->toBe(0);
+});
+
+test("create sends proration_behavior when set", function (): void {
+    $fake = Stripe::fake([
+        "subscriptions.create" => StripeFixtures::subscription([
+            "id" => "sub_new",
+            "proration_behavior" => "none",
+        ]),
+    ]);
+
+    $subscription = StripeSubscription::make(
+        customer: "cus_test",
+        items: [["price" => "price_test"]],
+        prorationBehavior: ProrationBehavior::None
+    );
+
+    $service = StripeSubscriptionService::make();
+    $service->create($subscription);
+
+    $params = $fake->getCall("subscriptions.create");
+
+    expect($params)->toHaveKey("proration_behavior")
+        ->and($params["proration_behavior"])->toBe("none");
+});
+
+test("issueFirstInvoiceOn works with service create", function (): void {
+    $fake = Stripe::fake([
+        "subscriptions.create" => StripeFixtures::subscription([
+            "id" => "sub_new",
+        ]),
+    ]);
+
+    $subscription = StripeSubscription::make(
+        customer: "cus_test",
+        items: [["price" => "price_test"]],
+        trialEnd: CarbonImmutable::now()->addDays(14)
+    );
+
+    $subscription->issueFirstInvoiceOn(
+        CarbonImmutable::create(2025, 6, 15, 0, 0, 0)
+    );
+
+    $service = StripeSubscriptionService::make();
+    $service->create($subscription);
+
+    $params = $fake->getCall("subscriptions.create");
+
+    expect($params)->toHaveKey("billing_cycle_anchor_config")
+        ->and($params["billing_cycle_anchor_config"]["day_of_month"])->toBe(15)
+        ->and($params["billing_cycle_anchor_config"]["month"])->toBe(6);
 });
