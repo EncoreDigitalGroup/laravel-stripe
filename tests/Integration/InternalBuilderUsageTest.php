@@ -55,7 +55,7 @@ describe("Internal Builder Usage Integration", function (): void {
                 'city' => 'Cambridge',
                 'state' => 'MA',
                 'postal_code' => '02138',
-                'country' => 'US'
+                'country' => 'US',
             ],
             'shipping' => [
                 'name' => 'Jane Smith',
@@ -65,9 +65,9 @@ describe("Internal Builder Usage Integration", function (): void {
                     'city' => 'Boston',
                     'state' => 'MA',
                     'postal_code' => '02101',
-                    'country' => 'US'
-                ]
-            ]
+                    'country' => 'US',
+                ],
+            ],
         ], []);
 
         // Convert from Stripe object - this should use builders internally
@@ -97,26 +97,26 @@ describe("Internal Builder Usage Integration", function (): void {
                 'interval' => 'month',
                 'interval_count' => 1,
                 'trial_period_days' => 14,
-                'usage_type' => 'licensed'
+                'usage_type' => 'licensed',
             ],
             'tiers' => [
                 [
                     'up_to' => 1000,
                     'unit_amount' => 100,
-                    'flat_amount' => 0
+                    'flat_amount' => 0,
                 ],
                 [
                     'up_to' => 'inf',
                     'unit_amount' => 80,
-                    'flat_amount' => 0
-                ]
+                    'flat_amount' => 0,
+                ],
             ],
             'custom_unit_amount' => [
                 'minimum' => 500,
                 'maximum' => 10000,
-                'preset' => 2000
+                'preset' => 2000,
             ],
-            'metadata' => []
+            'metadata' => [],
         ], []);
 
         // Convert from Stripe object - this should use builders internally
@@ -150,7 +150,7 @@ describe("Internal Builder Usage Integration", function (): void {
             customUnitAmount: [
                 'minimum' => 1000,
                 'maximum' => 50000,
-                'preset' => 5000
+                'preset' => 5000,
             ]
         );
 
@@ -171,7 +171,7 @@ describe("Internal Builder Usage Integration", function (): void {
         $price = Stripe::price(product: "prod_123", currency: "usd", unitAmount: 1999);
         $subscription = Stripe::subscription(customer: "cus_123");
         $webhook = Stripe::webhook(url: "https://example.com/webhook", events: ["*"]);
-        $financialConnection = Stripe::financialConnections(customer: Stripe::customer(email: "test@example.com"));
+        $financialConnection = Stripe::financialConnection(customer: Stripe::customer(email: "test@example.com"));
 
         // All should be proper object instances
         expect($product)->toBeInstanceOf(StripeProduct::class)

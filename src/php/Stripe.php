@@ -60,7 +60,7 @@ class Stripe
         return self::builder()->address()->build(...$params);
     }
 
-    public static function financialConnections(mixed ...$params): StripeFinancialConnection
+    public static function financialConnection(mixed ...$params): StripeFinancialConnection
     {
         return self::builder()->financialConnection()->build(...$params);
     }

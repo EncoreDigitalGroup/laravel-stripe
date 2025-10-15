@@ -35,7 +35,7 @@ test("can create a customer object via static method", function (): void {
 
 test("can create financial connections object via static method", function (): void {
     $customer = StripeCustomer::make(email: "test@example.com");
-    $connection = Stripe::financialConnections(customer: $customer);
+    $connection = Stripe::financialConnection(customer: $customer);
 
     expect($connection)->toBeInstanceOf(StripeFinancialConnection::class)
         ->and($connection->customer)->toBe($customer);
@@ -94,7 +94,7 @@ test("fake method returns fake that can be used for assertions", function (): vo
 test("fake method throws exception when FakeStripeClient not available", function (): void {
     // This test would only fail if the class doesn't exist, which it does in our test environment
     // So we're just verifying the method exists and works
-    expect(fn (): \EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
+    expect(fn(): \EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient => Stripe::fake())->not->toThrow(RuntimeException::class);
 });
 
 test("can create product object via static method", function (): void {
