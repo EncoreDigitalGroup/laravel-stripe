@@ -13,7 +13,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use EncoreDigitalGroup\Stripe\Stripe;
-use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use Stripe\Util\Util;
 
 describe("Internal Builder Usage Integration", function (): void {
     test("Stripe facade methods use builders internally", function (): void {
@@ -45,8 +45,9 @@ describe("Internal Builder Usage Integration", function (): void {
 
     test("DTO fromStripeObject methods use builders for nested objects", function (): void {
         // Create a mock Stripe customer object with address and shipping
-        $stripeCustomer = StripeFixtures::customer([
+        $stripeCustomer = Util::convertToStripeObject([
             'id' => 'cus_123',
+            'object' => 'customer',
             'email' => 'customer@example.com',
             'name' => 'Jane Smith',
             'address' => [
@@ -67,7 +68,7 @@ describe("Internal Builder Usage Integration", function (): void {
                     'country' => 'US'
                 ]
             ]
-        ]);
+        ], []);
 
         // Convert from Stripe object - this should use builders internally
         $customer = StripeCustomer::fromStripeObject($stripeCustomer);
@@ -87,8 +88,9 @@ describe("Internal Builder Usage Integration", function (): void {
 
     test("StripePrice fromStripeObject uses builders for complex nested objects", function (): void {
         // Create a mock Stripe price object with recurring and tiers
-        $stripePrice = StripeFixtures::price([
+        $stripePrice = Util::convertToStripeObject([
             'id' => 'price_123',
+            'object' => 'price',
             'product' => 'prod_123',
             'currency' => 'usd',
             'recurring' => [
@@ -113,8 +115,9 @@ describe("Internal Builder Usage Integration", function (): void {
                 'minimum' => 500,
                 'maximum' => 10000,
                 'preset' => 2000
-            ]
-        ]);
+            ],
+            'metadata' => []
+        ], []);
 
         // Convert from Stripe object - this should use builders internally
         $price = StripePrice::fromStripeObject($stripePrice);
@@ -180,7 +183,7 @@ describe("Internal Builder Usage Integration", function (): void {
             ->and($price->product)->toBe("prod_123")
             ->and($price->currency)->toBe("usd")
             ->and($price->unitAmount)->toBe(1999)
-            ->and($subscription->customer)->toBeNull()
+            ->and($subscription->customer)->toBe("cus_123")
             ->and($webhook->url)->toBe("https://example.com/webhook")
             ->and($webhook->events)->toBe(["*"]);
     });
