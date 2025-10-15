@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\CustomUnitAmountBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ProductBuilder;
@@ -26,6 +27,8 @@ describe("ProductBuilder", function (): void {
 
     test("can build a product with all parameters", function (): void {
         $builder = new ProductBuilder();
+        $created = CarbonImmutable::createFromTimestamp(1640995200);
+        $updated = CarbonImmutable::createFromTimestamp(1640995300);
         $product = $builder->build(
             id: "prod_123",
             name: "Complete Product",
@@ -44,8 +47,8 @@ describe("ProductBuilder", function (): void {
             taxCode: "txcd_123",
             unitLabel: "piece",
             url: "https://example.com/product",
-            created: 1640995200,
-            updated: 1640995300
+            created: $created,
+            updated: $updated
         );
 
         expect($product)
@@ -61,8 +64,8 @@ describe("ProductBuilder", function (): void {
             ->and($product->taxCode)->toBe("txcd_123")
             ->and($product->unitLabel)->toBe("piece")
             ->and($product->url)->toBe("https://example.com/product")
-            ->and($product->created)->toBe(1640995200)
-            ->and($product->updated)->toBe(1640995300);
+            ->and($product->created)->toBe($created)
+            ->and($product->updated)->toBe($updated);
     });
 
     describe("Nested Builders", function (): void {

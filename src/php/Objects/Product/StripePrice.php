@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
@@ -17,12 +18,14 @@ use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Price;
 use Stripe\StripeObject;
 
 class StripePrice
 {
     use HasMake;
+    use HasTimestamps;
 
     public function __construct(
         public ?string $id = null,
@@ -42,7 +45,7 @@ class StripePrice
         public ?int $transformQuantity = null,
         public ?StripeCustomUnitAmount $customUnitAmount = null,
         public ?TaxBehavior $taxBehavior = null,
-        public ?int $created = null
+        public ?CarbonImmutable $created = null
     ) {}
 
     public static function make(mixed ...$params): static
@@ -105,7 +108,7 @@ class StripePrice
             transformQuantity: $stripePrice->transform_quantity ?? null,
             customUnitAmount: $customUnitAmount,
             taxBehavior: $taxBehavior,
-            created: $stripePrice->created ?? null
+            created: self::timestampToCarbon($stripePrice->created ?? null)
         );
     }
 
@@ -200,6 +203,7 @@ class StripePrice
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
             "tax_behavior" => $this->taxBehavior?->value,
+            "created" => self::carbonToTimestamp($this->created),
         ];
 
         return Arr::whereNotNull($array);

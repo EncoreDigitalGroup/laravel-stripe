@@ -7,17 +7,20 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 
 class StripeBankAccount
 {
     use HasMake;
+    use HasTimestamps;
 
     public function __construct(
         public ?string $id = null,
         public ?string $category = null,
-        public ?int $created = null,
+        public ?CarbonImmutable $created = null,
         public ?string $displayName = null,
         public ?string $institutionName = null,
         public ?string $last4 = null,
@@ -33,7 +36,7 @@ class StripeBankAccount
         $array = [
             'id' => $this->id,
             'category' => $this->category,
-            'created' => $this->created,
+            'created' => self::carbonToTimestamp($this->created),
             'display_name' => $this->displayName,
             'institution_name' => $this->institutionName,
             'last4' => $this->last4,

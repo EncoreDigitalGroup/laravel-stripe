@@ -7,13 +7,16 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Product;
 
 class StripeProduct
 {
     use HasMake;
+    use HasTimestamps;
 
     public function __construct(
         public ?string $id = null,
@@ -28,8 +31,8 @@ class StripeProduct
         public ?string $url = null,
         public ?bool $shippable = null,
         public ?array $packageDimensions = null,
-        public ?int $created = null,
-        public ?int $updated = null
+        public ?CarbonImmutable $created = null,
+        public ?CarbonImmutable $updated = null
     ) {}
 
     /**
@@ -76,8 +79,8 @@ class StripeProduct
             url: $stripeProduct->url ?? null,
             shippable: $stripeProduct->shippable ?? null,
             packageDimensions: $packageDimensions,
-            created: $stripeProduct->created ?? null,
-            updated: $stripeProduct->updated ?? null
+            created: self::timestampToCarbon($stripeProduct->created ?? null),
+            updated: self::timestampToCarbon($stripeProduct->updated ?? null)
         );
     }
 
@@ -96,6 +99,8 @@ class StripeProduct
             "url" => $this->url,
             "shippable" => $this->shippable,
             "package_dimensions" => $this->packageDimensions,
+            "created" => self::carbonToTimestamp($this->created),
+            "updated" => self::carbonToTimestamp($this->updated),
         ];
 
         return Arr::whereNotNull($array);

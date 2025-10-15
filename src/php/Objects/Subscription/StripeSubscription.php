@@ -14,22 +14,24 @@ use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Subscription;
 
 class StripeSubscription
 {
     use HasMake;
+    use HasTimestamps;
 
     public function __construct(
         public ?string                           $id = null,
         public ?string                           $customer = null,
         public ?SubscriptionStatus               $status = null,
-        public ?int                              $currentPeriodStart = null,
-        public ?int                              $currentPeriodEnd = null,
-        public ?int                              $cancelAt = null,
-        public ?int                              $canceledAt = null,
-        public ?int                              $trialStart = null,
-        public ?int                              $trialEnd = null,
+        public ?CarbonImmutable                  $currentPeriodStart = null,
+        public ?CarbonImmutable                  $currentPeriodEnd = null,
+        public ?CarbonImmutable                  $cancelAt = null,
+        public ?CarbonImmutable                  $canceledAt = null,
+        public ?CarbonImmutable                  $trialStart = null,
+        public ?CarbonImmutable                  $trialEnd = null,
         public ?array                            $items = null,
         public ?string                           $defaultPaymentMethod = null,
         public ?array                            $metadata = null,
@@ -59,12 +61,12 @@ class StripeSubscription
             id: $stripeSubscription->id,
             customer: $customer,
             status: $status,
-            currentPeriodStart: $stripeSubscription->current_period_start ?? null,
-            currentPeriodEnd: $stripeSubscription->current_period_end ?? null,
-            cancelAt: $stripeSubscription->cancel_at ?? null,
-            canceledAt: $stripeSubscription->canceled_at ?? null,
-            trialStart: $stripeSubscription->trial_start ?? null,
-            trialEnd: $stripeSubscription->trial_end ?? null,
+            currentPeriodStart: self::timestampToCarbon($stripeSubscription->current_period_start ?? null),
+            currentPeriodEnd: self::timestampToCarbon($stripeSubscription->current_period_end ?? null),
+            cancelAt: self::timestampToCarbon($stripeSubscription->cancel_at ?? null),
+            canceledAt: self::timestampToCarbon($stripeSubscription->canceled_at ?? null),
+            trialStart: self::timestampToCarbon($stripeSubscription->trial_start ?? null),
+            trialEnd: self::timestampToCarbon($stripeSubscription->trial_end ?? null),
             items: $items,
             defaultPaymentMethod: $defaultPaymentMethod,
             metadata: $stripeSubscription->metadata->toArray(),
@@ -193,12 +195,12 @@ class StripeSubscription
             "id" => $this->id,
             "customer" => $this->customer,
             "status" => $this->status?->value,
-            "current_period_start" => $this->currentPeriodStart,
-            "current_period_end" => $this->currentPeriodEnd,
-            "cancel_at" => $this->cancelAt,
-            "canceled_at" => $this->canceledAt,
-            "trial_start" => $this->trialStart,
-            "trial_end" => $this->trialEnd,
+            "current_period_start" => self::carbonToTimestamp($this->currentPeriodStart),
+            "current_period_end" => self::carbonToTimestamp($this->currentPeriodEnd),
+            "cancel_at" => self::carbonToTimestamp($this->cancelAt),
+            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
+            "trial_start" => self::carbonToTimestamp($this->trialStart),
+            "trial_end" => self::carbonToTimestamp($this->trialEnd),
             "items" => $this->items,
             "default_payment_method" => $this->defaultPaymentMethod,
             "metadata" => $this->metadata,

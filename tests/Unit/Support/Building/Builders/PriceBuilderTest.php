@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
@@ -32,6 +33,7 @@ describe("PriceBuilder", function (): void {
 
     test("can build a price with all parameters", function (): void {
         $builder = new PriceBuilder();
+        $created = CarbonImmutable::createFromTimestamp(1640995200);
         $price = $builder->build(
             id: "price_123",
             product: "prod_123",
@@ -46,7 +48,7 @@ describe("PriceBuilder", function (): void {
             lookupKey: "premium_plan",
             transformQuantity: 1,
             taxBehavior: TaxBehavior::Exclusive,
-            created: 1640995200
+            created: $created
         );
 
         expect($price)
@@ -64,7 +66,7 @@ describe("PriceBuilder", function (): void {
             ->and($price->lookupKey)->toBe("premium_plan")
             ->and($price->transformQuantity)->toBe(1)
             ->and($price->taxBehavior)->toBe(TaxBehavior::Exclusive)
-            ->and($price->created)->toBe(1640995200);
+            ->and($price->created)->toBe($created);
     });
 
     describe("Nested Builders", function (): void {

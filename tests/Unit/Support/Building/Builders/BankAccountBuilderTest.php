@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\BankAccountBuilder;
 
@@ -26,10 +27,11 @@ describe("BankAccountBuilder", function (): void {
 
     test("can build bank account with all parameters", function (): void {
         $builder = new BankAccountBuilder();
+        $created = CarbonImmutable::createFromTimestamp(1640995200);
         $bankAccount = $builder->build(
             id: "ba_456",
             category: "checking",
-            created: 1640995200,
+            created: $created,
             displayName: "Wells Fargo Savings",
             institutionName: "Wells Fargo",
             last4: "1234",
@@ -43,7 +45,7 @@ describe("BankAccountBuilder", function (): void {
             ->toBeInstanceOf(StripeBankAccount::class)
             ->and($bankAccount->id)->toBe("ba_456")
             ->and($bankAccount->category)->toBe("checking")
-            ->and($bankAccount->created)->toBe(1640995200)
+            ->and($bankAccount->created)->toBe($created)
             ->and($bankAccount->displayName)->toBe("Wells Fargo Savings")
             ->and($bankAccount->institutionName)->toBe("Wells Fargo")
             ->and($bankAccount->last4)->toBe("1234")

@@ -280,7 +280,7 @@ test("issueFirstInvoiceOn works with service create", function (): void {
     $subscription = StripeSubscription::make(
         customer: "cus_test",
         items: [["price" => "price_test"]],
-        trialEnd: CarbonImmutable::now()->addDays(14)->timestamp
+        trialEnd: CarbonImmutable::now()->addDays(14)
     );
 
     $subscription->issueFirstInvoiceOn(

@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeBankAccountNormalizer;
@@ -16,7 +17,7 @@ test("can normalize StripeBankAccount to array", function (): void {
     $bankAccount = new StripeBankAccount;
     $bankAccount->id = "ba_123";
     $bankAccount->category = "cash";
-    $bankAccount->created = 1234567890;
+    $bankAccount->created = CarbonImmutable::createFromTimestamp(1234567890);
     $bankAccount->displayName = "Test Bank";
     $bankAccount->institutionName = "Test Institution";
     $bankAccount->last4 = "1234";

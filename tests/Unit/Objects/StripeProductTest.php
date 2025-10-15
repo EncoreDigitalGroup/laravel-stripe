@@ -63,8 +63,10 @@ test("can create StripeProduct from Stripe object", function (): void {
         ->and($product->url)->toBe("https://example.com")
         ->and($product->shippable)->toBeTrue()
         ->and($product->packageDimensions)->toBeArray()
-        ->and($product->created)->toBe(1234567890)
-        ->and($product->updated)->toBe(1234567891);
+        ->and($product->created)->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->created->timestamp)->toBe(1234567890)
+        ->and($product->updated)->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->updated->timestamp)->toBe(1234567891);
 });
 
 test("fromStripeObject handles nested default_price object", function (): void {

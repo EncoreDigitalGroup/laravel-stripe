@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
@@ -29,11 +30,12 @@ describe("StripeBankAccount", function (): void {
 
     test("can create StripeBankAccount with all parameters", function (): void {
         $transactionRefresh = StripeTransactionRefresh::make(status: "pending");
+        $created = CarbonImmutable::createFromTimestamp(1640995200);
 
         $bankAccount = StripeBankAccount::make(
             id: "ba_456",
             category: "savings",
-            created: 1640995200,
+            created: $created,
             displayName: "Wells Fargo Savings",
             institutionName: "Wells Fargo",
             last4: "5678",
@@ -48,7 +50,7 @@ describe("StripeBankAccount", function (): void {
             ->toBeInstanceOf(StripeBankAccount::class)
             ->and($bankAccount->id)->toBe("ba_456")
             ->and($bankAccount->category)->toBe("savings")
-            ->and($bankAccount->created)->toBe(1640995200)
+            ->and($bankAccount->created)->toBe($created)
             ->and($bankAccount->displayName)->toBe("Wells Fargo Savings")
             ->and($bankAccount->institutionName)->toBe("Wells Fargo")
             ->and($bankAccount->last4)->toBe("5678")
