@@ -1,4 +1,4 @@
-name: Pull Request
+name: Main
 
 on:
     push:
@@ -6,23 +6,21 @@ on:
             - main
 
 concurrency:
-    group: ${{ github.repository }}-${{ github.event.pull_request.number }}-main
+    group: ${{ github.repository }}-main
     cancel-in-progress: true
 
 jobs:
     StaticAnalysis:
         name: StaticAnalysis
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_staticAnalysis.yml@v3
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_staticAnalysis.yml@v3
         with:
-            composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
             phpVersion: '8.3'
             path: 'src/'
             branch: ${{ github.head_ref }}
 
     Tests:
         name: Tests
-        uses: EncoreSoftware/ci-pipelines/.github/workflows/php_test.yml@v3
+        uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_test.yml@v3
         with:
-            composerAuthJson: ${{ vars.COMPOSER_AUTH_JSON }}
             phpVersion: '8.3'
             branch: ${{ github.head_ref }}
