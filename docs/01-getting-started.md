@@ -132,7 +132,8 @@ return StripeCustomer::fromStripeObject($stripeCustomer);
 
 ## Understanding the Builder Pattern
 
-You'll see `Stripe::builder()->customer()->build()`, `Stripe::builder()->product()->build()`, etc. throughout this library. This builder pattern provides named parameters and better IDE support:
+You'll see `Stripe::builder()->customer()->build()`, `Stripe::builder()->product()->build()`, etc. throughout this library. This builder pattern provides named parameters
+and better IDE support:
 
 ```php
 // Traditional constructor (works, but verbose)
