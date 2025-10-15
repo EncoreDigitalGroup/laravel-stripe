@@ -51,13 +51,13 @@ class StripePrice
     public static function make(mixed ...$params): static
     {
         // Handle tiers parameter conversion from array to collection
-        if (isset($params['tiers']) && !($params['tiers'] instanceof StripeProductTierCollection)) {
-            $params['tiers'] = new StripeProductTierCollection($params['tiers']);
+        if (isset($params["tiers"]) && !($params["tiers"] instanceof StripeProductTierCollection)) {
+            $params["tiers"] = new StripeProductTierCollection($params["tiers"]);
         }
 
         // Handle customUnitAmount parameter conversion from array to DTO
-        if (isset($params['customUnitAmount']) && !($params['customUnitAmount'] instanceof StripeCustomUnitAmount)) {
-            $params['customUnitAmount'] = (new StripeBuilder())->customUnitAmount()->build(...$params['customUnitAmount']);
+        if (isset($params["customUnitAmount"]) && !($params["customUnitAmount"] instanceof StripeCustomUnitAmount)) {
+            $params["customUnitAmount"] = (new StripeBuilder())->customUnitAmount()->build(...$params["customUnitAmount"]);
         }
 
         return new static(...$params);

@@ -34,17 +34,17 @@ class StripeBankAccount
     public function toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'category' => $this->category,
-            'created' => self::carbonToTimestamp($this->created),
-            'display_name' => $this->displayName,
-            'institution_name' => $this->institutionName,
-            'last4' => $this->last4,
-            'live_mode' => $this->liveMode,
-            'permissions' => $this->permissions,
-            'subscriptions' => $this->subscriptions,
-            'supported_payment_method_types' => $this->supportedPaymentMethodTypes,
-            'transaction_refresh' => $this->transactionRefresh?->toArray(),
+            "id" => $this->id,
+            "category" => $this->category,
+            "created" => self::carbonToTimestamp($this->created),
+            "display_name" => $this->displayName,
+            "institution_name" => $this->institutionName,
+            "last4" => $this->last4,
+            "live_mode" => $this->liveMode,
+            "permissions" => $this->permissions,
+            "subscriptions" => $this->subscriptions,
+            "supported_payment_method_types" => $this->supportedPaymentMethodTypes,
+            "transaction_refresh" => $this->transactionRefresh?->toArray(),
         ];
 
         return Arr::whereNotNull($array);

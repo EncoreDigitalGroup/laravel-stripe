@@ -72,10 +72,10 @@ describe("StripeRecurring", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array['interval'])->toBe('week')
-            ->and($array['interval_count'])->toBe(2)
-            ->and($array['trial_period_days'])->toBe(7)
-            ->and($array['usage_type'])->toBe('licensed');
+            ->and($array["interval"])->toBe("week")
+            ->and($array["interval_count"])->toBe(2)
+            ->and($array["trial_period_days"])->toBe(7)
+            ->and($array["usage_type"])->toBe("licensed");
     });
 
     test("toArray filters null values", function (): void {
@@ -87,12 +87,12 @@ describe("StripeRecurring", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array)->toHaveKey('interval')
-            ->and($array['interval'])->toBe('month')
-            ->and($array)->not->toHaveKey('interval_count')
-            ->and($array)->not->toHaveKey('trial_period_days')
-            ->and($array)->not->toHaveKey('usage_type')
-            ->and($array)->not->toHaveKey('aggregate_usage');
+            ->and($array)->toHaveKey("interval")
+            ->and($array["interval"])->toBe("month")
+            ->and($array)->not->toHaveKey("interval_count")
+            ->and($array)->not->toHaveKey("trial_period_days")
+            ->and($array)->not->toHaveKey("usage_type")
+            ->and($array)->not->toHaveKey("aggregate_usage");
     });
 
     test("toArray converts enums to values", function (): void {
@@ -106,8 +106,8 @@ describe("StripeRecurring", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array['interval'])->toBe('day')
-            ->and($array['usage_type'])->toBe('metered')
-            ->and($array['aggregate_usage'])->toBe('last_during_period');
+            ->and($array["interval"])->toBe("day")
+            ->and($array["usage_type"])->toBe("metered")
+            ->and($array["aggregate_usage"])->toBe("last_during_period");
     });
 });

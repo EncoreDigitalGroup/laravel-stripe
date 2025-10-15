@@ -88,13 +88,13 @@ describe("StripeBankAccount", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array['id'])->toBe("ba_123")
-            ->and($array['category'])->toBe("checking")
-            ->and($array['display_name'])->toBe("Test Account")
-            ->and($array['institution_name'])->toBe("Test Bank")
-            ->and($array['last4'])->toBe("9999")
-            ->and($array['live_mode'])->toBeFalse()
-            ->and($array['permissions'])->toBe(["balances"]);
+            ->and($array["id"])->toBe("ba_123")
+            ->and($array["category"])->toBe("checking")
+            ->and($array["display_name"])->toBe("Test Account")
+            ->and($array["institution_name"])->toBe("Test Bank")
+            ->and($array["last4"])->toBe("9999")
+            ->and($array["live_mode"])->toBeFalse()
+            ->and($array["permissions"])->toBe(["balances"]);
     });
 
     test("toArray includes nested transaction refresh", function (): void {
@@ -110,9 +110,9 @@ describe("StripeBankAccount", function (): void {
 
         $array = $bankAccount->toArray();
 
-        expect($array['transaction_refresh'])
+        expect($array["transaction_refresh"])
             ->toBeArray()
-            ->and($array['transaction_refresh']['id'])->toBe("tr_123")
-            ->and($array['transaction_refresh']['status'])->toBe("succeeded");
+            ->and($array["transaction_refresh"]["id"])->toBe("tr_123")
+            ->and($array["transaction_refresh"]["status"])->toBe("succeeded");
     });
 });

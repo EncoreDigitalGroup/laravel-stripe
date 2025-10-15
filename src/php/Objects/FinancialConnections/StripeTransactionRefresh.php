@@ -25,10 +25,10 @@ class StripeTransactionRefresh
     public function toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'last_attempted_at' => $this->lastAttemptedAt,
-            'next_refresh_available_at' => $this->nextRefreshAvailableAt,
-            'status' => $this->status,
+            "id" => $this->id,
+            "last_attempted_at" => $this->lastAttemptedAt,
+            "next_refresh_available_at" => $this->nextRefreshAvailableAt,
+            "status" => $this->status,
         ];
 
         return Arr::whereNotNull($array);

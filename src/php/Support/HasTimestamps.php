@@ -22,6 +22,6 @@ trait HasTimestamps
 
     protected static function carbonToTimestamp(?CarbonImmutable $carbon): ?int
     {
-        return $carbon !== null ? (int) $carbon->timestamp : null;
+        return $carbon instanceof \Carbon\CarbonImmutable ? (int) $carbon->timestamp : null;
     }
 }

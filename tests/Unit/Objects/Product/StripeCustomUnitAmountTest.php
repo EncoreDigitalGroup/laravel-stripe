@@ -55,9 +55,9 @@ describe("StripeCustomUnitAmount", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array['minimum'])->toBe(500)
-            ->and($array['maximum'])->toBe(10000)
-            ->and($array['preset'])->toBe(2000);
+            ->and($array["minimum"])->toBe(500)
+            ->and($array["maximum"])->toBe(10000)
+            ->and($array["preset"])->toBe(2000);
     });
 
     test("toArray filters null values", function (): void {
@@ -69,9 +69,9 @@ describe("StripeCustomUnitAmount", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array)->toHaveKey('minimum')
-            ->and($array['minimum'])->toBe(500)
-            ->and($array)->not->toHaveKey('maximum')
-            ->and($array)->not->toHaveKey('preset');
+            ->and($array)->toHaveKey("minimum")
+            ->and($array["minimum"])->toBe(500)
+            ->and($array)->not->toHaveKey("maximum")
+            ->and($array)->not->toHaveKey("preset");
     });
 });

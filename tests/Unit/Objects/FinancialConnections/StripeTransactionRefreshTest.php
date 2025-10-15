@@ -60,10 +60,10 @@ describe("StripeTransactionRefresh", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array['id'])->toBe("tr_456")
-            ->and($array['last_attempted_at'])->toBe(1640995200)
-            ->and($array['next_refresh_available_at'])->toBe(1640995800)
-            ->and($array['status'])->toBe("failed");
+            ->and($array["id"])->toBe("tr_456")
+            ->and($array["last_attempted_at"])->toBe(1640995200)
+            ->and($array["next_refresh_available_at"])->toBe(1640995800)
+            ->and($array["status"])->toBe("failed");
     });
 
     test("toArray filters null values", function (): void {
@@ -75,10 +75,10 @@ describe("StripeTransactionRefresh", function (): void {
 
         expect($array)
             ->toBeArray()
-            ->and($array)->toHaveKey('status')
-            ->and($array['status'])->toBe("pending")
-            ->and($array)->not->toHaveKey('id')
-            ->and($array)->not->toHaveKey('last_attempted_at')
-            ->and($array)->not->toHaveKey('next_refresh_available_at');
+            ->and($array)->toHaveKey("status")
+            ->and($array["status"])->toBe("pending")
+            ->and($array)->not->toHaveKey("id")
+            ->and($array)->not->toHaveKey("last_attempted_at")
+            ->and($array)->not->toHaveKey("next_refresh_available_at");
     });
 });
