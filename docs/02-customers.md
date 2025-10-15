@@ -161,19 +161,43 @@ Customers can have billing addresses and shipping information. The library provi
 
 ### Billing Address
 
+The library provides multiple ways to create address objects:
+
 ```php
+// Method 1: Direct DTO creation (shortest)
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 
 $address = StripeAddress::make(
     line1: '123 Main Street',
-    line2: 'Apt 4B',           // Optional
+    line2: 'Apt 4B',
     city: 'San Francisco',
     state: 'CA',
     postalCode: '94105',
     country: 'US'
 );
 
-$customer = $service->create(StripeCustomer::make(
+// Method 2: Using the builder pattern (discoverable)
+$address = Stripe::builder()->address()->build(
+    line1: '123 Main Street',
+    line2: 'Apt 4B',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'US'
+);
+
+// Method 3: Using the facade shortcut
+$address = Stripe::address(
+    line1: '123 Main Street',
+    line2: 'Apt 4B',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'US'
+);
+
+// Create customer with address
+$customer = Stripe::customers()->create(Stripe::customer(
     email: 'customer@example.com',
     name: 'John Doe',
     address: $address
@@ -187,6 +211,7 @@ Shipping requires both an address and a name, and optionally includes a phone nu
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
 
+// Method 1: Direct DTO creation
 $shippingAddress = StripeAddress::make(
     line1: '456 Shipping Lane',
     city: 'Los Angeles',
@@ -198,10 +223,24 @@ $shippingAddress = StripeAddress::make(
 $shipping = StripeShipping::make(
     address: $shippingAddress,
     name: 'John Doe',
-    phone: '+1-555-123-4567'  // Optional
+    phone: '+1-555-123-4567'
 );
 
-$customer = $service->create(StripeCustomer::make(
+// Method 2: Using builders for nested objects (recommended for discoverability)
+$shipping = Stripe::builder()->shipping()->build(
+    address: Stripe::builder()->address()->build(
+        line1: '456 Shipping Lane',
+        city: 'Los Angeles',
+        state: 'CA',
+        postalCode: '90210',
+        country: 'US'
+    ),
+    name: 'John Doe',
+    phone: '+1-555-123-4567'
+);
+
+// Create customer with shipping
+$customer = Stripe::customers()->create(Stripe::customer(
     email: 'customer@example.com',
     name: 'John Doe',
     shipping: $shipping

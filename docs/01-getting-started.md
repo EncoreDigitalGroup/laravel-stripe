@@ -107,9 +107,9 @@ $price = Stripe::price(
     currency: "usd",
     unitAmount: 2000,
     type: PriceType::Recurring,  // Not "recurring"
-    recurring: [
-        "interval" => RecurringInterval::Month  // Not "month"
-    ]
+    recurring: Stripe::recurring(
+        interval: RecurringInterval::Month  // Not "month"
+    )
 );
 ```
 

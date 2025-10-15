@@ -41,6 +41,51 @@ The `StripeProductService` provides all standard CRUD operations plus special me
 
 ### Creating Products
 
+There are three ways to create product data objects. All three are functionally equivalent—choose based on your preference and use case.
+
+#### Method 1: Direct DTO Creation (Shortest)
+
+```php
+use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
+
+$productData = StripeProduct::make(
+    name: 'Basic Widget',
+    description: 'A basic widget for everyday use'
+);
+```
+
+This is the most concise approach when you don't need IDE discovery or chaining.
+
+#### Method 2: Using the Builder Pattern (Most Discoverable)
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+
+$productData = Stripe::builder()->product()->build(
+    name: 'Basic Widget',
+    description: 'A basic widget for everyday use'
+);
+```
+
+The builder pattern provides excellent IDE autocompletion and discoverability. It's especially useful for complex nested objects.
+
+#### Method 3: Using the Facade Shortcut (Recommended)
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+
+$productData = Stripe::product(
+    name: 'Basic Widget',
+    description: 'A basic widget for everyday use'
+);
+```
+
+This is the recommended approach—it's concise like Method 1 but provides better discoverability through the Stripe facade. Under the hood, it uses the builder pattern.
+
+#### Creating Products in Stripe
+
+Once you have your product data object, pass it to the service to create it in Stripe:
+
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
