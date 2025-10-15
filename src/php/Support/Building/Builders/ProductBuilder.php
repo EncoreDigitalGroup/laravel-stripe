@@ -18,11 +18,11 @@ class ProductBuilder
 
     public function tier(): TierBuilder
     {
-        return new TierBuilder();
+        return new TierBuilder;
     }
 
     public function customUnitAmount(): CustomUnitAmountBuilder
     {
-        return new CustomUnitAmountBuilder();
+        return new CustomUnitAmountBuilder;
     }
 }

@@ -12,7 +12,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionBuilder;
 
 describe("SubscriptionBuilder", function (): void {
     test("can build a basic subscription", function (): void {
-        $builder = new SubscriptionBuilder();
+        $builder = new SubscriptionBuilder;
         $subscription = $builder->build(
             customer: "cus_123",
             items: [["price" => "price_123"]]
@@ -25,7 +25,7 @@ describe("SubscriptionBuilder", function (): void {
     });
 
     test("can build subscription with all parameters", function (): void {
-        $builder = new SubscriptionBuilder();
+        $builder = new SubscriptionBuilder;
         $currentPeriodStart = CarbonImmutable::createFromTimestamp(1640995200);
         $currentPeriodEnd = CarbonImmutable::createFromTimestamp(1643673600);
         $cancelAt = CarbonImmutable::createFromTimestamp(1650000000);
@@ -37,7 +37,7 @@ describe("SubscriptionBuilder", function (): void {
             currentPeriodEnd: $currentPeriodEnd,
             items: [
                 ["price" => "price_123", "quantity" => 2],
-                ["price" => "price_456", "quantity" => 1]
+                ["price" => "price_456", "quantity" => 1],
             ],
             metadata: ["plan" => "premium"],
             cancelAt: $cancelAt,
@@ -54,7 +54,7 @@ describe("SubscriptionBuilder", function (): void {
             ->and($subscription->currentPeriodEnd)->toBe($currentPeriodEnd)
             ->and($subscription->items)->toBe([
                 ["price" => "price_123", "quantity" => 2],
-                ["price" => "price_456", "quantity" => 1]
+                ["price" => "price_456", "quantity" => 1],
             ])
             ->and($subscription->metadata)->toBe(["plan" => "premium"])
             ->and($subscription->cancelAt)->toBe($cancelAt)
@@ -63,7 +63,7 @@ describe("SubscriptionBuilder", function (): void {
     });
 
     test("can build subscription with minimal parameters", function (): void {
-        $builder = new SubscriptionBuilder();
+        $builder = new SubscriptionBuilder;
         $subscription = $builder->build();
 
         expect($subscription)

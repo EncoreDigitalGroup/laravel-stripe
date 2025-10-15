@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\CustomerBuilder;
 
 describe("CustomerBuilder", function (): void {
     test("can build a basic customer", function (): void {
-        $builder = new CustomerBuilder();
+        $builder = new CustomerBuilder;
         $customer = $builder->build(
             email: "test@example.com"
         );
@@ -21,7 +21,7 @@ describe("CustomerBuilder", function (): void {
     });
 
     test("can build a customer with all parameters", function (): void {
-        $builder = new CustomerBuilder();
+        $builder = new CustomerBuilder;
         $customer = $builder->build(
             id: "cus_123",
             email: "test@example.com",

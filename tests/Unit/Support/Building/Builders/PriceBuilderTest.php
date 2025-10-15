@@ -17,7 +17,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 
 describe("PriceBuilder", function (): void {
     test("can build a basic price", function (): void {
-        $builder = new PriceBuilder();
+        $builder = new PriceBuilder;
         $price = $builder->build(
             product: "prod_123",
             unitAmount: 2999,
@@ -32,7 +32,7 @@ describe("PriceBuilder", function (): void {
     });
 
     test("can build a price with all parameters", function (): void {
-        $builder = new PriceBuilder();
+        $builder = new PriceBuilder;
         $created = CarbonImmutable::createFromTimestamp(1640995200);
         $price = $builder->build(
             id: "price_123",
@@ -71,21 +71,21 @@ describe("PriceBuilder", function (): void {
 
     describe("Nested Builders", function (): void {
         test("can access tier builder", function (): void {
-            $builder = new PriceBuilder();
+            $builder = new PriceBuilder;
             $tierBuilder = $builder->tier();
 
             expect($tierBuilder)->toBeInstanceOf(TierBuilder::class);
         });
 
         test("can access custom unit amount builder", function (): void {
-            $builder = new PriceBuilder();
+            $builder = new PriceBuilder;
             $customUnitAmountBuilder = $builder->customUnitAmount();
 
             expect($customUnitAmountBuilder)->toBeInstanceOf(CustomUnitAmountBuilder::class);
         });
 
         test("can access recurring builder", function (): void {
-            $builder = new PriceBuilder();
+            $builder = new PriceBuilder;
             $recurringBuilder = $builder->recurring();
 
             expect($recurringBuilder)->toBeInstanceOf(RecurringBuilder::class);

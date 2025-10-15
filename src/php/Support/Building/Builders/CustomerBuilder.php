@@ -18,11 +18,11 @@ class CustomerBuilder
 
     public function address(): AddressBuilder
     {
-        return new AddressBuilder();
+        return new AddressBuilder;
     }
 
     public function shipping(): ShippingBuilder
     {
-        return new ShippingBuilder();
+        return new ShippingBuilder;
     }
 }

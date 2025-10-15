@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\CustomUnitAmountBuilder;
 
 describe("CustomUnitAmountBuilder", function (): void {
     test("can build a basic custom unit amount", function (): void {
-        $builder = new CustomUnitAmountBuilder();
+        $builder = new CustomUnitAmountBuilder;
         $customUnitAmount = $builder->build(
             minimum: 500
         );
@@ -21,7 +21,7 @@ describe("CustomUnitAmountBuilder", function (): void {
     });
 
     test("can build custom unit amount with all parameters", function (): void {
-        $builder = new CustomUnitAmountBuilder();
+        $builder = new CustomUnitAmountBuilder;
         $customUnitAmount = $builder->build(
             minimum: 500,
             maximum: 100000,
@@ -36,7 +36,7 @@ describe("CustomUnitAmountBuilder", function (): void {
     });
 
     test("can build custom unit amount with only maximum", function (): void {
-        $builder = new CustomUnitAmountBuilder();
+        $builder = new CustomUnitAmountBuilder;
         $customUnitAmount = $builder->build(
             maximum: 50000
         );
@@ -49,7 +49,7 @@ describe("CustomUnitAmountBuilder", function (): void {
     });
 
     test("can build custom unit amount with preset only", function (): void {
-        $builder = new CustomUnitAmountBuilder();
+        $builder = new CustomUnitAmountBuilder;
         $customUnitAmount = $builder->build(
             preset: 1500
         );

@@ -23,25 +23,25 @@ class StripeSubscription
     use HasTimestamps;
 
     public function __construct(
-        public ?string                           $id = null,
-        public ?string                           $customer = null,
-        public ?SubscriptionStatus               $status = null,
-        public ?CarbonImmutable                  $currentPeriodStart = null,
-        public ?CarbonImmutable                  $currentPeriodEnd = null,
-        public ?CarbonImmutable                  $cancelAt = null,
-        public ?CarbonImmutable                  $canceledAt = null,
-        public ?CarbonImmutable                  $trialStart = null,
-        public ?CarbonImmutable                  $trialEnd = null,
-        public ?array                            $items = null,
-        public ?string                           $defaultPaymentMethod = null,
-        public ?array                            $metadata = null,
-        public ?string                           $currency = null,
-        public ?CollectionMethod                 $collectionMethod = null,
-        public ?StripeBillingCycleAnchorConfig   $billingCycleAnchorConfig = null,
-        public ?ProrationBehavior                $prorationBehavior = null,
-        public ?bool                             $cancelAtPeriodEnd = null,
-        public ?int                              $daysUntilDue = null,
-        public ?string                           $description = null
+        public ?string $id = null,
+        public ?string $customer = null,
+        public ?SubscriptionStatus $status = null,
+        public ?CarbonImmutable $currentPeriodStart = null,
+        public ?CarbonImmutable $currentPeriodEnd = null,
+        public ?CarbonImmutable $cancelAt = null,
+        public ?CarbonImmutable $canceledAt = null,
+        public ?CarbonImmutable $trialStart = null,
+        public ?CarbonImmutable $trialEnd = null,
+        public ?array $items = null,
+        public ?string $defaultPaymentMethod = null,
+        public ?array $metadata = null,
+        public ?string $currency = null,
+        public ?CollectionMethod $collectionMethod = null,
+        public ?StripeBillingCycleAnchorConfig $billingCycleAnchorConfig = null,
+        public ?ProrationBehavior $prorationBehavior = null,
+        public ?bool $cancelAtPeriodEnd = null,
+        public ?int $daysUntilDue = null,
+        public ?string $description = null
     ) {}
 
     /**

@@ -13,7 +13,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 
 describe("ProductBuilder", function (): void {
     test("can build a product with basic parameters", function (): void {
-        $builder = new ProductBuilder();
+        $builder = new ProductBuilder;
         $product = $builder->build(
             name: "Test Product",
             description: "A test product"
@@ -26,7 +26,7 @@ describe("ProductBuilder", function (): void {
     });
 
     test("can build a product with all parameters", function (): void {
-        $builder = new ProductBuilder();
+        $builder = new ProductBuilder;
         $created = CarbonImmutable::createFromTimestamp(1640995200);
         $updated = CarbonImmutable::createFromTimestamp(1640995300);
         $product = $builder->build(
@@ -41,7 +41,7 @@ describe("ProductBuilder", function (): void {
                 "height" => 10.0,
                 "length" => 20.0,
                 "weight" => 5.0,
-                "width" => 15.0
+                "width" => 15.0,
             ],
             shippable: true,
             taxCode: "txcd_123",
@@ -70,14 +70,14 @@ describe("ProductBuilder", function (): void {
 
     describe("Nested Builders", function (): void {
         test("can access tier builder", function (): void {
-            $builder = new ProductBuilder();
+            $builder = new ProductBuilder;
             $tierBuilder = $builder->tier();
 
             expect($tierBuilder)->toBeInstanceOf(TierBuilder::class);
         });
 
         test("can access custom unit amount builder", function (): void {
-            $builder = new ProductBuilder();
+            $builder = new ProductBuilder;
             $customUnitAmountBuilder = $builder->customUnitAmount();
 
             expect($customUnitAmountBuilder)->toBeInstanceOf(CustomUnitAmountBuilder::class);

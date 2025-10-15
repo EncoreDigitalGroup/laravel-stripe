@@ -36,7 +36,7 @@ class StripeCustomer
         if (isset($stripeCustomer->address)) {
             /** @var \Stripe\StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
-            $address = (new StripeBuilder())->address()->build(
+            $address = (new StripeBuilder)->address()->build(
                 line1: $stripeAddress->line1 ?? null,
                 line2: $stripeAddress->line2 ?? null,
                 city: $stripeAddress->city ?? null,
@@ -54,7 +54,7 @@ class StripeCustomer
             if (isset($stripeShipping->address)) {
                 /** @var \Stripe\StripeObject $shippingAddressObj */
                 $shippingAddressObj = $stripeShipping->address;
-                $shippingAddress = (new StripeBuilder())->address()->build(
+                $shippingAddress = (new StripeBuilder)->address()->build(
                     line1: $shippingAddressObj->line1 ?? null,
                     line2: $shippingAddressObj->line2 ?? null,
                     city: $shippingAddressObj->city ?? null,
@@ -66,7 +66,7 @@ class StripeCustomer
 
             // Only create shipping if we have the required fields (address and name)
             if ($shippingAddress instanceof \EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress && isset($stripeShipping->name)) {
-                $shipping = (new StripeBuilder())->shipping()->build(
+                $shipping = (new StripeBuilder)->shipping()->build(
                     address: $shippingAddress,
                     name: $stripeShipping->name,
                     phone: $stripeShipping->phone ?? null

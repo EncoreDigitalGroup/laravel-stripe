@@ -7,14 +7,6 @@
 
 namespace EncoreDigitalGroup\Stripe;
 
-use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
-use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
-use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
-use EncoreDigitalGroup\Stripe\Objects\Product\StripeRecurring;
-use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
@@ -32,7 +24,7 @@ class Stripe
 
     public static function builder(): StripeBuilder
     {
-        return new StripeBuilder();
+        return new StripeBuilder;
     }
 
     #endregion

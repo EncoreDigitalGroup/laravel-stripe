@@ -18,11 +18,11 @@ class FinancialConnectionBuilder
 
     public function bankAccount(): BankAccountBuilder
     {
-        return new BankAccountBuilder();
+        return new BankAccountBuilder;
     }
 
     public function transactionRefresh(): TransactionRefreshBuilder
     {
-        return new TransactionRefreshBuilder();
+        return new TransactionRefreshBuilder;
     }
 }

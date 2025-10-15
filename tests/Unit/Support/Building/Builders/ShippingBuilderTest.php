@@ -13,7 +13,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
 describe("ShippingBuilder", function (): void {
     test("can build a basic shipping", function (): void {
         $address = StripeAddress::make(line1: "123 Main St", city: "Boston", country: "US");
-        $builder = new ShippingBuilder();
+        $builder = new ShippingBuilder;
         $shipping = $builder->build(
             address: $address,
             name: "John Doe"
@@ -35,7 +35,7 @@ describe("ShippingBuilder", function (): void {
             postalCode: "02138",
             country: "US"
         );
-        $builder = new ShippingBuilder();
+        $builder = new ShippingBuilder;
         $shipping = $builder->build(
             address: $address,
             name: "Jane Smith",
@@ -51,7 +51,7 @@ describe("ShippingBuilder", function (): void {
 
     describe("Nested Builders", function (): void {
         test("can access address builder", function (): void {
-            $builder = new ShippingBuilder();
+            $builder = new ShippingBuilder;
             $addressBuilder = $builder->address();
 
             expect($addressBuilder)->toBeInstanceOf(AddressBuilder::class);

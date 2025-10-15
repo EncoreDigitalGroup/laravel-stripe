@@ -18,16 +18,16 @@ class PriceBuilder
 
     public function tier(): TierBuilder
     {
-        return new TierBuilder();
+        return new TierBuilder;
     }
 
     public function customUnitAmount(): CustomUnitAmountBuilder
     {
-        return new CustomUnitAmountBuilder();
+        return new CustomUnitAmountBuilder;
     }
 
     public function recurring(): RecurringBuilder
     {
-        return new RecurringBuilder();
+        return new RecurringBuilder;
     }
 }

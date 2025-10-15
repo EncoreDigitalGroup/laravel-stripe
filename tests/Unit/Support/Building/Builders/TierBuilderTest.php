@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 
 describe("TierBuilder", function (): void {
     test("can build a basic tier", function (): void {
-        $builder = new TierBuilder();
+        $builder = new TierBuilder;
         $tier = $builder->build(
             upTo: 1000,
             unitAmount: 100
@@ -23,7 +23,7 @@ describe("TierBuilder", function (): void {
     });
 
     test("can build a tier with all parameters", function (): void {
-        $builder = new TierBuilder();
+        $builder = new TierBuilder;
         $tier = $builder->build(
             upTo: 5000,
             unitAmount: 80,
@@ -42,7 +42,7 @@ describe("TierBuilder", function (): void {
     });
 
     test("can build infinite tier", function (): void {
-        $builder = new TierBuilder();
+        $builder = new TierBuilder;
         $tier = $builder->build(
             upTo: "inf",
             unitAmount: 60
@@ -55,7 +55,7 @@ describe("TierBuilder", function (): void {
     });
 
     test("can build tier with flat amount only", function (): void {
-        $builder = new TierBuilder();
+        $builder = new TierBuilder;
         $tier = $builder->build(
             upTo: 100,
             flatAmount: 1000,

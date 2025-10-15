@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilde
 
 describe("TransactionRefreshBuilder", function (): void {
     test("can build a basic transaction refresh", function (): void {
-        $builder = new TransactionRefreshBuilder();
+        $builder = new TransactionRefreshBuilder;
         $transactionRefresh = $builder->build(
             status: "pending"
         );
@@ -22,7 +22,7 @@ describe("TransactionRefreshBuilder", function (): void {
     });
 
     test("can build transaction refresh with all parameters", function (): void {
-        $builder = new TransactionRefreshBuilder();
+        $builder = new TransactionRefreshBuilder;
         $transactionRefresh = $builder->build(
             id: "tr_123",
             lastAttemptedAt: 1640995200,
@@ -39,7 +39,7 @@ describe("TransactionRefreshBuilder", function (): void {
     });
 
     test("can build transaction refresh with minimal parameters", function (): void {
-        $builder = new TransactionRefreshBuilder();
+        $builder = new TransactionRefreshBuilder;
         $transactionRefresh = $builder->build();
 
         expect($transactionRefresh)

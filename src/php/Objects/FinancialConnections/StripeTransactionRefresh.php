@@ -17,8 +17,8 @@ class StripeTransactionRefresh
     // TODO: Change Timestamps from INT to CarbonImmutable
     public function __construct(
         public ?string $id = null,
-        public ?int    $lastAttemptedAt = null,
-        public ?int    $nextRefreshAvailableAt = null,
+        public ?int $lastAttemptedAt = null,
+        public ?int $nextRefreshAvailableAt = null,
         public ?string $status = null
     ) {}
 

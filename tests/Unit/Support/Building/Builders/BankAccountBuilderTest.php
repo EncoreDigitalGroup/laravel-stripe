@@ -11,7 +11,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\BankAccountBuilder;
 
 describe("BankAccountBuilder", function (): void {
     test("can build a basic bank account", function (): void {
-        $builder = new BankAccountBuilder();
+        $builder = new BankAccountBuilder;
         $bankAccount = $builder->build(
             id: "ba_123",
             displayName: "Chase Checking",
@@ -26,7 +26,7 @@ describe("BankAccountBuilder", function (): void {
     });
 
     test("can build bank account with all parameters", function (): void {
-        $builder = new BankAccountBuilder();
+        $builder = new BankAccountBuilder;
         $created = CarbonImmutable::createFromTimestamp(1640995200);
         $bankAccount = $builder->build(
             id: "ba_456",
@@ -56,7 +56,7 @@ describe("BankAccountBuilder", function (): void {
     });
 
     test("can build bank account with minimal parameters", function (): void {
-        $builder = new BankAccountBuilder();
+        $builder = new BankAccountBuilder;
         $bankAccount = $builder->build();
 
         expect($bankAccount)

@@ -13,7 +13,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 
 describe("RecurringBuilder", function (): void {
     test("can build a basic recurring", function (): void {
-        $builder = new RecurringBuilder();
+        $builder = new RecurringBuilder;
         $recurring = $builder->build(
             interval: RecurringInterval::Month
         );
@@ -24,7 +24,7 @@ describe("RecurringBuilder", function (): void {
     });
 
     test("can build recurring with all parameters", function (): void {
-        $builder = new RecurringBuilder();
+        $builder = new RecurringBuilder;
         $recurring = $builder->build(
             interval: RecurringInterval::Month,
             intervalCount: 3,
@@ -43,7 +43,7 @@ describe("RecurringBuilder", function (): void {
     });
 
     test("can build weekly recurring", function (): void {
-        $builder = new RecurringBuilder();
+        $builder = new RecurringBuilder;
         $recurring = $builder->build(
             interval: RecurringInterval::Week,
             intervalCount: 2
@@ -56,7 +56,7 @@ describe("RecurringBuilder", function (): void {
     });
 
     test("can build yearly recurring with trial", function (): void {
-        $builder = new RecurringBuilder();
+        $builder = new RecurringBuilder;
         $recurring = $builder->build(
             interval: RecurringInterval::Year,
             intervalCount: 1,

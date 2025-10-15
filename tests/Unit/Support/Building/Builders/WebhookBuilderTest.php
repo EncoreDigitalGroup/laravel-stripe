@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;
 
 describe("WebhookBuilder", function (): void {
     test("can build a basic webhook", function (): void {
-        $builder = new WebhookBuilder();
+        $builder = new WebhookBuilder;
         $webhook = $builder->build(
             url: "https://api.example.com/webhooks/stripe"
         );
@@ -21,7 +21,7 @@ describe("WebhookBuilder", function (): void {
     });
 
     test("can build webhook with all parameters", function (): void {
-        $builder = new WebhookBuilder();
+        $builder = new WebhookBuilder;
         $webhook = $builder->build(
             url: "https://api.example.com/webhooks/stripe",
             events: ["customer.created", "payment_intent.succeeded"]
@@ -34,7 +34,7 @@ describe("WebhookBuilder", function (): void {
     });
 
     test("can build webhook with minimal parameters", function (): void {
-        $builder = new WebhookBuilder();
+        $builder = new WebhookBuilder;
         $webhook = $builder->build(
             url: "https://test.example.com/stripe",
             events: ["*"]

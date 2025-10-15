@@ -10,7 +10,7 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\AddressBuilder;
 
 describe("AddressBuilder", function (): void {
     test("can build a basic address", function (): void {
-        $builder = new AddressBuilder();
+        $builder = new AddressBuilder;
         $address = $builder->build(
             line1: "123 Main St"
         );
@@ -21,7 +21,7 @@ describe("AddressBuilder", function (): void {
     });
 
     test("can build address with all parameters", function (): void {
-        $builder = new AddressBuilder();
+        $builder = new AddressBuilder;
         $address = $builder->build(
             line1: "123 Main St",
             line2: "Apt 4B",
@@ -42,7 +42,7 @@ describe("AddressBuilder", function (): void {
     });
 
     test("can build minimal address", function (): void {
-        $builder = new AddressBuilder();
+        $builder = new AddressBuilder;
         $address = $builder->build(
             line1: "456 Oak Ave",
             city: "Cambridge",

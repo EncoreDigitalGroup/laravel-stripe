@@ -18,6 +18,6 @@ class ShippingBuilder
 
     public function address(): AddressBuilder
     {
-        return new AddressBuilder();
+        return new AddressBuilder;
     }
 }

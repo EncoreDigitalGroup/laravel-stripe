@@ -57,7 +57,7 @@ class StripePrice
 
         // Handle customUnitAmount parameter conversion from array to DTO
         if (isset($params["customUnitAmount"]) && !($params["customUnitAmount"] instanceof StripeCustomUnitAmount)) {
-            $params["customUnitAmount"] = (new StripeBuilder())->customUnitAmount()->build(...$params["customUnitAmount"]);
+            $params["customUnitAmount"] = (new StripeBuilder)->customUnitAmount()->build(...$params["customUnitAmount"]);
         }
 
         return new static(...$params);
@@ -136,7 +136,7 @@ class StripePrice
             $aggregateUsage = RecurringAggregateUsage::from($recurringObj->aggregate_usage);
         }
 
-        return (new StripeBuilder())->recurring()->build(
+        return (new StripeBuilder)->recurring()->build(
             interval: $interval,
             intervalCount: $recurringObj->interval_count ?? null,
             trialPeriodDays: $recurringObj->trial_period_days ?? null,
@@ -155,7 +155,7 @@ class StripePrice
         foreach ($stripePrice->tiers as $tier) {
             /** @var StripeObject $tierObj */
             $tierObj = $tier;
-            $tiers[] = (new StripeBuilder())->tier()->build(
+            $tiers[] = (new StripeBuilder)->tier()->build(
                 upTo: $tierObj->up_to ?? null,
                 unitAmount: $tierObj->unit_amount ?? null,
                 unitAmountDecimal: $tierObj->unit_amount_decimal ?? null,
@@ -176,7 +176,7 @@ class StripePrice
         /** @var StripeObject $customUnitAmountObj */
         $customUnitAmountObj = $stripePrice->custom_unit_amount;
 
-        return (new StripeBuilder())->customUnitAmount()->build(
+        return (new StripeBuilder)->customUnitAmount()->build(
             minimum: $customUnitAmountObj->minimum ?? null,
             maximum: $customUnitAmountObj->maximum ?? null,
             preset: $customUnitAmountObj->preset ?? null
@@ -208,6 +208,4 @@ class StripePrice
 
         return Arr::whereNotNull($array);
     }
-
-
 }

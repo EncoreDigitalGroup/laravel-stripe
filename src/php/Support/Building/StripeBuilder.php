@@ -27,27 +27,27 @@ class StripeBuilder
 
     public function customer(): CustomerBuilder
     {
-        return new CustomerBuilder();
+        return new CustomerBuilder;
     }
 
     public function product(): ProductBuilder
     {
-        return new ProductBuilder();
+        return new ProductBuilder;
     }
 
     public function price(): PriceBuilder
     {
-        return new PriceBuilder();
+        return new PriceBuilder;
     }
 
     public function subscription(): SubscriptionBuilder
     {
-        return new SubscriptionBuilder();
+        return new SubscriptionBuilder;
     }
 
     public function financialConnection(): FinancialConnectionBuilder
     {
-        return new FinancialConnectionBuilder();
+        return new FinancialConnectionBuilder;
     }
 
     #endregion
@@ -56,17 +56,17 @@ class StripeBuilder
 
     public function address(): AddressBuilder
     {
-        return new AddressBuilder();
+        return new AddressBuilder;
     }
 
     public function shipping(): ShippingBuilder
     {
-        return new ShippingBuilder();
+        return new ShippingBuilder;
     }
 
     public function webhook(): WebhookBuilder
     {
-        return new WebhookBuilder();
+        return new WebhookBuilder;
     }
 
     #endregion
@@ -75,27 +75,27 @@ class StripeBuilder
 
     public function tier(): TierBuilder
     {
-        return new TierBuilder();
+        return new TierBuilder;
     }
 
     public function customUnitAmount(): CustomUnitAmountBuilder
     {
-        return new CustomUnitAmountBuilder();
+        return new CustomUnitAmountBuilder;
     }
 
     public function recurring(): RecurringBuilder
     {
-        return new RecurringBuilder();
+        return new RecurringBuilder;
     }
 
     public function bankAccount(): BankAccountBuilder
     {
-        return new BankAccountBuilder();
+        return new BankAccountBuilder;
     }
 
     public function transactionRefresh(): TransactionRefreshBuilder
     {
-        return new TransactionRefreshBuilder();
+        return new TransactionRefreshBuilder;
     }
 
     #endregion
