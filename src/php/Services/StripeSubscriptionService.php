@@ -21,8 +21,14 @@ class StripeSubscriptionService
     {
         $data = $subscription->toArray();
 
-        // Remove id if present (can't send id on create)
-        unset($data["id"]);
+        // Remove read-only fields that can't be sent on create
+        unset(
+            $data["id"],
+            $data["status"],
+            $data["current_period_start"],
+            $data["current_period_end"],
+            $data["canceled_at"]
+        );
 
         /** @phpstan-ignore argument.type */
         $stripeSubscription = $this->stripe->subscriptions->create($data);

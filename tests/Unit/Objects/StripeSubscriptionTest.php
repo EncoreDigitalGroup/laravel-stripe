@@ -5,8 +5,11 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
+use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use Stripe\Util\Util;
 
@@ -172,4 +175,105 @@ test("fromStripeObject handles items correctly", function (): void {
         ->and($subscription->items[0]["price"])->toBe("price_1")
         ->and($subscription->items[0]["quantity"])->toBe(2)
         ->and($subscription->items[1]["price"])->toBe("price_2");
+});
+
+test("fromStripeObject handles billing_cycle_anchor_config", function (): void {
+    $stripeObject = Util::convertToStripeObject([
+        "id" => "sub_123",
+        "object" => "subscription",
+        "customer" => "cus_123",
+        "status" => "active",
+        "billing_cycle_anchor_config" => [
+            "day_of_month" => 15,
+            "month" => 6,
+            "hour" => 14,
+            "minute" => 30,
+            "second" => 0,
+        ],
+        "items" => ["data" => []],
+        "metadata" => [],
+    ], []);
+
+    $subscription = StripeSubscription::fromStripeObject($stripeObject);
+
+    expect($subscription->billingCycleAnchorConfig)
+        ->toBeInstanceOf(StripeBillingCycleAnchorConfig::class)
+        ->and($subscription->billingCycleAnchorConfig->dayOfMonth)->toBe(15)
+        ->and($subscription->billingCycleAnchorConfig->month)->toBe(6)
+        ->and($subscription->billingCycleAnchorConfig->hour)->toBe(14)
+        ->and($subscription->billingCycleAnchorConfig->minute)->toBe(30)
+        ->and($subscription->billingCycleAnchorConfig->second)->toBe(0);
+});
+
+test("fromStripeObject handles proration_behavior", function (): void {
+    $stripeObject = Util::convertToStripeObject([
+        "id" => "sub_123",
+        "object" => "subscription",
+        "customer" => "cus_123",
+        "status" => "active",
+        "proration_behavior" => "none",
+        "items" => ["data" => []],
+        "metadata" => [],
+    ], []);
+
+    $subscription = StripeSubscription::fromStripeObject($stripeObject);
+
+    expect($subscription->prorationBehavior)->toBe(ProrationBehavior::None);
+});
+
+test("toArray includes billing_cycle_anchor_config", function (): void {
+    $config = StripeBillingCycleAnchorConfig::make(
+        dayOfMonth: 1,
+        hour: 0,
+        minute: 0,
+        second: 0
+    );
+
+    $subscription = StripeSubscription::make(
+        customer: "cus_123",
+        billingCycleAnchorConfig: $config
+    );
+
+    $array = $subscription->toArray();
+
+    expect($array)->toHaveKey("billing_cycle_anchor_config")
+        ->and($array["billing_cycle_anchor_config"])->toBeArray()
+        ->and($array["billing_cycle_anchor_config"]["day_of_month"])->toBe(1)
+        ->and($array["billing_cycle_anchor_config"]["hour"])->toBe(0);
+});
+
+test("toArray includes proration_behavior", function (): void {
+    $subscription = StripeSubscription::make(
+        customer: "cus_123",
+        prorationBehavior: ProrationBehavior::None
+    );
+
+    $array = $subscription->toArray();
+
+    expect($array)->toHaveKey("proration_behavior")
+        ->and($array["proration_behavior"])->toBe("none");
+});
+
+test("issueFirstInvoiceOn creates billing cycle anchor config", function (): void {
+    $subscription = StripeSubscription::make(customer: "cus_123");
+
+    $date = CarbonImmutable::create(2025, 6, 15, 14, 30, 0);
+    $subscription->issueFirstInvoiceOn($date);
+
+    expect($subscription->billingCycleAnchorConfig)
+        ->toBeInstanceOf(StripeBillingCycleAnchorConfig::class)
+        ->and($subscription->billingCycleAnchorConfig->dayOfMonth)->toBe(15)
+        ->and($subscription->billingCycleAnchorConfig->month)->toBe(6)
+        ->and($subscription->billingCycleAnchorConfig->hour)->toBe(14)
+        ->and($subscription->billingCycleAnchorConfig->minute)->toBe(30)
+        ->and($subscription->billingCycleAnchorConfig->second)->toBe(0);
+});
+
+test("issueFirstInvoiceOn returns self for chaining", function (): void {
+    $subscription = StripeSubscription::make(customer: "cus_123");
+
+    $date = CarbonImmutable::create(2025, 6, 15);
+    $result = $subscription->issueFirstInvoiceOn($date);
+
+    expect($result)->toBe($subscription);
 });
