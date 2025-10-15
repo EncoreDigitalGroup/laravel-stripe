@@ -147,17 +147,6 @@ class StripeSubscription
             return null;
         }
 
-        // Handle both array and object formats
-        if (is_array($config)) {
-            return StripeBillingCycleAnchorConfig::make(
-                dayOfMonth: $config["day_of_month"] ?? null,
-                month: $config["month"] ?? null,
-                hour: $config["hour"] ?? null,
-                minute: $config["minute"] ?? null,
-                second: $config["second"] ?? null
-            );
-        }
-
         return StripeBillingCycleAnchorConfig::make(
             dayOfMonth: $config->day_of_month ?? null,
             month: $config->month ?? null,

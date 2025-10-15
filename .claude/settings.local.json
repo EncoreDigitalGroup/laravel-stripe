@@ -3,7 +3,8 @@
     "allow": [
       "Bash(./vendor/bin/pest --stop-on-failure)",
       "Bash(./vendor/bin/pest:*)",
-      "WebFetch(domain:docs.stripe.com)"
+      "WebFetch(domain:docs.stripe.com)",
+      "Bash(./vendor/bin/phpstan analyse:*)"
     ],
     "deny": [],
     "ask": []
