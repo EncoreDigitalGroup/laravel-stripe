@@ -31,7 +31,7 @@ Let"s create a simple customer to understand how this library works:
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$customerData = Stripe::customer(email: "john@example.com", name: "John Doe");
+$customerData = Stripe::builder()->customer()->build(email: "john@example.com", name: "John Doe");
 
 // Create a customer
 $customer = Stripe::customers()->create($customerData);
@@ -83,10 +83,10 @@ $customer = $stripe->customers->create([
 ]);
 
 // You write this (Laravel Stripe):
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: "john@example.com",
     name: "John Doe",
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: "123 Main St",
         city: "Anytown",
         state: "CA",
@@ -103,11 +103,11 @@ The library provides enums for Stripe constants, preventing typos and providing 
 ```php
 use EncoreDigitalGroup\Stripe\Enums\{PriceType, RecurringInterval};
 
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     currency: "usd",
     unitAmount: 2000,
     type: PriceType::Recurring,  // Not "recurring"
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month  // Not "month"
     )
 );
@@ -130,9 +130,9 @@ $stripeCustomer = $this->stripe->customers->create($data);
 return StripeCustomer::fromStripeObject($stripeCustomer);
 ```
 
-## Understanding the Factory Pattern
+## Understanding the Builder Pattern
 
-You"ll see `Stripe::customer()`, `Stripe::product()`, etc. throughout this library. These are factory methods that provide named parameters and better IDE support:
+You'll see `Stripe::builder()->customer()->build()`, `Stripe::builder()->product()->build()`, etc. throughout this library. This builder pattern provides named parameters and better IDE support:
 
 ```php
 // Traditional constructor (works, but verbose)
@@ -146,8 +146,8 @@ $customer = new StripeCustomer(
     shipping: null
 );
 
-// Factory pattern (cleaner, skip null values)
-$customer = Stripe::customer(
+// Builder pattern (cleaner, skip null values)
+$customer = Stripe::builder()->customer()->build(
     email: "john@example.com",
     name: "John Doe"
 );
@@ -214,7 +214,7 @@ $collection = $service->list($params);
 
 ```php
 // All DTOs support:
-$dto = Stripe::customer(/* named params */); // or product(), price(), etc.
+$dto = Stripe::builder()->customer()->build(/* named params */); // or product(), price(), etc.
 $array = $dto->toArray();
 $dto = DtoClass::fromStripeObject($stripeObject);
 ```

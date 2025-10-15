@@ -28,50 +28,6 @@ class Stripe
 {
     use HasStripe;
 
-    #region Factory Methods - Create data objects using builders
-
-    public static function customer(mixed ...$params): StripeCustomer
-    {
-        return self::builder()->customer()->build(...$params);
-    }
-
-    public static function product(mixed ...$params): StripeProduct
-    {
-        return self::builder()->product()->build(...$params);
-    }
-
-    public static function price(mixed ...$params): StripePrice
-    {
-        return self::builder()->price()->build(...$params);
-    }
-
-    public static function recurring(mixed ...$params): StripeRecurring
-    {
-        return self::builder()->recurring()->build(...$params);
-    }
-
-    public static function subscription(mixed ...$params): StripeSubscription
-    {
-        return self::builder()->subscription()->build(...$params);
-    }
-
-    public static function address(mixed ...$params): StripeAddress
-    {
-        return self::builder()->address()->build(...$params);
-    }
-
-    public static function financialConnection(mixed ...$params): StripeFinancialConnection
-    {
-        return self::builder()->financialConnection()->build(...$params);
-    }
-
-    public static function webhook(mixed ...$params): StripeWebhook
-    {
-        return self::builder()->webhook()->build(...$params);
-    }
-
-    #endregion
-
     #region Builder Methods - Access fluent builders
 
     public static function builder(): StripeBuilder

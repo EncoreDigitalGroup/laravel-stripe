@@ -1,6 +1,7 @@
 # Builders Reference
 
-The Laravel Stripe library provides a fluent builder pattern for creating Stripe data objects. This comprehensive guide covers all available builders, when to use them, and practical examples for each.
+The Laravel Stripe library provides a fluent builder pattern for creating Stripe data objects. This comprehensive guide covers all available builders, when to use them,
+and practical examples for each.
 
 ## Table of Contents
 
@@ -15,7 +16,8 @@ The Laravel Stripe library provides a fluent builder pattern for creating Stripe
 
 ## Understanding the Builder Pattern
 
-The builder pattern provides a fluent, discoverable way to create complex objects. The library implements three access patterns—all functionally equivalent—to suit different coding styles.
+The builder pattern provides a fluent, discoverable way to create complex objects. The library implements three access patterns—all functionally equivalent—to suit
+different coding styles.
 
 ### Why Use Builders?
 
@@ -47,10 +49,10 @@ $customer = new StripeCustomer(
 // ✅ With builders - clean, fluent, discoverable
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$customer = Stripe::customer(
+$customer = Stripe::builder()->customer()->build(
     email: 'john@example.com',
     name: 'John Doe',
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
@@ -68,31 +70,13 @@ $customer = Stripe::customer(
 4. **Nested Objects** - Clean syntax for complex structures
 5. **Discoverability** - Easy to explore the API
 
-## Three Ways to Create Objects
+## Creating Objects with the Builder Pattern
 
-All three methods produce identical results. Choose based on your preference and use case.
+All objects in the Laravel Stripe library are created using the builder pattern via `Stripe::builder()`. This provides maximum discoverability and type safety.
 
-### Method 1: Direct DTO Creation
+### Builder Pattern Usage
 
-Use `::make()` directly on the DTO class:
-
-```php
-use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
-
-$customer = StripeCustomer::make(
-    email: 'john@example.com',
-    name: 'John Doe'
-);
-```
-
-**When to use:**
-- You know exactly which class you need
-- Writing quick, concise code
-- No need for IDE discovery
-
-### Method 2: Full Builder Pattern
-
-Use `Stripe::builder()` for maximum discoverability:
+Use `Stripe::builder()` for all object creation:
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
@@ -103,30 +87,13 @@ $customer = Stripe::builder()->customer()->build(
 );
 ```
 
-**When to use:**
-- Learning the library
-- Complex nested objects
-- You want IDE autocomplete to guide you
-- Team prefers explicit builder syntax
+**Benefits:**
 
-### Method 3: Facade Shortcuts (Recommended)
-
-Use `Stripe::factoryMethod()` for the best balance:
-
-```php
-use EncoreDigitalGroup\Stripe\Stripe;
-
-$customer = Stripe::customer(
-    email: 'john@example.com',
-    name: 'John Doe'
-);
-```
-
-**When to use:**
-- Most situations (recommended default)
-- Clean, concise syntax
-- Good IDE support
-- Under the hood, it uses the builder pattern
+- Maximum IDE autocomplete and discoverability
+- Type safety at compile time
+- Consistent API across all objects
+- Easy to explore available methods and properties
+- Clean syntax for complex nested objects
 
 ## Main Entity Builders
 
@@ -140,27 +107,27 @@ Creates `StripeCustomer` objects for customer management.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple customer
-$customer = Stripe::customer(
+$customer = Stripe::builder()->customer()->build(
     email: 'customer@example.com',
     name: 'Jane Smith'
 );
 
 // Customer with full details
-$customer = Stripe::customer(
+$customer = Stripe::builder()->customer()->build(
     email: 'customer@example.com',
     name: 'Jane Smith',
     description: 'Premium customer',
     phone: '+1-555-123-4567',
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: '123 Business Ave',
         city: 'New York',
         state: 'NY',
         postalCode: '10001',
         country: 'US'
     ),
-    shipping: Stripe::shipping(
+    shipping: Stripe::builder()->shipping()->build(
         name: 'Jane Smith',
-        address: Stripe::address(
+        address: Stripe::builder()->address()->build(
             line1: '456 Home St',
             city: 'Brooklyn',
             state: 'NY',
@@ -175,13 +142,12 @@ $customer = Stripe::customer(
     ]
 );
 
-// All three methods work the same:
-$customer = StripeCustomer::make(email: '...');                         // Method 1
-$customer = Stripe::builder()->customer()->build(email: '...');         // Method 2
-$customer = Stripe::customer(email: '...');                             // Method 3 (recommended)
+// Create customer using builder pattern:
+$customer = Stripe::builder()->customer()->build(email: '...');
 ```
 
 **Customer Properties:**
+
 - `id` - Customer ID (read-only on create)
 - `email` - Customer email address
 - `name` - Customer full name
@@ -199,13 +165,13 @@ Creates `StripeProduct` objects for products and services.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple product
-$product = Stripe::product(
+$product = Stripe::builder()->product()->build(
     name: 'Premium Subscription',
     description: 'Access to all premium features'
 );
 
 // Product with rich metadata
-$product = Stripe::product(
+$product = Stripe::builder()->product()->build(
     name: 'Enterprise License',
     description: 'Full enterprise access with priority support',
     active: true,
@@ -224,7 +190,7 @@ $product = Stripe::product(
 );
 
 // Physical product with shipping
-$product = Stripe::product(
+$product = Stripe::builder()->product()->build(
     name: 'Hardware Device',
     shippable: true,
     packageDimensions: [
@@ -238,6 +204,7 @@ $product = Stripe::product(
 ```
 
 **Product Properties:**
+
 - `id` - Product ID (read-only on create)
 - `name` - Product name (required)
 - `description` - Product description
@@ -262,57 +229,57 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\{PriceType, RecurringInterval, TierMode, BillingScheme};
 
 // Simple one-time price
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     product: 'prod_abc123',
     currency: 'usd',
     unitAmount: 1999  // $19.99
 );
 
 // Recurring subscription price
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     product: 'prod_abc123',
     currency: 'usd',
     unitAmount: 2999,  // $29.99
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         intervalCount: 1
     )
 );
 
 // Tiered pricing
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     product: 'prod_abc123',
     currency: 'usd',
     billingScheme: BillingScheme::Tiered,
     tiers: [
-        Stripe::tier(upTo: 10, unitAmount: 1000),      // First 10: $10 each
-        Stripe::tier(upTo: 50, unitAmount: 800),       // Next 40: $8 each
-        Stripe::tier(upTo: null, unitAmount: 600)      // 51+: $6 each
+        Stripe::builder()->product()->tier()->build(upTo: 10, unitAmount: 1000),      // First 10: $10 each
+        Stripe::builder()->product()->tier()->build(upTo: 50, unitAmount: 800),       // Next 40: $8 each
+        Stripe::builder()->product()->tier()->build(upTo: null, unitAmount: 600)      // 51+: $6 each
     ],
     tiersMode: TierMode::Volume,
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month)
 );
 
 // Usage-based pricing
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     product: 'prod_abc123',
     currency: 'usd',
     billingScheme: BillingScheme::PerUnit,
     unitAmount: 50,  // $0.50 per unit
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: 'metered'
     )
 );
 
 // Customer-defined pricing
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     product: 'prod_abc123',
     currency: 'usd',
-    customUnitAmount: Stripe::customUnitAmount(
+    customUnitAmount: Stripe::builder()->product()->customUnitAmount()->build(
         minimum: 500,    // Minimum $5.00
         maximum: 100000, // Maximum $1,000.00
         preset: 2000     // Default $20.00
@@ -321,6 +288,7 @@ $price = Stripe::price(
 ```
 
 **Price Properties:**
+
 - `id` - Price ID (read-only on create)
 - `product` - Product ID
 - `currency` - Three-letter currency code
@@ -344,7 +312,7 @@ use EncoreDigitalGroup\Stripe\Enums\{CollectionMethod, ProrationBehavior};
 use Carbon\Carbon;
 
 // Simple subscription
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_abc123',
     items: [
         ['price' => 'price_monthly']
@@ -352,7 +320,7 @@ $subscription = Stripe::subscription(
 );
 
 // Subscription with trial
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_abc123',
     items: [
         ['price' => 'price_monthly']
@@ -361,7 +329,7 @@ $subscription = Stripe::subscription(
 );
 
 // Complex subscription with multiple items
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_abc123',
     items: [
         ['price' => 'price_base', 'quantity' => 1],
@@ -378,10 +346,10 @@ $subscription = Stripe::subscription(
 );
 
 // Subscription with custom billing anchor
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_abc123',
     items: [['price' => 'price_monthly']],
-    billingCycleAnchorConfig: StripeBillingCycleAnchorConfig::make(
+    billingCycleAnchorConfig: Stripe::builder()->subscription()->billingCycleAnchorConfig()->build(
         dayOfMonth: 1,
         hour: 0,
         minute: 0,
@@ -391,6 +359,7 @@ $subscription = Stripe::subscription(
 ```
 
 **Subscription Properties:**
+
 - `id` - Subscription ID (read-only on create)
 - `customer` - Customer ID
 - `status` - Subscription status enum
@@ -419,14 +388,14 @@ Creates `StripeFinancialConnection` objects for bank account linking.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Basic financial connection
-$connection = Stripe::financialConnection(
-    customer: Stripe::customer(id: 'cus_abc123'),
+$connection = Stripe::builder()->financialConnection()->build(
+    customer: Stripe::builder()->customer()->build(id: 'cus_abc123'),
     permissions: ['payment_method']
 );
 
 // Connection with multiple permissions
-$connection = Stripe::financialConnection(
-    customer: Stripe::customer(id: 'cus_abc123'),
+$connection = Stripe::builder()->financialConnection()->build(
+    customer: Stripe::builder()->customer()->build(id: 'cus_abc123'),
     permissions: [
         'transactions',
         'balances',
@@ -437,10 +406,12 @@ $connection = Stripe::financialConnection(
 ```
 
 **FinancialConnection Properties:**
+
 - `customer` - StripeCustomer object (required)
 - `permissions` - Array of permission strings (default: ['transactions'])
 
 **Available Permissions:**
+
 - `transactions` - Access transaction history
 - `balances` - Access balance information
 - `ownership` - Access ownership details
@@ -458,7 +429,7 @@ Creates `StripeAddress` objects for billing and shipping addresses.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Complete address
-$address = Stripe::address(
+$address = Stripe::builder()->address()->build(
     line1: '123 Main Street',
     line2: 'Suite 400',
     city: 'San Francisco',
@@ -468,7 +439,7 @@ $address = Stripe::address(
 );
 
 // Minimal address
-$address = Stripe::address(
+$address = Stripe::builder()->address()->build(
     line1: '456 Oak Ave',
     city: 'Portland',
     state: 'OR',
@@ -477,7 +448,7 @@ $address = Stripe::address(
 );
 
 // International address
-$address = Stripe::address(
+$address = Stripe::builder()->address()->build(
     line1: '10 Downing Street',
     city: 'London',
     postalCode: 'SW1A 2AA',
@@ -486,6 +457,7 @@ $address = Stripe::address(
 ```
 
 **Address Properties:**
+
 - `line1` - Street address line 1
 - `line2` - Street address line 2 (optional)
 - `city` - City
@@ -501,10 +473,10 @@ Creates `StripeShipping` objects for shipping information.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Complete shipping information
-$shipping = Stripe::shipping(
+$shipping = Stripe::builder()->shipping()->build(
     name: 'Jane Doe',
     phone: '+1-555-123-4567',
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: '789 Shipping Lane',
         line2: 'Apt 2B',
         city: 'Seattle',
@@ -515,9 +487,9 @@ $shipping = Stripe::shipping(
 );
 
 // Minimal shipping
-$shipping = Stripe::shipping(
+$shipping = Stripe::builder()->shipping()->build(
     name: 'John Smith',
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: '321 Delivery St',
         city: 'Austin',
         state: 'TX',
@@ -528,6 +500,7 @@ $shipping = Stripe::shipping(
 ```
 
 **Shipping Properties:**
+
 - `name` - Recipient name
 - `phone` - Contact phone (optional)
 - `address` - Shipping address (StripeAddress)
@@ -540,13 +513,13 @@ Creates `StripeWebhook` objects for webhook configuration.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Basic webhook
-$webhook = Stripe::webhook(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',
     events: ['customer.created', 'customer.updated']
 );
 
 // Comprehensive webhook
-$webhook = Stripe::webhook(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',
     events: [
         // Customer events
@@ -572,6 +545,7 @@ $webhook = Stripe::webhook(
 ```
 
 **Webhook Properties:**
+
 - `url` - Webhook endpoint URL
 - `events` - Array of event types to subscribe to
 
@@ -588,25 +562,25 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\{RecurringInterval, AggregateUsage};
 
 // Monthly billing
-$recurring = Stripe::recurring(
+$recurring = Stripe::builder()->product()->recurring()->build(
     interval: RecurringInterval::Month,
     intervalCount: 1
 );
 
 // Quarterly billing
-$recurring = Stripe::recurring(
+$recurring = Stripe::builder()->product()->recurring()->build(
     interval: RecurringInterval::Month,
     intervalCount: 3
 );
 
 // Annual billing
-$recurring = Stripe::recurring(
+$recurring = Stripe::builder()->product()->recurring()->build(
     interval: RecurringInterval::Year,
     intervalCount: 1
 );
 
 // Metered usage billing
-$recurring = Stripe::recurring(
+$recurring = Stripe::builder()->product()->recurring()->build(
     interval: RecurringInterval::Month,
     usageType: 'metered',
     aggregateUsage: AggregateUsage::Sum
@@ -614,6 +588,7 @@ $recurring = Stripe::recurring(
 ```
 
 **Recurring Properties:**
+
 - `interval` - Billing interval enum (day, week, month, year)
 - `intervalCount` - Number of intervals between billings
 - `usageType` - Usage type ('metered' or 'licensed')
@@ -628,26 +603,27 @@ use EncoreDigitalGroup\Stripe\Stripe;
 
 // Volume tiers
 $tiers = [
-    Stripe::tier(upTo: 10, unitAmount: 1000),     // 1-10: $10 each
-    Stripe::tier(upTo: 50, unitAmount: 800),      // 11-50: $8 each
-    Stripe::tier(upTo: null, unitAmount: 600)     // 51+: $6 each
+    Stripe::builder()->product()->tier()->build(upTo: 10, unitAmount: 1000),     // 1-10: $10 each
+    Stripe::builder()->product()->tier()->build(upTo: 50, unitAmount: 800),      // 11-50: $8 each
+    Stripe::builder()->product()->tier()->build(upTo: null, unitAmount: 600)     // 51+: $6 each
 ];
 
 // Flat fee + per unit
 $tiers = [
-    Stripe::tier(upTo: 1, flatAmount: 5000),      // Base: $50
-    Stripe::tier(upTo: null, unitAmount: 100)     // Each additional: $1
+    Stripe::builder()->product()->tier()->build(upTo: 1, flatAmount: 5000),      // Base: $50
+    Stripe::builder()->product()->tier()->build(upTo: null, unitAmount: 100)     // Each additional: $1
 ];
 
 // Graduated tiers with flat fees
 $tiers = [
-    Stripe::tier(upTo: 5, unitAmount: 2000, flatAmount: 0),
-    Stripe::tier(upTo: 20, unitAmount: 1500, flatAmount: 10000),
-    Stripe::tier(upTo: null, unitAmount: 1000, flatAmount: 0)
+    Stripe::builder()->product()->tier()->build(upTo: 5, unitAmount: 2000, flatAmount: 0),
+    Stripe::builder()->product()->tier()->build(upTo: 20, unitAmount: 1500, flatAmount: 10000),
+    Stripe::builder()->product()->tier()->build(upTo: null, unitAmount: 1000, flatAmount: 0)
 ];
 ```
 
 **Tier Properties:**
+
 - `upTo` - Upper bound of tier (null for infinity)
 - `unitAmount` - Per-unit cost in cents
 - `flatAmount` - Flat fee for tier in cents
@@ -661,14 +637,14 @@ Creates custom unit amount objects for customer-defined pricing.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Pay-what-you-want with bounds
-$customAmount = Stripe::customUnitAmount(
+$customAmount = Stripe::builder()->product()->customUnitAmount()->build(
     minimum: 500,      // Minimum $5.00
     maximum: 100000,   // Maximum $1,000.00
     preset: 2000       // Suggested $20.00
 );
 
 // Donation with minimum
-$customAmount = Stripe::customUnitAmount(
+$customAmount = Stripe::builder()->product()->customUnitAmount()->build(
     minimum: 100,      // Minimum $1.00
     preset: 1000       // Suggested $10.00
     // No maximum
@@ -676,6 +652,7 @@ $customAmount = Stripe::customUnitAmount(
 ```
 
 **CustomUnitAmount Properties:**
+
 - `minimum` - Minimum amount in cents
 - `maximum` - Maximum amount in cents (optional)
 - `preset` - Suggested/default amount in cents
@@ -689,7 +666,7 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use Carbon\CarbonImmutable;
 
 // Basic bank account
-$bankAccount = Stripe::bankAccount(
+$bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
     id: 'fca_abc123',
     category: 'checking',
     displayName: 'Primary Checking',
@@ -698,7 +675,7 @@ $bankAccount = Stripe::bankAccount(
 );
 
 // Complete bank account with transaction refresh
-$bankAccount = Stripe::bankAccount(
+$bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
     id: 'fca_abc123',
     category: 'savings',
     created: CarbonImmutable::now(),
@@ -709,7 +686,7 @@ $bankAccount = Stripe::bankAccount(
     permissions: ['payment_method', 'transactions'],
     subscriptions: ['transactions'],
     supportedPaymentMethodTypes: ['us_bank_account'],
-    transactionRefresh: Stripe::transactionRefresh(
+    transactionRefresh: Stripe::builder()->financialConnection()->transactionRefresh()->build(
         status: 'succeeded',
         lastAttemptedAt: time() - 3600,
         nextRefreshAvailableAt: time() + 82800
@@ -718,6 +695,7 @@ $bankAccount = Stripe::bankAccount(
 ```
 
 **BankAccount Properties:**
+
 - `id` - Financial Connection Account ID
 - `category` - Account type (checking, savings, etc.)
 - `created` - Creation timestamp (CarbonImmutable)
@@ -738,7 +716,7 @@ Creates `StripeTransactionRefresh` objects for transaction sync status.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Transaction refresh status
-$refresh = Stripe::transactionRefresh(
+$refresh = Stripe::builder()->financialConnection()->transactionRefresh()->build(
     id: 'tr_abc123',
     status: 'succeeded',
     lastAttemptedAt: time() - 3600,
@@ -746,12 +724,13 @@ $refresh = Stripe::transactionRefresh(
 );
 
 // Pending refresh
-$refresh = Stripe::transactionRefresh(
+$refresh = Stripe::builder()->financialConnection()->transactionRefresh()->build(
     status: 'pending'
 );
 ```
 
 **TransactionRefresh Properties:**
+
 - `id` - Refresh ID
 - `lastAttemptedAt` - Unix timestamp of last attempt
 - `nextRefreshAvailableAt` - Unix timestamp of next availability
@@ -781,34 +760,42 @@ $builder->shipping()->build(...);
 $builder->webhook()->build(...);
 
 // Sub-objects
-$builder->recurring()->build(...);
-$builder->tier()->build(...);
-$builder->customUnitAmount()->build(...);
-$builder->bankAccount()->build(...);
-$builder->transactionRefresh()->build(...);
+$builder->product()->recurring()->build(...);
+$builder->product()->tier()->build(...);
+$builder->product()->customUnitAmount()->build(...);
+$builder->financialConnection()->bankAccount()->build(...);
+$builder->financialConnection()->transactionRefresh()->build(...);
+$builder->subscription()->billingCycleAnchorConfig()->build(...);
 ```
 
-### Via Stripe Facade Shortcuts (Recommended)
+### Using the Builder Pattern
+
+All objects are created through the builder pattern:
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
+$builder = Stripe::builder();
+
 // Main entities
-Stripe::customer(...);
-Stripe::product(...);
-Stripe::price(...);
-Stripe::subscription(...);
-Stripe::financialConnection(...);
+$builder->customer()->build(...);
+$builder->product()->build(...);
+$builder->price()->build(...);
+$builder->subscription()->build(...);
+$builder->financialConnection()->build(...);
 
 // Support objects
-Stripe::address(...);
-Stripe::shipping(...);
-Stripe::webhook(...);
+$builder->address()->build(...);
+$builder->shipping()->build(...);
+$builder->webhook()->build(...);
 
 // Sub-objects
-Stripe::recurring(...);
-// Note: tier() and customUnitAmount() are not exposed as facade shortcuts
-// Use Stripe::builder()->tier() or direct DTO creation for these
+$builder->product()->recurring()->build(...);
+$builder->product()->tier()->build(...);
+$builder->product()->customUnitAmount()->build(...);
+$builder->financialConnection()->bankAccount()->build(...);
+$builder->financialConnection()->transactionRefresh()->build(...);
+$builder->subscription()->billingCycleAnchorConfig()->build(...);
 ```
 
 ## Practical Examples
@@ -821,11 +808,11 @@ Real-world scenarios demonstrating builder usage.
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Create customer with full address
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: $request->email,
     name: $request->name,
     phone: $request->phone,
-    address: Stripe::address(
+    address: Stripe::builder()->address()->build(
         line1: $request->address_line1,
         line2: $request->address_line2,
         city: $request->city,
@@ -833,10 +820,10 @@ $customer = Stripe::customers()->create(Stripe::customer(
         postalCode: $request->postal_code,
         country: $request->country
     ),
-    shipping: Stripe::shipping(
+    shipping: Stripe::builder()->shipping()->build(
         name: $request->shipping_name ?? $request->name,
         phone: $request->shipping_phone ?? $request->phone,
-        address: Stripe::address(
+        address: Stripe::builder()->address()->build(
             line1: $request->shipping_line1 ?? $request->address_line1,
             line2: $request->shipping_line2 ?? $request->address_line2,
             city: $request->shipping_city ?? $request->city,

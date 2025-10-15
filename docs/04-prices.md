@@ -27,28 +27,28 @@ Stripe's pricing system is designed around flexibility and scalability:
 
 ```php
 // Example: SaaS product with multiple pricing models
-$product = Stripe::products()->create(Stripe::product(name: 'Project Management Software'));
+$product = Stripe::products()->create(Stripe::builder()->product()->build(name: 'Project Management Software'));
 
 // Monthly subscription
-$monthlyPrice = Stripe::prices()->create(Stripe::price(
+$monthlyPrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: $product->id,
     unitAmount: 2999,  // $29.99
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month)
 ));
 
 // Annual subscription (with discount)
-$annualPrice = Stripe::prices()->create(Stripe::price(
+$annualPrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: $product->id,
     unitAmount: 29999, // $299.99 (2 months free)
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(interval: RecurringInterval::Year)
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Year)
 ));
 
 // One-time setup fee
-$setupFee = Stripe::prices()->create(Stripe::price(
+$setupFee = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: $product->id,
     unitAmount: 9999,  // $99.99
     currency: 'usd',
@@ -68,7 +68,7 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\{PriceType, RecurringInterval};
 
 // Simple one-time price
-$price = Stripe::prices()->create(Stripe::price(
+$price = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_abc123',
     unitAmount: 1999,  // $19.99 in cents
     currency: 'usd',
@@ -76,19 +76,19 @@ $price = Stripe::prices()->create(Stripe::price(
 ));
 
 // Monthly subscription
-$subscription = Stripe::prices()->create(Stripe::price(
+$subscription = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_abc123',
     unitAmount: 999,   // $9.99/month
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         intervalCount: 1
     )
 ));
 
 // With metadata and nickname
-$premium = Stripe::prices()->create(Stripe::price(
+$premium = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_abc123',
     unitAmount: 4999,
     currency: 'usd',
@@ -98,7 +98,7 @@ $premium = Stripe::prices()->create(Stripe::price(
         'tier' => 'premium',
         'features' => 'unlimited'
     ],
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month)
 ));
 
 echo $price->id; // "price_abc123..."
@@ -129,7 +129,7 @@ if ($price->type === PriceType::Recurring) {
 
 ```php
 // Only these fields can be updated:
-$updatedPrice = Stripe::prices()->update('price_abc123', Stripe::price(
+$updatedPrice = Stripe::prices()->update('price_abc123', Stripe::builder()->price()->build(
     active: false,           // Archive/reactivate
     nickname: 'Updated Name', // Display name
     metadata: [              // Custom metadata
@@ -175,13 +175,13 @@ Lookup keys provide a convenient way to reference prices by name instead of ID:
 
 ```php
 // Create with lookup key
-$price = Stripe::prices()->create(Stripe::price(
+$price = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_abc123',
     unitAmount: 2999,
     currency: 'usd',
     type: PriceType::Recurring,
     lookupKey: 'premium_monthly',
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month)
 ));
 
 // Retrieve by lookup key
@@ -204,7 +204,7 @@ The `StripePrice` class represents complex pricing configurations with full type
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Enums\*;
 
-$price = Stripe::price(
+$price = Stripe::builder()->price()->build(
     id: 'price_123',                      // string|null - Stripe price ID
     product: 'prod_123',                  // string|null - Product ID (required for create)
     active: true,                         // bool|null - Whether price is active
@@ -213,7 +213,7 @@ $price = Stripe::price(
     unitAmountDecimal: '29.99',           // string|null - Decimal amount for high precision
     type: PriceType::Recurring,           // PriceType|null - OneTime or Recurring
     billingScheme: BillingScheme::PerUnit, // BillingScheme|null - How to calculate total
-    recurring: Stripe::recurring(...),   // StripeRecurring|null - Recurring billing configuration
+    recurring: Stripe::builder()->product()->recurring()->build(...),   // StripeRecurring|null - Recurring billing configuration
     nickname: 'Premium Plan',            // string|null - Display name
     metadata: ['tier' => 'premium'],     // array|null - Custom metadata
     lookupKey: 'premium_monthly',         // string|null - Lookup identifier
@@ -231,25 +231,19 @@ $price = Stripe::price(
 The library provides multiple ways to create objects for consistency and discoverability:
 
 ```php
-// Method 1: Direct DTO creation (shortest)
-$tier = StripeProductTier::make(upTo: 1000, unitAmount: 100);
-$customer = StripeCustomer::make(email: 'user@example.com');
-$address = StripeAddress::make(line1: '123 Main St', city: 'Boston');
-
-// Method 2: Builder pattern (discoverable through IDE)
+// All DTOs are created using the builder pattern
 $tier = Stripe::builder()->product()->tier()->build(upTo: 1000, unitAmount: 100);
 $customer = Stripe::builder()->customer()->build(email: 'user@example.com');
 $address = Stripe::builder()->address()->build(line1: '123 Main St', city: 'Boston');
-
-// Method 3: Facade shortcuts for main objects
-$product = Stripe::product(name: 'My Product');          // Same as StripeProduct::make()
-$price = Stripe::price(unitAmount: 2999, currency: 'usd'); // Same as StripePrice::make()
-$customer = Stripe::customer(email: 'user@example.com');   // Same as StripeCustomer::make()
+$product = Stripe::builder()->product()->build(name: 'My Product');
+$price = Stripe::builder()->price()->build(unitAmount: 2999, currency: 'usd');
+$recurring = Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month);
 ```
 
 **Available Builder Categories:**
 
 **Main Entity Builders:**
+
 - `Stripe::builder()->customer()->build()` - Customer objects
 - `Stripe::builder()->product()->build()` - Product objects
 - `Stripe::builder()->price()->build()` - Price objects
@@ -257,11 +251,13 @@ $customer = Stripe::customer(email: 'user@example.com');   // Same as StripeCust
 - `Stripe::builder()->financialConnection()->build()` - Financial connection objects
 
 **Support Object Builders:**
+
 - `Stripe::builder()->address()->build()` - Address objects
 - `Stripe::builder()->shipping()->build()` - Shipping objects
 - `Stripe::builder()->webhook()->build()` - Webhook objects
 
 **Sub-Object Builders:**
+
 - `Stripe::builder()->product()->tier()->build()` - Price tier objects
 - `Stripe::builder()->product()->customUnitAmount()->build()` - Custom unit amount objects
 - `Stripe::builder()->product()->recurring()->build()` - Recurring billing objects
@@ -370,36 +366,36 @@ Recurring billing is one of Stripe's most powerful features, supporting complex 
 
 ```php
 // Monthly subscription
-$monthly = Stripe::prices()->create(Stripe::price(
+$monthly = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_saas',
     unitAmount: 2999,  // $29.99/month
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         intervalCount: 1
     )
 ));
 
 // Quarterly billing
-$quarterly = Stripe::prices()->create(Stripe::price(
+$quarterly = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_saas',
     unitAmount: 8499,  // $84.99 every 3 months
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         intervalCount: 3
     )
 ));
 
 // Weekly billing
-$weekly = Stripe::prices()->create(Stripe::price(
+$weekly = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_weekly_service',
     unitAmount: 999,   // $9.99/week
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Week,
         intervalCount: 1
     )
@@ -409,12 +405,12 @@ $weekly = Stripe::prices()->create(Stripe::price(
 ### Recurring with Trial Periods
 
 ```php
-$withTrial = Stripe::prices()->create(Stripe::price(
+$withTrial = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_premium',
     unitAmount: 4999,
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         intervalCount: 1,
         trialPeriodDays: 14  // 14-day free trial
@@ -427,13 +423,13 @@ $withTrial = Stripe::prices()->create(Stripe::price(
 For usage-based subscriptions where quantity varies each billing period:
 
 ```php
-$apiUsage = Stripe::prices()->create(Stripe::price(
+$apiUsage = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_api_service',
     unitAmount: 1,     // $0.01 per API call
     currency: 'usd',
     type: PriceType::Recurring,
     billingScheme: BillingScheme::PerUnit,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Metered,
         aggregateUsage: RecurringAggregateUsage::Sum
@@ -441,12 +437,12 @@ $apiUsage = Stripe::prices()->create(Stripe::price(
 ));
 
 // Different aggregation methods
-$bandwidthUsage = Stripe::prices()->create(Stripe::price(
+$bandwidthUsage = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_bandwidth',
     unitAmount: 50,    // $0.50 per GB
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Metered,
         aggregateUsage: RecurringAggregateUsage::Max  // Bill for peak usage
@@ -463,13 +459,13 @@ Tiered pricing allows different rates based on quantity, perfect for volume disc
 Each tier applies to its specific quantity range:
 
 ```php
-$graduatedPrice = Stripe::prices()->create(Stripe::price(
+$graduatedPrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_storage',
     currency: 'usd',
     type: PriceType::Recurring,
     billingScheme: BillingScheme::Tiered,
     tiersMode: TiersMode::Graduated,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month),
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month),
     tiers: [
         Stripe::builder()->product()->tier()->build(
             upTo: 1000,        // First 1,000 units
@@ -506,7 +502,7 @@ $flatTiers = $graduatedPrice->tiers->withFlatAmounts();
 The entire quantity uses one tier's pricing:
 
 ```php
-$volumePrice = Stripe::prices()->create(Stripe::price(
+$volumePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_licenses',
     currency: 'usd',
     type: PriceType::OneTime,
@@ -534,13 +530,13 @@ $volumePrice = Stripe::prices()->create(Stripe::price(
 ### Tiers with Flat Fees
 
 ```php
-$tiersWithFlat = Stripe::prices()->create(Stripe::price(
+$tiersWithFlat = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_enterprise',
     currency: 'usd',
     type: PriceType::Recurring,
     billingScheme: BillingScheme::Tiered,
     tiersMode: TiersMode::Graduated,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month),
+    recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month),
     tiers: [
         Stripe::builder()->product()->tier()->build(
             upTo: 100,
@@ -562,12 +558,12 @@ Stripe supports sophisticated usage-based models where the final amount depends 
 ### Simple Metered Billing
 
 ```php
-$apiCalls = Stripe::prices()->create(Stripe::price(
+$apiCalls = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_api',
     unitAmount: 1,     // $0.01 per call
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Metered,
         aggregateUsage: RecurringAggregateUsage::Sum
@@ -590,12 +586,12 @@ $currentValue = RecurringAggregateUsage::LastEver;
 // Max: Use the highest value recorded in the period
 $peakUsage = RecurringAggregateUsage::Max;
 
-$storagePrice = Stripe::prices()->create(Stripe::price(
+$storagePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_storage',
     unitAmount: 10,    // $0.10 per GB
     currency: 'usd',
     type: PriceType::Recurring,
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Metered,
         aggregateUsage: $peakUsage  // Bill for peak storage used
@@ -609,26 +605,26 @@ Combine fixed fees with usage-based charges by creating multiple prices for the 
 
 ```php
 // Base subscription
-$basePrice = Stripe::prices()->create(Stripe::price(
+$basePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_hybrid_service',
     unitAmount: 2999,  // $29.99 base fee
     currency: 'usd',
     type: PriceType::Recurring,
     nickname: 'Base Subscription',
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Licensed
     )
 ));
 
 // Usage charges
-$usagePrice = Stripe::prices()->create(Stripe::price(
+$usagePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_hybrid_service',
     unitAmount: 10,    // $0.10 per transaction
     currency: 'usd',
     type: PriceType::Recurring,
     nickname: 'Transaction Fees',
-    recurring: Stripe::recurring(
+    recurring: Stripe::builder()->product()->recurring()->build(
         interval: RecurringInterval::Month,
         usageType: RecurringUsageType::Metered,
         aggregateUsage: RecurringAggregateUsage::Sum
@@ -643,7 +639,7 @@ $usagePrice = Stripe::prices()->create(Stripe::price(
 Allow customers to set their own price within defined limits:
 
 ```php
-$donationPrice = Stripe::prices()->create(Stripe::price(
+$donationPrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_donation',
     currency: 'usd',
     type: PriceType::OneTime,
@@ -659,8 +655,8 @@ echo $donationPrice->customUnitAmount->minimum;  // 500
 echo $donationPrice->customUnitAmount->maximum;  // 100000
 echo $donationPrice->customUnitAmount->preset;   // 2000
 
-// Alternative: Use direct DTO creation for one-off objects
-$customUnit = StripeCustomUnitAmount::make(minimum: 500, maximum: 100000, preset: 2000);
+// All custom unit amounts are created via builder
+$customUnit = Stripe::builder()->product()->customUnitAmount()->build(minimum: 500, maximum: 100000, preset: 2000);
 ```
 
 ### Transform Quantity
@@ -669,7 +665,7 @@ Useful for fractional units or quantity transformations:
 
 ```php
 // Price is per 100 units, but sold individually
-$wholesalePrice = Stripe::prices()->create(Stripe::price(
+$wholesalePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_wholesale',
     unitAmount: 10000,      // $100 per 100 units
     currency: 'usd',
@@ -686,7 +682,7 @@ Control how taxes are calculated and displayed:
 
 ```php
 // Tax included in the price
-$inclusivePrice = Stripe::prices()->create(Stripe::price(
+$inclusivePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_b2c',
     unitAmount: 1200,  // $12.00 including tax
     currency: 'usd',
@@ -695,7 +691,7 @@ $inclusivePrice = Stripe::prices()->create(Stripe::price(
 ));
 
 // Tax added to the price
-$exclusivePrice = Stripe::prices()->create(Stripe::price(
+$exclusivePrice = Stripe::prices()->create(Stripe::builder()->price()->build(
     product: 'prod_b2b',
     unitAmount: 1000,  // $10.00 + tax
     currency: 'usd',
@@ -773,12 +769,12 @@ test('can create a recurring price', function () {
         ])
     ]);
 
-    $price = Stripe::prices()->create(Stripe::price(
+    $price = Stripe::prices()->create(Stripe::builder()->price()->build(
         product: 'prod_test',
         unitAmount: 2999,
         currency: 'usd',
         type: PriceType::Recurring,
-        recurring: Stripe::recurring(
+        recurring: Stripe::builder()->product()->recurring()->build(
             interval: RecurringInterval::Month,
             intervalCount: 1
         )
@@ -808,13 +804,13 @@ test('creates tiered price with graduated tiers', function () {
         ])
     ]);
 
-    $price = Stripe::prices()->create(Stripe::price(
+    $price = Stripe::prices()->create(Stripe::builder()->price()->build(
         product: 'prod_storage',
         currency: 'usd',
         type: PriceType::Recurring,
         billingScheme: BillingScheme::Tiered,
         tiersMode: TiersMode::Graduated,
-        recurring: Stripe::recurring(interval: RecurringInterval::Month),
+        recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month),
         tiers: [
             Stripe::builder()->product()->tier()->build(upTo: 1000, unitAmount: 100),
             Stripe::builder()->product()->tier()->build(upTo: 'inf', unitAmount: 80)
@@ -858,7 +854,7 @@ test('update removes immutable fields from payload', function () {
         'prices.update' => StripeFixtures::price(['id' => 'price_123'])
     ]);
 
-    $price = Stripe::price(
+    $price = Stripe::builder()->price()->build(
         unitAmount: 9999,          // Should be removed
         currency: 'eur',           // Should be removed
         nickname: 'Updated Name',  // Should remain
@@ -892,7 +888,7 @@ class SaaSPricingService
     public function createPricingTiers(string $productId): array
     {
         return [
-            'starter' => Stripe::prices()->create(Stripe::price(
+            'starter' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 999,   // $9.99/month
                 currency: 'usd',
@@ -904,13 +900,13 @@ class SaaSPricingService
                     'users' => '5',
                     'storage_gb' => '10'
                 ],
-                recurring: Stripe::recurring(
+                recurring: Stripe::builder()->product()->recurring()->build(
                     interval: RecurringInterval::Month,
                     trialPeriodDays: 14
                 )
             )),
 
-            'professional' => Stripe::prices()->create(Stripe::price(
+            'professional' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 2999,  // $29.99/month
                 currency: 'usd',
@@ -922,13 +918,13 @@ class SaaSPricingService
                     'users' => '25',
                     'storage_gb' => '100'
                 ],
-                recurring: Stripe::recurring(
+                recurring: Stripe::builder()->product()->recurring()->build(
                     interval: RecurringInterval::Month,
                     trialPeriodDays: 14
                 )
             )),
 
-            'enterprise' => Stripe::prices()->create(Stripe::price(
+            'enterprise' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 9999,  // $99.99/month
                 currency: 'usd',
@@ -940,7 +936,7 @@ class SaaSPricingService
                     'users' => 'unlimited',
                     'storage_gb' => '1000'
                 ],
-                recurring: Stripe::recurring(interval: RecurringInterval::Month)
+                recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month)
             ))
         ];
     }
@@ -952,7 +948,7 @@ class SaaSPricingService
         foreach ($monthlyPrices as $tier => $monthlyPrice) {
             $annualAmount = $monthlyPrice->unitAmount * 10; // 2 months free
 
-            $annualPrices[$tier . '_annual'] = Stripe::prices()->create(Stripe::price(
+            $annualPrices[$tier . '_annual'] = Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $monthlyPrice->product,
                 unitAmount: $annualAmount,
                 currency: $monthlyPrice->currency,
@@ -963,7 +959,7 @@ class SaaSPricingService
                     'billing' => 'annual',
                     'discount' => '17%'
                 ]),
-                recurring: Stripe::recurring(interval: RecurringInterval::Year)
+                recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Year)
             ));
         }
 
@@ -981,7 +977,7 @@ class ApiPricingService
     {
         return [
             // Base plan with included requests
-            'base' => Stripe::prices()->create(Stripe::price(
+            'base' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 2999,  // $29.99/month base
                 currency: 'usd',
@@ -992,21 +988,21 @@ class ApiPricingService
                     'included_requests' => '10000',
                     'overage_rate' => '0.001'
                 ],
-                recurring: Stripe::recurring(
+                recurring: Stripe::builder()->product()->recurring()->build(
                     interval: RecurringInterval::Month,
                     usageType: RecurringUsageType::Licensed
                 )
             )),
 
             // Overage charges
-            'overage' => Stripe::prices()->create(Stripe::price(
+            'overage' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 1,     // $0.01 per extra request
                 currency: 'usd',
                 type: PriceType::Recurring,
                 nickname: 'API Overage',
                 lookupKey: 'api_overage',
-                recurring: Stripe::recurring(
+                recurring: Stripe::builder()->product()->recurring()->build(
                     interval: RecurringInterval::Month,
                     usageType: RecurringUsageType::Metered,
                     aggregateUsage: RecurringAggregateUsage::Sum
@@ -1014,14 +1010,14 @@ class ApiPricingService
             )),
 
             // Pay-as-you-go option
-            'payg' => Stripe::prices()->create(Stripe::price(
+            'payg' => Stripe::prices()->create(Stripe::builder()->price()->build(
                 product: $productId,
                 unitAmount: 2,     // $0.02 per request (higher rate)
                 currency: 'usd',
                 type: PriceType::Recurring,
                 nickname: 'Pay As You Go',
                 lookupKey: 'api_payg',
-                recurring: Stripe::recurring(
+                recurring: Stripe::builder()->product()->recurring()->build(
                     interval: RecurringInterval::Month,
                     usageType: RecurringUsageType::Metered,
                     aggregateUsage: RecurringAggregateUsage::Sum
@@ -1039,7 +1035,7 @@ class EcommercePricingService
 {
     public function createVolumeDiscounts(string $productId): StripePrice
     {
-        return Stripe::prices()->create(Stripe::price(
+        return Stripe::prices()->create(Stripe::builder()->price()->build(
             product: $productId,
             currency: 'usd',
             type: PriceType::OneTime,
@@ -1073,14 +1069,14 @@ class EcommercePricingService
 
     public function createGraduatedPricing(string $productId): StripePrice
     {
-        return Stripe::prices()->create(Stripe::price(
+        return Stripe::prices()->create(Stripe::builder()->price()->build(
             product: $productId,
             currency: 'usd',
             type: PriceType::Recurring,
             nickname: 'Storage with Graduated Pricing',
             billingScheme: BillingScheme::Tiered,
             tiersMode: TiersMode::Graduated,
-            recurring: Stripe::recurring(interval: RecurringInterval::Month),
+            recurring: Stripe::builder()->product()->recurring()->build(interval: RecurringInterval::Month),
             tiers: [
                 Stripe::builder()->product()->tier()->build(
                     upTo: 100,

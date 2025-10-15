@@ -14,7 +14,8 @@ Stripe library—from basic CRUD operations to complex address handling and comp
 
 ## Basic Customer Operations
 
-The customer service (accessed via `Stripe::customers()`) provides all the standard operations you need for customer management. All methods are fully typed and return consistent, predictable results.
+The customer service (accessed via `Stripe::customers()`) provides all the standard operations you need for customer management. All methods are fully typed and return
+consistent, predictable results.
 
 ### Creating Customers
 
@@ -22,13 +23,13 @@ The customer service (accessed via `Stripe::customers()`) provides all the stand
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple customer
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: 'john@example.com',
     name: 'John Doe'
 ));
 
 // Customer with description
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: 'premium@example.com',
     name: 'Premium Customer',
     description: 'VIP customer with premium support',
@@ -54,7 +55,7 @@ echo $customer->description;
 
 ```php
 // Update with new data
-$updatedCustomer = Stripe::customers()->update('cus_abc123', Stripe::customer(
+$updatedCustomer = Stripe::customers()->update('cus_abc123', Stripe::builder()->customer()->build(
     name: 'John Smith',  // Changed name
     phone: '+1-555-987-6543'  // Updated phone
     // email unchanged, so not included
@@ -113,14 +114,14 @@ use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
 
-$customer = StripeCustomer::make(
+$customer = Stripe::builder()->customer()->build(
     id: 'cus_123',              // string|null - Stripe customer ID
     email: 'john@example.com',   // string|null - Email address
     name: 'John Doe',           // string|null - Full name
     description: 'VIP customer', // string|null - Custom description
     phone: '+1-555-123-4567',   // string|null - Phone number
-    address: StripeAddress::make(/* ... */), // StripeAddress|null
-    shipping: StripeShipping::make(/* ... */) // StripeShipping|null
+    address: Stripe::builder()->address()->build(/* ... */), // StripeAddress|null
+    shipping: Stripe::builder()->shipping()->build(/* ... */) // StripeShipping|null
 );
 ```
 
@@ -134,7 +135,7 @@ $stripeCustomer = $stripe->customers->retrieve('cus_123');
 $ourCustomer = StripeCustomer::fromStripeObject($stripeCustomer);
 
 // From our DTO to array for API calls
-$customer = StripeCustomer::make(email: 'test@example.com');
+$customer = Stripe::builder()->customer()->build(email: 'test@example.com');
 $array = $customer->toArray();
 // Returns: ['email' => 'test@example.com'] (nulls filtered out)
 ```
@@ -144,7 +145,7 @@ $array = $customer->toArray();
 The library intelligently handles null values. Only non-null fields are sent to Stripe:
 
 ```php
-$customer = StripeCustomer::make(
+$customer = Stripe::builder()->customer()->build(
     email: 'john@example.com',
     name: 'John Doe'
     // description, phone, address, shipping are null
@@ -161,22 +162,7 @@ Customers can have billing addresses and shipping information. The library provi
 
 ### Billing Address
 
-The library provides multiple ways to create address objects:
-
 ```php
-// Method 1: Direct DTO creation (shortest)
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
-
-$address = StripeAddress::make(
-    line1: '123 Main Street',
-    line2: 'Apt 4B',
-    city: 'San Francisco',
-    state: 'CA',
-    postalCode: '94105',
-    country: 'US'
-);
-
-// Method 2: Using the builder pattern (discoverable)
 $address = Stripe::builder()->address()->build(
     line1: '123 Main Street',
     line2: 'Apt 4B',
@@ -186,18 +172,8 @@ $address = Stripe::builder()->address()->build(
     country: 'US'
 );
 
-// Method 3: Using the facade shortcut
-$address = Stripe::address(
-    line1: '123 Main Street',
-    line2: 'Apt 4B',
-    city: 'San Francisco',
-    state: 'CA',
-    postalCode: '94105',
-    country: 'US'
-);
-
 // Create customer with address
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: 'customer@example.com',
     name: 'John Doe',
     address: $address
@@ -211,22 +187,6 @@ Shipping requires both an address and a name, and optionally includes a phone nu
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
 
-// Method 1: Direct DTO creation
-$shippingAddress = StripeAddress::make(
-    line1: '456 Shipping Lane',
-    city: 'Los Angeles',
-    state: 'CA',
-    postalCode: '90210',
-    country: 'US'
-);
-
-$shipping = StripeShipping::make(
-    address: $shippingAddress,
-    name: 'John Doe',
-    phone: '+1-555-123-4567'
-);
-
-// Method 2: Using builders for nested objects (recommended for discoverability)
 $shipping = Stripe::builder()->shipping()->build(
     address: Stripe::builder()->address()->build(
         line1: '456 Shipping Lane',
@@ -240,7 +200,7 @@ $shipping = Stripe::builder()->shipping()->build(
 );
 
 // Create customer with shipping
-$customer = Stripe::customers()->create(Stripe::customer(
+$customer = Stripe::customers()->create(Stripe::builder()->customer()->build(
     email: 'customer@example.com',
     name: 'John Doe',
     shipping: $shipping
@@ -253,7 +213,7 @@ The library handles the differences between our camelCase properties and Stripe'
 
 ```php
 // Our object
-$address = StripeAddress::make(
+$address = Stripe::builder()->address()->build(
     postalCode: '12345'  // camelCase
 );
 
@@ -380,7 +340,7 @@ test('can create a customer', function () {
 
     // Act: Create the customer
     $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = $service->create(Stripe::builder()->customer()->build(
         email: 'test@example.com',
         name: 'Test Customer'
     ));
@@ -409,7 +369,7 @@ test('creates customer with dynamic response', function () {
     ]);
 
     $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = $service->create(Stripe::builder()->customer()->build(
         email: 'dynamic@example.com',
         name: 'Dynamic Name'
     ));
@@ -461,9 +421,9 @@ test('creates customer with address', function () {
     ]);
 
     $service = StripeCustomerService::make();
-    $customer = $service->create(StripeCustomer::make(
+    $customer = $service->create(Stripe::builder()->customer()->build(
         email: 'test@example.com',
-        address: StripeAddress::make(
+        address: Stripe::builder()->address()->build(
             line1: '123 Test Street',
             city: 'Test City',
             state: 'TC',
@@ -491,8 +451,8 @@ test('tracks multiple API calls', function () {
     $service = StripeCustomerService::make();
 
     // Make multiple calls
-    $customer = $service->create(StripeCustomer::make(email: 'test@example.com'));
-    $service->update($customer->id, StripeCustomer::make(name: 'Updated'));
+    $customer = $service->create(Stripe::builder()->customer()->build(email: 'test@example.com'));
+    $service->update($customer->id, Stripe::builder()->customer()->build(name: 'Updated'));
     $service->delete($customer->id);
 
     // Verify all calls were made
@@ -521,7 +481,7 @@ class CustomerRegistrationService
     {
         $address = null;
         if ($addressData) {
-            $address = StripeAddress::make(
+            $address = Stripe::builder()->address()->build(
                 line1: $addressData['line1'],
                 line2: $addressData['line2'] ?? null,
                 city: $addressData['city'],
@@ -531,7 +491,7 @@ class CustomerRegistrationService
             );
         }
 
-        $customer = $this->stripeCustomerService->create(StripeCustomer::make(
+        $customer = $this->stripeCustomerService->create(Stripe::builder()->customer()->build(
             email: $user->email,
             name: $user->name,
             description: "User ID: {$user->id}",
@@ -553,17 +513,17 @@ class CustomerProfileService
 {
     public function updateProfile(User $user, array $profileData): StripeCustomer
     {
-        $updateData = StripeCustomer::make(
+        $updateData = Stripe::builder()->customer()->build(
             name: $profileData['name'] ?? null,
             phone: $profileData['phone'] ?? null
         );
 
         // Update address if provided
         if (isset($profileData['address'])) {
-            $updateData = StripeCustomer::make(
+            $updateData = Stripe::builder()->customer()->build(
                 name: $profileData['name'] ?? null,
                 phone: $profileData['phone'] ?? null,
-                address: StripeAddress::make(
+                address: Stripe::builder()->address()->build(
                     line1: $profileData['address']['line1'],
                     line2: $profileData['address']['line2'] ?? null,
                     city: $profileData['address']['city'],
@@ -635,7 +595,7 @@ class SafeCustomerService
         try {
             $service = StripeCustomerService::make();
 
-            return $service->create(StripeCustomer::make(
+            return $service->create(Stripe::builder()->customer()->build(
                 email: $customerData['email'],
                 name: $customerData['name'],
                 phone: $customerData['phone'] ?? null

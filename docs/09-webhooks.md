@@ -1,6 +1,7 @@
 # Webhooks
 
-Webhooks are how Stripe notifies your application about events that happen in your Stripe account—successful payments, failed charges, subscription updates, and more. This chapter covers everything you need to handle Stripe webhooks in your Laravel application, from registration to verification and event processing.
+Webhooks are how Stripe notifies your application about events that happen in your Stripe account—successful payments, failed charges, subscription updates, and more.
+This chapter covers everything you need to handle Stripe webhooks in your Laravel application, from registration to verification and event processing.
 
 ## Table of Contents
 
@@ -15,7 +16,8 @@ Webhooks are how Stripe notifies your application about events that happen in yo
 
 ## Understanding Stripe Webhooks
 
-Webhooks are HTTP callbacks that Stripe sends to your application when specific events occur. This allows your application to respond to changes in real-time without polling Stripe's API.
+Webhooks are HTTP callbacks that Stripe sends to your application when specific events occur. This allows your application to respond to changes in real-time without
+polling Stripe's API.
 
 ### Why Use Webhooks?
 
@@ -93,7 +95,7 @@ The `StripeWebhook` object helps you configure webhook endpoints.
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$webhook = Stripe::webhook(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',  // string - Your webhook endpoint URL
     events: [                                   // array - Events to subscribe to
         'customer.created',
@@ -113,7 +115,7 @@ There are three ways to create webhook objects:
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 
-$webhook = StripeWebhook::make(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',
     events: ['customer.created', 'customer.updated']
 );
@@ -135,7 +137,7 @@ $webhook = Stripe::builder()->webhook()->build(
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$webhook = Stripe::webhook(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',
     events: ['customer.subscription.updated']
 );
@@ -153,7 +155,7 @@ class WebhookSetupController extends Controller
     {
         $stripe = app(StripeClient::class);
 
-        $webhook = Stripe::webhook(
+        $webhook = Stripe::builder()->webhook()->build(
             url: route('stripe.webhook'),
             events: [
                 'customer.created',
@@ -186,7 +188,7 @@ class WebhookSetupController extends Controller
 ### Converting to Array
 
 ```php
-$webhook = Stripe::webhook(
+$webhook = Stripe::builder()->webhook()->build(
     url: 'https://myapp.com/webhooks/stripe',
     events: ['customer.created', 'invoice.paid']
 );

@@ -1,6 +1,7 @@
 # Subscriptions
 
-Subscriptions are the backbone of recurring revenue businesses. This chapter covers everything you need to know about managing subscriptions with the Laravel Stripe library—from creating simple monthly subscriptions to complex multi-item subscriptions with trials, proration, and billing cycle customization.
+Subscriptions are the backbone of recurring revenue businesses. This chapter covers everything you need to know about managing subscriptions with the Laravel Stripe
+library—from creating simple monthly subscriptions to complex multi-item subscriptions with trials, proration, and billing cycle customization.
 
 ## Table of Contents
 
@@ -26,7 +27,7 @@ Subscriptions represent recurring payments from customers for access to products
 ```php
 // Basic subscription flow
 // 1. Customer subscribes to a price
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [
         ['price' => 'price_monthly_2999']
@@ -54,7 +55,7 @@ The subscription service (accessed via `Stripe::subscriptions()`) provides all t
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple monthly subscription
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_customer123',
     items: [
         ['price' => 'price_monthly']
@@ -62,7 +63,7 @@ $subscription = Stripe::subscriptions()->create(Stripe::subscription(
 ));
 
 // Subscription with metadata
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_customer123',
     items: [
         ['price' => 'price_professional']
@@ -101,7 +102,7 @@ foreach ($subscription->items as $item) {
 
 ```php
 // Update subscription metadata or settings
-$updatedSubscription = Stripe::subscriptions()->update('sub_abc123', Stripe::subscription(
+$updatedSubscription = Stripe::subscriptions()->update('sub_abc123', Stripe::builder()->subscription()->build(
     description: 'Updated: Professional Plan',
     metadata: [
         'plan_tier' => 'professional_plus',
@@ -110,7 +111,7 @@ $updatedSubscription = Stripe::subscriptions()->update('sub_abc123', Stripe::sub
 ));
 
 // Change items (upgrade/downgrade)
-$updatedSubscription = Stripe::subscriptions()->update('sub_abc123', Stripe::subscription(
+$updatedSubscription = Stripe::subscriptions()->update('sub_abc123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_premium', 'quantity' => 1]
     ],
@@ -168,7 +169,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Enums\{SubscriptionStatus, CollectionMethod, ProrationBehavior};
 use Carbon\CarbonImmutable;
 
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     id: 'sub_123',                                     // string|null - Subscription ID
     customer: 'cus_123',                               // string|null - Customer ID (required for create)
     status: SubscriptionStatus::Active,                // SubscriptionStatus|null - Current status
@@ -220,14 +221,14 @@ if ($subscription->status === SubscriptionStatus::Active) {
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 
 // Charge automatically (most common)
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_monthly']],
     collectionMethod: CollectionMethod::ChargeAutomatically
 );
 
 // Send invoice (for B2B/NET payment terms)
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_b2b',
     items: [['price' => 'price_enterprise']],
     collectionMethod: CollectionMethod::SendInvoice,
@@ -250,7 +251,7 @@ ProrationBehavior::None             // No pro-rata adjustment
 ProrationBehavior::AlwaysInvoice    // Create invoice immediately
 
 // Usage when updating
-$updated = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$updated = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [['price' => 'price_premium']],
     prorationBehavior: ProrationBehavior::CreateProrations
 ));
@@ -319,7 +320,7 @@ match($subscription->status) {
 use Carbon\Carbon;
 
 // Trial with specific end date
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_monthly']],
     trialEnd: Carbon::now()->addDays(14) // 14-day trial
@@ -330,7 +331,7 @@ echo $subscription->trialEnd->toDateString(); // Trial end date
 
 // Trial with period from price configuration
 // (uses trial_period_days from the price if set)
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_with_trial']] // Price has trial_period_days: 14
 ));
@@ -345,17 +346,17 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfi
 use Carbon\Carbon;
 
 // Bill on the 1st of every month
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_monthly']],
-    billingCycleAnchorConfig: StripeBillingCycleAnchorConfig::make(
+    billingCycleAnchorConfig: Stripe::builder()->subscription()->billingCycleAnchorConfig()->build(
         dayOfMonth: 1
     )
 ));
 
 // Bill on a specific date and time
 $billingDate = Carbon::parse('2025-02-01 09:00:00');
-$subscription = Stripe::subscription(
+$subscription = Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_monthly']]
 );
@@ -370,7 +371,7 @@ Stripe::subscriptions()->create($subscription);
 
 ```php
 // Create a subscription backdated to a specific date
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [['price' => 'price_monthly']],
     currentPeriodStart: Carbon::parse('2025-01-01'),
@@ -386,7 +387,7 @@ Subscriptions can include multiple prices, allowing complex pricing models.
 
 ```php
 // SaaS with base fee + usage charges
-$subscription = Stripe::subscriptions()->create(Stripe::subscription(
+$subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
     customer: 'cus_123',
     items: [
         [
@@ -417,21 +418,21 @@ foreach ($subscription->items as $item) {
 
 ```php
 // Add an item to existing subscription
-$updated = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$updated = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_addon_feature', 'quantity' => 1]
     ]
 ));
 
 // Change quantity of an item
-$updated = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$updated = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['id' => 'si_item123', 'quantity' => 10] // Update specific item
     ]
 ));
 
 // Remove an item
-$updated = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$updated = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['id' => 'si_item123', 'deleted' => true]
     ]
@@ -448,7 +449,7 @@ When changing subscriptions mid-period, Stripe can calculate pro-rated charges:
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 
 // Upgrade with proration (customer charged for remainder of period)
-$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_premium'] // More expensive plan
     ],
@@ -456,7 +457,7 @@ $upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
 ));
 
 // Immediate upgrade without proration
-$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_premium']
     ],
@@ -464,7 +465,7 @@ $upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
 ));
 
 // Create invoice immediately
-$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$upgraded = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_premium']
     ],
@@ -476,12 +477,12 @@ $upgraded = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
 
 ```php
 // Schedule a change for next billing cycle
-$subscription = Stripe::subscriptions()->update('sub_123', Stripe::subscription(
+$subscription = Stripe::subscriptions()->update('sub_123', Stripe::builder()->subscription()->build(
     items: [
         ['price' => 'price_new_plan']
     ],
     prorationBehavior: ProrationBehavior::None, // No immediate charge
-    billingCycleAnchorConfig: StripeBillingCycleAnchorConfig::make(
+    billingCycleAnchorConfig: Stripe::builder()->subscription()->billingCycleAnchorConfig()->build(
         dayOfMonth: 1 // Apply on next 1st of month
     )
 ));
@@ -506,7 +507,7 @@ test('can create a subscription', function () {
         ])
     ]);
 
-    $subscription = Stripe::subscriptions()->create(Stripe::subscription(
+    $subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
         customer: 'cus_123',
         items: [
             ['price' => 'price_monthly']
@@ -569,7 +570,7 @@ test('creates subscription with trial period', function () {
         ])
     ]);
 
-    $subscription = Stripe::subscriptions()->create(Stripe::subscription(
+    $subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
         customer: 'cus_123',
         items: [['price' => 'price_monthly']],
         trialEnd: now()->addDays(14)
@@ -595,7 +596,7 @@ class SubscriptionManager
 
     public function subscribe(User $user, string $priceId): StripeSubscription
     {
-        $subscription = $this->subscriptionService->create(Stripe::subscription(
+        $subscription = $this->subscriptionService->create(Stripe::builder()->subscription()->build(
             customer: $user->stripe_customer_id,
             items: [
                 ['price' => $priceId, 'quantity' => 1]
@@ -615,7 +616,7 @@ class SubscriptionManager
 
     public function upgrade(User $user, string $newPriceId): StripeSubscription
     {
-        return $this->subscriptionService->update($user->stripe_subscription_id, Stripe::subscription(
+        return $this->subscriptionService->update($user->stripe_subscription_id, Stripe::builder()->subscription()->build(
             items: [['price' => $newPriceId]],
             prorationBehavior: ProrationBehavior::CreateProrations,
             metadata: [
@@ -629,7 +630,7 @@ class SubscriptionManager
     public function downgrade(User $user, string $newPriceId): StripeSubscription
     {
         // Downgrade at period end (no immediate charge)
-        return $this->subscriptionService->update($user->stripe_subscription_id, Stripe::subscription(
+        return $this->subscriptionService->update($user->stripe_subscription_id, Stripe::builder()->subscription()->build(
             items: [['price' => $newPriceId]],
             prorationBehavior: ProrationBehavior::None
         ));
@@ -653,7 +654,7 @@ class UsageBasedBillingService
 {
     public function createUsageSubscription(User $user): StripeSubscription
     {
-        return Stripe::subscriptions()->create(Stripe::subscription(
+        return Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
             customer: $user->stripe_customer_id,
             items: [
                 [
@@ -699,7 +700,7 @@ class TrialService
 {
     public function startTrialSubscription(User $user, string $priceId, int $trialDays = 14): StripeSubscription
     {
-        $subscription = Stripe::subscriptions()->create(Stripe::subscription(
+        $subscription = Stripe::subscriptions()->create(Stripe::builder()->subscription()->build(
             customer: $user->stripe_customer_id,
             items: [['price' => $priceId]],
             trialEnd: now()->addDays($trialDays),
@@ -723,7 +724,7 @@ class TrialService
 
         $newTrialEnd = $subscription->trialEnd->addDays($additionalDays);
 
-        return Stripe::subscriptions()->update($user->stripe_subscription_id, Stripe::subscription(
+        return Stripe::subscriptions()->update($user->stripe_subscription_id, Stripe::builder()->subscription()->build(
             trialEnd: $newTrialEnd,
             metadata: [
                 'trial_extended_at' => now()->toISOString(),
@@ -734,7 +735,7 @@ class TrialService
 
     public function endTrialEarly(User $user): StripeSubscription
     {
-        return Stripe::subscriptions()->update($user->stripe_subscription_id, Stripe::subscription(
+        return Stripe::subscriptions()->update($user->stripe_subscription_id, Stripe::builder()->subscription()->build(
             trialEnd: now()
         ));
     }

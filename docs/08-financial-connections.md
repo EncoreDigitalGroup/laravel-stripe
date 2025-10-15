@@ -1,6 +1,7 @@
 # Financial Connections
 
-Stripe Financial Connections allows your users to securely connect their bank accounts to your application, enabling ACH payments, account verification, and balance information. This chapter covers the Laravel Stripe library's implementation of Financial Connections, from session creation to handling connected accounts.
+Stripe Financial Connections allows your users to securely connect their bank accounts to your application, enabling ACH payments, account verification, and balance
+information. This chapter covers the Laravel Stripe library's implementation of Financial Connections, from session creation to handling connected accounts.
 
 ## Table of Contents
 
@@ -51,22 +52,16 @@ This object represents the configuration for creating a Financial Connection ses
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
 
-// Method 1: Direct DTO creation
-$connection = StripeFinancialConnection::make(
+// Create financial connection using builder pattern
+$connection = Stripe::builder()->financialConnection()->build(
     customer: $customer,
     permissions: ['transactions', 'balances', 'ownership']
 );
 
-// Method 2: Using the builder pattern
+// All financial connections are created via builder
 $connection = Stripe::builder()->financialConnection()->build(
     customer: $customer,
     permissions: ['payment_method']
-);
-
-// Method 3: Using the facade shortcut (recommended)
-$connection = Stripe::financialConnection(
-    customer: $customer,
-    permissions: ['transactions']
 );
 ```
 
@@ -75,15 +70,16 @@ $connection = Stripe::financialConnection(
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 
-$customer = StripeCustomer::make(id: 'cus_123');
+$customer = Stripe::builder()->customer()->build(id: 'cus_123');
 
-$connection = Stripe::financialConnection(
+$connection = Stripe::builder()->financialConnection()->build(
     customer: $customer,              // StripeCustomer - Required customer object
     permissions: ['transactions']     // array - Permissions to request (default: ['transactions'])
 );
 ```
 
 **Available Permissions:**
+
 - `transactions` - Access to transaction history
 - `balances` - Access to account balance information
 - `ownership` - Access to account ownership details
@@ -94,8 +90,8 @@ $connection = Stripe::financialConnection(
 The `toArray()` method formats the data for Stripe API calls:
 
 ```php
-$connection = Stripe::financialConnection(
-    customer: Stripe::customer(id: 'cus_abc123'),
+$connection = Stripe::builder()->financialConnection()->build(
+    customer: Stripe::builder()->customer()->build(id: 'cus_abc123'),
     permissions: ['transactions', 'payment_method']
 );
 
@@ -130,7 +126,7 @@ class BankAccountController extends Controller
         $customer = Stripe::customers()->get($request->user()->stripe_customer_id);
 
         // Create financial connection configuration
-        $connectionConfig = Stripe::financialConnection(
+        $connectionConfig = Stripe::builder()->financialConnection()->build(
             customer: $customer,
             permissions: ['transactions', 'payment_method', 'balances']
         );
@@ -152,14 +148,14 @@ class BankAccountController extends Controller
 
 ```php
 // Minimal configuration
-$connection = Stripe::financialConnection(
-    customer: Stripe::customer(id: 'cus_123'),
+$connection = Stripe::builder()->financialConnection()->build(
+    customer: Stripe::builder()->customer()->build(id: 'cus_123'),
     permissions: ['payment_method']
 );
 
 // Multiple permissions for comprehensive access
-$connection = Stripe::financialConnection(
-    customer: Stripe::customer(id: 'cus_123'),
+$connection = Stripe::builder()->financialConnection()->build(
+    customer: Stripe::builder()->customer()->build(id: 'cus_123'),
     permissions: [
         'transactions',    // Transaction history
         'balances',        // Balance information
@@ -225,8 +221,8 @@ class BankAccountController extends Controller
         $stripe = app(StripeClient::class);
 
         // Create financial connection session
-        $connection = Stripe::financialConnection(
-            customer: Stripe::customer(id: $user->stripe_customer_id),
+        $connection = Stripe::builder()->financialConnection()->build(
+            customer: Stripe::builder()->customer()->build(id: $user->stripe_customer_id),
             permissions: ['transactions', 'payment_method']
         );
 
@@ -419,7 +415,7 @@ Represents a connected bank account with full details:
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
-$bankAccount = StripeBankAccount::make(
+$bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
     id: 'fca_abc123',
     category: 'checking',
     displayName: 'Chase Checking',
@@ -429,7 +425,7 @@ $bankAccount = StripeBankAccount::make(
     permissions: ['payment_method', 'transactions'],
     subscriptions: ['transactions'],
     supportedPaymentMethodTypes: ['us_bank_account'],
-    transactionRefresh: StripeTransactionRefresh::make(
+    transactionRefresh: Stripe::builder()->financialConnection()->transactionRefresh()->build(
         status: 'succeeded',
         lastAttemptedAt: time() - 3600,
         nextRefreshAvailableAt: time() + 82800
@@ -440,7 +436,7 @@ $bankAccount = StripeBankAccount::make(
 ### StripeBankAccount Properties
 
 ```php
-$bankAccount = StripeBankAccount::make(
+$bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
     id: 'fca_123',                              // string|null - Stripe Financial Connection Account ID
     category: 'checking',                       // string|null - Account type (checking, savings, etc.)
     created: CarbonImmutable::now(),           // CarbonImmutable|null - Creation timestamp
@@ -462,7 +458,7 @@ Represents transaction synchronization status:
 ```php
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
-$transactionRefresh = StripeTransactionRefresh::make(
+$transactionRefresh = Stripe::builder()->financialConnection()->transactionRefresh()->build(
     id: 'tr_abc123',                    // string|null - Refresh ID
     lastAttemptedAt: time() - 3600,     // int|null - Unix timestamp of last refresh attempt
     nextRefreshAvailableAt: time() + 82800, // int|null - Unix timestamp when next refresh is available
@@ -471,6 +467,7 @@ $transactionRefresh = StripeTransactionRefresh::make(
 ```
 
 **Transaction Refresh Statuses:**
+
 - `pending` - Refresh is in progress
 - `succeeded` - Last refresh completed successfully
 - `failed` - Last refresh encountered an error
@@ -487,12 +484,12 @@ use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnec
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 
 test('can create financial connection configuration', function () {
-    $customer = StripeCustomer::make(
+    $customer = Stripe::builder()->customer()->build(
         id: 'cus_test123',
         email: 'test@example.com'
     );
 
-    $connection = Stripe::financialConnection(
+    $connection = Stripe::builder()->financialConnection()->build(
         customer: $customer,
         permissions: ['transactions', 'payment_method']
     );
@@ -504,17 +501,17 @@ test('can create financial connection configuration', function () {
 });
 
 test('financial connection has default permissions', function () {
-    $customer = StripeCustomer::make(id: 'cus_test');
+    $customer = Stripe::builder()->customer()->build(id: 'cus_test');
 
-    $connection = Stripe::financialConnection(customer: $customer);
+    $connection = Stripe::builder()->financialConnection()->build(customer: $customer);
 
     expect($connection->permissions)->toBe(['transactions']);
 });
 
 test('financial connection toArray returns correct structure', function () {
-    $customer = StripeCustomer::make(id: 'cus_abc123');
+    $customer = Stripe::builder()->customer()->build(id: 'cus_abc123');
 
-    $connection = Stripe::financialConnection(
+    $connection = Stripe::builder()->financialConnection()->build(
         customer: $customer,
         permissions: ['transactions', 'balances']
     );
@@ -538,7 +535,7 @@ use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
 test('can create bank account object', function () {
-    $bankAccount = StripeBankAccount::make(
+    $bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
         id: 'fca_test123',
         category: 'checking',
         displayName: 'Test Checking',
@@ -555,12 +552,12 @@ test('can create bank account object', function () {
 });
 
 test('can create bank account with transaction refresh', function () {
-    $refresh = StripeTransactionRefresh::make(
+    $refresh = Stripe::builder()->financialConnection()->transactionRefresh()->build(
         status: 'succeeded',
         lastAttemptedAt: 1640995200
     );
 
-    $bankAccount = StripeBankAccount::make(
+    $bankAccount = Stripe::builder()->financialConnection()->bankAccount()->build(
         id: 'fca_test',
         transactionRefresh: $refresh
     );
@@ -593,8 +590,8 @@ test('creates financial connection session', function () {
     app()->instance(StripeClient::class, $stripeClient);
 
     // Create connection config
-    $connection = Stripe::financialConnection(
-        customer: Stripe::customer(id: 'cus_test'),
+    $connection = Stripe::builder()->financialConnection()->build(
+        customer: Stripe::builder()->customer()->build(id: 'cus_test'),
         permissions: ['payment_method']
     );
 
@@ -631,8 +628,8 @@ class BankAccountService
     public function createConnectionSession(User $user, array $permissions = ['payment_method']): array
     {
         // Create financial connection configuration
-        $connection = Stripe::financialConnection(
-            customer: Stripe::customer(id: $user->stripe_customer_id),
+        $connection = Stripe::builder()->financialConnection()->build(
+            customer: Stripe::builder()->customer()->build(id: $user->stripe_customer_id),
             permissions: $permissions
         );
 

@@ -24,7 +24,7 @@ Before diving into the code, it's important to understand Stripe's product/price
 
 ```php
 // Example: A SaaS subscription product
-$product = Stripe::product(
+$product = Stripe::builder()->product()->build(
     name: 'Premium Subscription',
     description: 'Access to premium features and priority support'
 );
@@ -41,22 +41,7 @@ The `StripeProductService` provides all standard CRUD operations plus special me
 
 ### Creating Products
 
-There are three ways to create product data objects. All three are functionally equivalent—choose based on your preference and use case.
-
-#### Method 1: Direct DTO Creation (Shortest)
-
-```php
-use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
-
-$productData = StripeProduct::make(
-    name: 'Basic Widget',
-    description: 'A basic widget for everyday use'
-);
-```
-
-This is the most concise approach when you don't need IDE discovery or chaining.
-
-#### Method 2: Using the Builder Pattern (Most Discoverable)
+The builder pattern provides excellent IDE autocompletion and discoverability. It's especially useful for complex nested objects.
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
@@ -67,21 +52,6 @@ $productData = Stripe::builder()->product()->build(
 );
 ```
 
-The builder pattern provides excellent IDE autocompletion and discoverability. It's especially useful for complex nested objects.
-
-#### Method 3: Using the Facade Shortcut (Recommended)
-
-```php
-use EncoreDigitalGroup\Stripe\Stripe;
-
-$productData = Stripe::product(
-    name: 'Basic Widget',
-    description: 'A basic widget for everyday use'
-);
-```
-
-This is the recommended approach—it's concise like Method 1 but provides better discoverability through the Stripe facade. Under the hood, it uses the builder pattern.
-
 #### Creating Products in Stripe
 
 Once you have your product data object, pass it to the service to create it in Stripe:
@@ -90,13 +60,13 @@ Once you have your product data object, pass it to the service to create it in S
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Simple product
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Basic Widget',
     description: 'A basic widget for everyday use'
 ));
 
 // Product with rich metadata
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Premium Software License',
     description: 'Enterprise software with full support',
     active: true,
@@ -131,7 +101,7 @@ echo $product->metadata['category']; // "software"
 
 ```php
 // Update specific fields
-$updatedProduct = Stripe::products()->update('prod_abc123', Stripe::product(
+$updatedProduct = Stripe::products()->update('prod_abc123', Stripe::builder()->product()->build(
     description: 'Updated: Enterprise software with 24/7 support',
     metadata: [
         'category' => 'software',
@@ -193,7 +163,7 @@ The `StripeProduct` class represents all product data with full type safety and 
 ```php
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 
-$product = Stripe::product(
+$product = Stripe::builder()->product()->build(
     id: 'prod_123',                    // string|null - Stripe product ID (read-only on create)
     name: 'Product Name',              // string|null - Product name (required for create)
     description: 'Product description', // string|null - Detailed description
@@ -216,7 +186,7 @@ $product = Stripe::product(
 Metadata allows you to store arbitrary key-value pairs with products:
 
 ```php
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Custom Widget',
     metadata: [
         'category' => 'widgets',
@@ -231,7 +201,7 @@ $product = Stripe::products()->create(Stripe::product(
 $category = $product->metadata['category']; // 'widgets'
 
 // Update metadata (merges with existing)
-Stripe::products()->update($product->id, Stripe::product(
+Stripe::products()->update($product->id, Stripe::builder()->product()->build(
     metadata: [
         'category' => 'premium-widgets',  // Updated
         'color' => 'blue'                // Added
@@ -243,7 +213,7 @@ Stripe::products()->update($product->id, Stripe::product(
 ### Images and Media
 
 ```php
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Stylish Shoes',
     description: 'Comfortable and fashionable footwear',
     images: [
@@ -264,7 +234,7 @@ foreach ($product->images as $imageUrl) {
 For physical products that require shipping:
 
 ```php
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Laptop Computer',
     shippable: true,
     packageDimensions: [
@@ -288,7 +258,7 @@ Stripe supports tax codes for automatic tax calculation:
 
 ```php
 // Product with tax code
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Digital Software',
     taxCode: 'txcd_10000000',  // Software - downloaded
     description: 'Downloadable productivity software'
@@ -303,7 +273,7 @@ $product = Stripe::products()->create(Stripe::product(
 For usage-based or per-unit products:
 
 ```php
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'API Calls',
     unitLabel: 'request',     // Singular form
     description: 'Pay per API request'
@@ -318,7 +288,7 @@ $product = Stripe::products()->create(Stripe::product(
 Link products to your website or documentation:
 
 ```php
-$product = Stripe::products()->create(Stripe::product(
+$product = Stripe::products()->create(Stripe::builder()->product()->build(
     name: 'Premium Plan',
     url: 'https://myapp.com/plans/premium',
     description: 'Full access to all premium features'
@@ -408,7 +378,7 @@ test('can create a product', function () {
         ])
     ]);
 
-    $product = Stripe::products()->create(Stripe::product(
+    $product = Stripe::products()->create(Stripe::builder()->product()->build(
         name: 'Test Product',
         description: 'A test product'
     ));
@@ -436,7 +406,7 @@ test('creates product with metadata', function () {
         ])
     ]);
 
-    $product = Stripe::products()->create(Stripe::product(
+    $product = Stripe::products()->create(Stripe::builder()->product()->build(
         name: 'Product with Metadata',
         metadata: [
             'category' => 'widgets',
@@ -481,7 +451,7 @@ test('create removes read-only fields from payload', function () {
         'products.create' => StripeFixtures::product(['id' => 'prod_new'])
     ]);
 
-    $product = Stripe::product(
+    $product = Stripe::builder()->product()->build(
         id: 'should_be_removed',
         name: 'Test Product',
         created: 1234567890,
@@ -533,7 +503,7 @@ class ProductCatalogService
 
     public function createProduct(array $productData): StripeProduct
     {
-        return Stripe::products()->create(Stripe::product(
+        return Stripe::products()->create(Stripe::builder()->product()->build(
             name: $productData['name'],
             description: $productData['description'],
             active: $productData['active'] ?? true,
@@ -621,7 +591,7 @@ class ProductLifecycleService
         // Get current product to merge metadata
         $currentProduct = Stripe::products()->get($productId);
 
-        return Stripe::products()->update($productId, Stripe::product(
+        return Stripe::products()->update($productId, Stripe::builder()->product()->build(
             metadata: array_merge($currentProduct->metadata ?? [], $metadata)
         ));
     }
@@ -710,7 +680,7 @@ class SafeProductService
     public function createProductSafely(array $productData): ?StripeProduct
     {
         try {
-            return Stripe::products()->create(Stripe::product(
+            return Stripe::products()->create(Stripe::builder()->product()->build(
                 name: $productData['name'],
                 description: $productData['description'] ?? null,
                 active: $productData['active'] ?? true,
