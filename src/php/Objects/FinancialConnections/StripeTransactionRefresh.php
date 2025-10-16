@@ -7,27 +7,29 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
+use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 
 class StripeTransactionRefresh
 {
     use HasMake;
+    use HasTimestamps;
 
-    // TODO: Change Timestamps from INT to CarbonImmutable
     public function __construct(
-        public ?string $id = null,
-        public ?int $lastAttemptedAt = null,
-        public ?int $nextRefreshAvailableAt = null,
-        public ?string $status = null
+        public ?string          $id = null,
+        public ?CarbonImmutable $lastAttemptedAt = null,
+        public ?CarbonImmutable $nextRefreshAvailableAt = null,
+        public ?string          $status = null
     ) {}
 
     public function toArray(): array
     {
         $array = [
             "id" => $this->id,
-            "last_attempted_at" => $this->lastAttemptedAt,
-            "next_refresh_available_at" => $this->nextRefreshAvailableAt,
+            "last_attempted_at" => self::carbonToTimestamp($this->lastAttemptedAt),
+            "next_refresh_available_at" => self::carbonToTimestamp($this->nextRefreshAvailableAt),
             "status" => $this->status,
         ];
 

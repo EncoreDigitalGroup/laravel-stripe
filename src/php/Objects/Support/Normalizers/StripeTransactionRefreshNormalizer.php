@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -40,8 +41,15 @@ class StripeTransactionRefreshNormalizer extends AbstractNormalizer implements D
 
         $transactionRefresh = new StripeTransactionRefresh;
         $transactionRefresh->id = $data["id"] ?? null;
-        $transactionRefresh->nextRefreshAvailableAt = $data["next_refresh_available_at"] ?? null;
-        $transactionRefresh->lastAttemptedAt = $data["last_attempted_at"] ?? null;
+
+        if (isset($data["next_refresh_available_at"])) {
+            $transactionRefresh->nextRefreshAvailableAt = CarbonImmutable::createFromTimestamp($data["next_refresh_available_at"]);
+        }
+
+        if (isset($data["last_attempted_at"])) {
+            $transactionRefresh->lastAttemptedAt = CarbonImmutable::createFromTimestamp($data["last_attempted_at"]);
+        }
+
         $transactionRefresh->status = $data["status"] ?? null;
 
         return $transactionRefresh;

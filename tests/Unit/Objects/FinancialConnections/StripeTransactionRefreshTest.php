@@ -5,22 +5,26 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
 describe("StripeTransactionRefresh", function (): void {
     test("can create StripeTransactionRefresh using make method", function (): void {
+        $lastAttemptedAt = CarbonImmutable::now();
+        $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
+
         $transactionRefresh = StripeTransactionRefresh::make(
             id: "tr_123",
-            lastAttemptedAt: 1640995200,
-            nextRefreshAvailableAt: 1640995800,
+            lastAttemptedAt: $lastAttemptedAt,
+            nextRefreshAvailableAt: $nextRefreshAvailableAt,
             status: "succeeded"
         );
 
         expect($transactionRefresh)
             ->toBeInstanceOf(StripeTransactionRefresh::class)
             ->and($transactionRefresh->id)->toBe("tr_123")
-            ->and($transactionRefresh->lastAttemptedAt)->toBe(1640995200)
-            ->and($transactionRefresh->nextRefreshAvailableAt)->toBe(1640995800)
+            ->and($transactionRefresh->lastAttemptedAt->timestamp)->toBe($lastAttemptedAt->timestamp)
+            ->and($transactionRefresh->nextRefreshAvailableAt->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
             ->and($transactionRefresh->status)->toBe("succeeded");
     });
 
@@ -49,10 +53,13 @@ describe("StripeTransactionRefresh", function (): void {
     });
 
     test("toArray returns correct structure", function (): void {
+        $lastAttemptedAt = CarbonImmutable::now();
+        $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
+
         $transactionRefresh = StripeTransactionRefresh::make(
             id: "tr_456",
-            lastAttemptedAt: 1640995200,
-            nextRefreshAvailableAt: 1640995800,
+            lastAttemptedAt: $lastAttemptedAt,
+            nextRefreshAvailableAt: $nextRefreshAvailableAt,
             status: "failed"
         );
 
@@ -61,8 +68,8 @@ describe("StripeTransactionRefresh", function (): void {
         expect($array)
             ->toBeArray()
             ->and($array["id"])->toBe("tr_456")
-            ->and($array["last_attempted_at"])->toBe(1640995200)
-            ->and($array["next_refresh_available_at"])->toBe(1640995800)
+            ->and($array["last_attempted_at"])->toBe($lastAttemptedAt->timestamp)
+            ->and($array["next_refresh_available_at"])->toBe($nextRefreshAvailableAt->timestamp)
             ->and($array["status"])->toBe("failed");
     });
 
