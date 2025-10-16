@@ -17,5 +17,5 @@ jobs:
                     generateReleaseNotes: true
                     isDraft: false
                     repository: ${{ github.repository }}
-                    tagName: ${{ github.head_ref }}
+                    tagName: ${{ github.ref_name }}
                     token: ${{ secrets.GITHUB_TOKEN }}

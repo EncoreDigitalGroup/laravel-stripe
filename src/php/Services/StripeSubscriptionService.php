@@ -58,7 +58,7 @@ class StripeSubscriptionService
     }
 
     /** @throws ApiErrorException */
-    public function cancel(string $subscriptionId): StripeSubscription
+    public function cancelImmediately(string $subscriptionId): StripeSubscription
     {
         $stripeSubscription = $this->stripe->subscriptions->cancel($subscriptionId);
 
