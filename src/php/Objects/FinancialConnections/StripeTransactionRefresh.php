@@ -18,10 +18,10 @@ class StripeTransactionRefresh
     use HasTimestamps;
 
     public function __construct(
-        public ?string          $id = null,
+        public ?string $id = null,
         public ?CarbonImmutable $lastAttemptedAt = null,
         public ?CarbonImmutable $nextRefreshAvailableAt = null,
-        public ?string          $status = null
+        public ?string $status = null
     ) {}
 
     public function toArray(): array
