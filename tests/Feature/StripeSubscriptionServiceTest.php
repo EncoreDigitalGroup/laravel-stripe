@@ -89,7 +89,7 @@ test("can cancel a subscription immediately", function (): void {
     ]);
 
     $service = StripeSubscriptionService::make();
-    $result = $service->cancel("sub_123");
+    $result = $service->cancelImmediately("sub_123");
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
