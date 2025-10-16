@@ -5,14 +5,15 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeTransactionRefreshNormalizer;
 
 test("can normalize StripeTransactionRefresh to array", function (): void {
     $transactionRefresh = new StripeTransactionRefresh;
     $transactionRefresh->id = "txn_refresh_123";
-    $transactionRefresh->lastAttemptedAt = 1234567890;
-    $transactionRefresh->nextRefreshAvailableAt = 1234567900;
+    $transactionRefresh->lastAttemptedAt = CarbonImmutable::now();
+    $transactionRefresh->nextRefreshAvailableAt = $transactionRefresh->lastAttemptedAt->addDay();
     $transactionRefresh->status = "pending";
 
     $normalizer = new StripeTransactionRefreshNormalizer;
@@ -20,8 +21,8 @@ test("can normalize StripeTransactionRefresh to array", function (): void {
 
     expect($result)->toBe([
         "id" => "txn_refresh_123",
-        "lastAttemptedAt" => 1234567890,
-        "nextRefreshAvailableAt" => 1234567900,
+        "lastAttemptedAt" => $transactionRefresh->lastAttemptedAt,
+        "nextRefreshAvailableAt" => $transactionRefresh->nextRefreshAvailableAt,
         "status" => "pending",
     ]);
 });
@@ -34,10 +35,13 @@ test("normalize throws exception for invalid type", function (): void {
 });
 
 test("can denormalize array to StripeTransactionRefresh", function (): void {
+    $lastAttemptedAt = CarbonImmutable::now();
+    $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
+
     $data = [
         "id" => "txn_refresh_456",
-        "last_attempted_at" => 1111111111,
-        "next_refresh_available_at" => 1111111120,
+        "last_attempted_at" => $lastAttemptedAt->timestamp,
+        "next_refresh_available_at" => $nextRefreshAvailableAt->timestamp,
         "status" => "succeeded",
     ];
 
@@ -46,8 +50,8 @@ test("can denormalize array to StripeTransactionRefresh", function (): void {
 
     expect($result)->toBeInstanceOf(StripeTransactionRefresh::class)
         ->and($result->id)->toBe("txn_refresh_456")
-        ->and($result->lastAttemptedAt)->toBe(1111111111)
-        ->and($result->nextRefreshAvailableAt)->toBe(1111111120)
+        ->and($result->lastAttemptedAt->timestamp)->toBe($lastAttemptedAt->timestamp)
+        ->and($result->nextRefreshAvailableAt->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
         ->and($result->status)->toBe("succeeded");
 });
 

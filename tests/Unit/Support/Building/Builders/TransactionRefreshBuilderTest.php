@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
 
@@ -22,19 +23,22 @@ describe("TransactionRefreshBuilder", function (): void {
     });
 
     test("can build transaction refresh with all parameters", function (): void {
+        $lastAttemptedAt = CarbonImmutable::now();
+        $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
+
         $builder = new TransactionRefreshBuilder;
         $transactionRefresh = $builder->build(
             id: "tr_123",
-            lastAttemptedAt: 1640995200,
-            nextRefreshAvailableAt: 1640995800,
+            lastAttemptedAt: $lastAttemptedAt,
+            nextRefreshAvailableAt: $nextRefreshAvailableAt,
             status: "succeeded"
         );
 
         expect($transactionRefresh)
             ->toBeInstanceOf(StripeTransactionRefresh::class)
             ->and($transactionRefresh->id)->toBe("tr_123")
-            ->and($transactionRefresh->lastAttemptedAt)->toBe(1640995200)
-            ->and($transactionRefresh->nextRefreshAvailableAt)->toBe(1640995800)
+            ->and($transactionRefresh->lastAttemptedAt->timestamp)->toBe($lastAttemptedAt->timestamp)
+            ->and($transactionRefresh->nextRefreshAvailableAt->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
             ->and($transactionRefresh->status)->toBe("succeeded");
     });
 
