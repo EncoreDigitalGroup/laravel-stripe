@@ -43,13 +43,6 @@ describe("StripeBuilder", function (): void {
             expect($priceBuilder)->toBeInstanceOf(PriceBuilder::class);
         });
 
-        test("can create subscription builder", function (): void {
-            $builder = new StripeBuilder;
-            $subscriptionBuilder = $builder->subscription();
-
-            expect($subscriptionBuilder)->toBeInstanceOf(SubscriptionBuilder::class);
-        });
-
         test("can create financial connection builder", function (): void {
             $builder = new StripeBuilder;
             $financialConnectionBuilder = $builder->financialConnection();

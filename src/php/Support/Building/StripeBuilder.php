@@ -42,16 +42,6 @@ class StripeBuilder
         return new PriceBuilder;
     }
 
-    public function subscription(): SubscriptionBuilder
-    {
-        return new SubscriptionBuilder;
-    }
-
-    public function subscriptionSchedule(): SubscriptionScheduleBuilder
-    {
-        return new SubscriptionScheduleBuilder;
-    }
-
     public function financialConnection(): FinancialConnectionBuilder
     {
         return new FinancialConnectionBuilder;
@@ -104,11 +94,5 @@ class StripeBuilder
     {
         return new TransactionRefreshBuilder;
     }
-
-    public function subscriptionSchedulePhase(): SubscriptionSchedulePhaseBuilder
-    {
-        return new SubscriptionSchedulePhaseBuilder;
-    }
-
     #endregion
 }
