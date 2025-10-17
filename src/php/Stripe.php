@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
@@ -49,6 +50,11 @@ class Stripe
     public static function subscriptions(): StripeSubscriptionService
     {
         return StripeSubscriptionService::make();
+    }
+
+    public static function subscriptionSchedules(): StripeSubscriptionScheduleService
+    {
+        return StripeSubscriptionScheduleService::make();
     }
 
     #endregion

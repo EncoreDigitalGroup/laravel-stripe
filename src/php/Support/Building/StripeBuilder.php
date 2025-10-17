@@ -17,6 +17,8 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\ProductBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionBuilder;
+use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionScheduleBuilder;
+use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionSchedulePhaseBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;
@@ -43,6 +45,11 @@ class StripeBuilder
     public function subscription(): SubscriptionBuilder
     {
         return new SubscriptionBuilder;
+    }
+
+    public function subscriptionSchedule(): SubscriptionScheduleBuilder
+    {
+        return new SubscriptionScheduleBuilder;
     }
 
     public function financialConnection(): FinancialConnectionBuilder
@@ -96,6 +103,11 @@ class StripeBuilder
     public function transactionRefresh(): TransactionRefreshBuilder
     {
         return new TransactionRefreshBuilder;
+    }
+
+    public function subscriptionSchedulePhase(): SubscriptionSchedulePhaseBuilder
+    {
+        return new SubscriptionSchedulePhaseBuilder;
     }
 
     #endregion
