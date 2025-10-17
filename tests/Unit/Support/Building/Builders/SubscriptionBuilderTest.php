@@ -20,8 +20,8 @@ describe("SubscriptionBuilder", function (): void {
 
         expect($subscription)
             ->toBeInstanceOf(StripeSubscription::class)
-            ->and($subscription->customer)->toBe("cus_123")
-            ->and($subscription->items)->toBe([["price" => "price_123"]]);
+            ->and($subscription->customer())->toBe("cus_123")
+            ->and($subscription->items())->toBe([["price" => "price_123"]]);
     });
 
     test("can build subscription with all parameters", function (): void {
@@ -47,19 +47,19 @@ describe("SubscriptionBuilder", function (): void {
 
         expect($subscription)
             ->toBeInstanceOf(StripeSubscription::class)
-            ->and($subscription->id)->toBe("sub_123")
-            ->and($subscription->customer)->toBe("cus_456")
-            ->and($subscription->status)->toBe(SubscriptionStatus::Active)
-            ->and($subscription->currentPeriodStart)->toBe($currentPeriodStart)
-            ->and($subscription->currentPeriodEnd)->toBe($currentPeriodEnd)
-            ->and($subscription->items)->toBe([
+            ->and($subscription->id())->toBe("sub_123")
+            ->and($subscription->customer())->toBe("cus_456")
+            ->and($subscription->status())->toBe(SubscriptionStatus::Active)
+            ->and($subscription->currentPeriodStart())->toBe($currentPeriodStart)
+            ->and($subscription->currentPeriodEnd())->toBe($currentPeriodEnd)
+            ->and($subscription->items())->toBe([
                 ["price" => "price_123", "quantity" => 2],
                 ["price" => "price_456", "quantity" => 1],
             ])
-            ->and($subscription->metadata)->toBe(["plan" => "premium"])
-            ->and($subscription->cancelAt)->toBe($cancelAt)
-            ->and($subscription->canceledAt)->toBeNull()
-            ->and($subscription->cancelAtPeriodEnd)->toBeFalse();
+            ->and($subscription->metadata())->toBe(["plan" => "premium"])
+            ->and($subscription->cancelAt())->toBe($cancelAt)
+            ->and($subscription->canceledAt())->toBeNull()
+            ->and($subscription->cancelAtPeriodEnd())->toBeFalse();
     });
 
     test("can build subscription with minimal parameters", function (): void {
@@ -68,8 +68,8 @@ describe("SubscriptionBuilder", function (): void {
 
         expect($subscription)
             ->toBeInstanceOf(StripeSubscription::class)
-            ->and($subscription->id)->toBeNull()
-            ->and($subscription->customer)->toBeNull()
-            ->and($subscription->items)->toBeNull();
+            ->and($subscription->id())->toBeNull()
+            ->and($subscription->customer())->toBeNull()
+            ->and($subscription->items())->toBeNull();
     });
 });

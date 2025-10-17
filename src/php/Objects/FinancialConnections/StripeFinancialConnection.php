@@ -8,7 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeFinancialConnection
 {

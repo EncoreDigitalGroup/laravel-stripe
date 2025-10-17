@@ -20,47 +20,46 @@ test("can create StripeSubscriptionSchedulePhase using make method", function ()
     ]);
     $taxRates = collect(["txr_test123", "txr_test456"]);
 
-    $phase = StripeSubscriptionSchedulePhase::make(
-        startDate: $now,
-        endDate: $endDate,
-        items: $items,
-        iterations: 3,
-        prorationBehavior: SubscriptionScheduleProrationBehavior::None,
-        trialPeriodDays: 14,
-        trialEnd: $trialEnd,
-        defaultPaymentMethod: "pm_test123",
-        defaultTaxRates: $taxRates,
-        collectionMethod: "charge_automatically",
-        metadata: ["key" => "value"],
-    );
+    $phase = StripeSubscriptionSchedulePhase::make()
+        ->withStartDate($now)
+        ->withEndDate($endDate)
+        ->withItems($items)
+        ->withIterations(3)
+        ->withProrationBehavior(SubscriptionScheduleProrationBehavior::None)
+        ->withTrialPeriodDays(14)
+        ->withTrialEnd($trialEnd)
+        ->withDefaultPaymentMethod("pm_test123")
+        ->withDefaultTaxRates($taxRates)
+        ->withCollectionMethod("charge_automatically")
+        ->withMetadata(["key" => "value"]);
 
-    expect($phase->startDate)->toBe($now)
-        ->and($phase->endDate)->toBe($endDate)
-        ->and($phase->items)->toBe($items)
-        ->and($phase->iterations)->toBe(3)
-        ->and($phase->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::None)
-        ->and($phase->trialPeriodDays)->toBe(14)
-        ->and($phase->trialEnd)->toBe($trialEnd)
-        ->and($phase->defaultPaymentMethod)->toBe("pm_test123")
-        ->and($phase->defaultTaxRates)->toBe($taxRates)
-        ->and($phase->collectionMethod)->toBe("charge_automatically")
-        ->and($phase->metadata)->toBe(["key" => "value"]);
+    expect($phase->startDate())->toBe($now)
+        ->and($phase->endDate())->toBe($endDate)
+        ->and($phase->items())->toBe($items)
+        ->and($phase->iterations())->toBe(3)
+        ->and($phase->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
+        ->and($phase->trialPeriodDays())->toBe(14)
+        ->and($phase->trialEnd())->toBe($trialEnd)
+        ->and($phase->defaultPaymentMethod())->toBe("pm_test123")
+        ->and($phase->defaultTaxRates())->toBe($taxRates)
+        ->and($phase->collectionMethod())->toBe("charge_automatically")
+        ->and($phase->metadata())->toBe(["key" => "value"]);
 });
 
 test("can create StripeSubscriptionSchedulePhase with nullable parameters", function (): void {
     $phase = StripeSubscriptionSchedulePhase::make();
 
-    expect($phase->startDate)->toBeNull()
-        ->and($phase->endDate)->toBeNull()
-        ->and($phase->items)->toBeNull()
-        ->and($phase->iterations)->toBeNull()
-        ->and($phase->prorationBehavior)->toBeNull()
-        ->and($phase->trialPeriodDays)->toBeNull()
-        ->and($phase->trialEnd)->toBeNull()
-        ->and($phase->defaultPaymentMethod)->toBeNull()
-        ->and($phase->defaultTaxRates)->toBeNull()
-        ->and($phase->collectionMethod)->toBeNull()
-        ->and($phase->metadata)->toBeNull();
+    expect($phase->startDate())->toBeNull()
+        ->and($phase->endDate())->toBeNull()
+        ->and($phase->items())->toBeNull()
+        ->and($phase->iterations())->toBeNull()
+        ->and($phase->prorationBehavior())->toBeNull()
+        ->and($phase->trialPeriodDays())->toBeNull()
+        ->and($phase->trialEnd())->toBeNull()
+        ->and($phase->defaultPaymentMethod())->toBeNull()
+        ->and($phase->defaultTaxRates())->toBeNull()
+        ->and($phase->collectionMethod())->toBeNull()
+        ->and($phase->metadata())->toBeNull();
 });
 
 test("can convert from Stripe object with all fields", function (): void {
@@ -89,28 +88,28 @@ test("can convert from Stripe object with all fields", function (): void {
 
     $phase = StripeSubscriptionSchedulePhase::fromStripeObject($stripeObject);
 
-    expect($phase->startDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($phase->startDate->timestamp)->toBe(1640995200)
-        ->and($phase->endDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($phase->endDate->timestamp)->toBe(1643673600)
-        ->and($phase->iterations)->toBe(3)
-        ->and($phase->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::AlwaysInvoice)
-        ->and($phase->trialPeriodDays)->toBe(7)
-        ->and($phase->trialEnd)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($phase->trialEnd->timestamp)->toBe(1641600000)
-        ->and($phase->defaultPaymentMethod)->toBe("pm_test123")
-        ->and($phase->collectionMethod)->toBe("send_invoice")
-        ->and($phase->invoiceSettings)->toBe("some_settings")
-        ->and($phase->metadata)->toBe(["phase" => "test"]);
+    expect($phase->startDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($phase->startDate()->timestamp)->toBe(1640995200)
+        ->and($phase->endDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($phase->endDate()->timestamp)->toBe(1643673600)
+        ->and($phase->iterations())->toBe(3)
+        ->and($phase->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::AlwaysInvoice)
+        ->and($phase->trialPeriodDays())->toBe(7)
+        ->and($phase->trialEnd())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($phase->trialEnd()->timestamp)->toBe(1641600000)
+        ->and($phase->defaultPaymentMethod())->toBe("pm_test123")
+        ->and($phase->collectionMethod())->toBe("send_invoice")
+        ->and($phase->invoiceSettings())->toBe("some_settings")
+        ->and($phase->metadata())->toBe(["phase" => "test"]);
 
-    expect($phase->items)->toHaveCount(1)
-        ->and($phase->items->first()["price"])->toBe("price_test123")
-        ->and($phase->items->first()["quantity"])->toBe(2)
-        ->and($phase->items->first()["metadata"])->toBe(["item" => "test"]);
+    expect($phase->items())->toHaveCount(1)
+        ->and($phase->items()->first()["price"])->toBe("price_test123")
+        ->and($phase->items()->first()["quantity"])->toBe(2)
+        ->and($phase->items()->first()["metadata"])->toBe(["item" => "test"]);
 
-    expect($phase->defaultTaxRates)->toHaveCount(2)
-        ->and($phase->defaultTaxRates->first())->toBe("txr_test123")
-        ->and($phase->defaultTaxRates->last())->toBe("txr_test456");
+    expect($phase->defaultTaxRates())->toHaveCount(2)
+        ->and($phase->defaultTaxRates()->first())->toBe("txr_test123")
+        ->and($phase->defaultTaxRates()->last())->toBe("txr_test456");
 });
 
 test("handles missing optional fields in fromStripeObject", function (): void {
@@ -120,13 +119,13 @@ test("handles missing optional fields in fromStripeObject", function (): void {
 
     $phase = StripeSubscriptionSchedulePhase::fromStripeObject($stripeObject);
 
-    expect($phase->startDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($phase->endDate)->toBeNull()
-        ->and($phase->items)->toBeNull()
-        ->and($phase->iterations)->toBeNull()
-        ->and($phase->prorationBehavior)->toBeNull()
-        ->and($phase->trialPeriodDays)->toBeNull()
-        ->and($phase->defaultTaxRates)->toBeNull();
+    expect($phase->startDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($phase->endDate())->toBeNull()
+        ->and($phase->items())->toBeNull()
+        ->and($phase->iterations())->toBeNull()
+        ->and($phase->prorationBehavior())->toBeNull()
+        ->and($phase->trialPeriodDays())->toBeNull()
+        ->and($phase->defaultTaxRates())->toBeNull();
 });
 
 test("converts to array with all fields", function (): void {

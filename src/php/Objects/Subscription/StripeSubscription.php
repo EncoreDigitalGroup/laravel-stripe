@@ -17,8 +17,8 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Subscription;
 
 class StripeSubscription
@@ -26,27 +26,25 @@ class StripeSubscription
     use HasMake;
     use HasTimestamps;
 
-    public function __construct(
-        public ?string $id = null,
-        public ?string $customer = null,
-        public ?SubscriptionStatus $status = null,
-        public ?CarbonImmutable $currentPeriodStart = null,
-        public ?CarbonImmutable $currentPeriodEnd = null,
-        public ?CarbonImmutable $cancelAt = null,
-        public ?CarbonImmutable $canceledAt = null,
-        public ?CarbonImmutable $trialStart = null,
-        public ?CarbonImmutable $trialEnd = null,
-        public ?array $items = null,
-        public ?string $defaultPaymentMethod = null,
-        public ?array $metadata = null,
-        public ?string $currency = null,
-        public ?CollectionMethod $collectionMethod = null,
-        public ?StripeBillingCycleAnchorConfig $billingCycleAnchorConfig = null,
-        public ?ProrationBehavior $prorationBehavior = null,
-        public ?bool $cancelAtPeriodEnd = null,
-        public ?int $daysUntilDue = null,
-        public ?string $description = null
-    ) {}
+    private ?string $id = null;
+    private ?string $customer = null;
+    private ?SubscriptionStatus $status = null;
+    private ?CarbonImmutable $currentPeriodStart = null;
+    private ?CarbonImmutable $currentPeriodEnd = null;
+    private ?CarbonImmutable $cancelAt = null;
+    private ?CarbonImmutable $canceledAt = null;
+    private ?CarbonImmutable $trialStart = null;
+    private ?CarbonImmutable $trialEnd = null;
+    private ?array $items = null;
+    private ?string $defaultPaymentMethod = null;
+    private ?array $metadata = null;
+    private ?string $currency = null;
+    private ?CollectionMethod $collectionMethod = null;
+    private ?StripeBillingCycleAnchorConfig $billingCycleAnchorConfig = null;
+    private ?ProrationBehavior $prorationBehavior = null;
+    private ?bool $cancelAtPeriodEnd = null;
+    private ?int $daysUntilDue = null;
+    private ?string $description = null;
 
     /**
      * Create a StripeSubscription instance from a Stripe API Subscription object
@@ -61,27 +59,67 @@ class StripeSubscription
         $billingCycleAnchorConfig = self::extractBillingCycleAnchorConfig($stripeSubscription);
         $prorationBehavior = self::extractProrationBehavior($stripeSubscription->proration_behavior ?? null);
 
-        return self::make(
-            id: $stripeSubscription->id,
-            customer: $customer,
-            status: $status,
-            currentPeriodStart: self::timestampToCarbon($stripeSubscription->current_period_start ?? null),
-            currentPeriodEnd: self::timestampToCarbon($stripeSubscription->current_period_end ?? null),
-            cancelAt: self::timestampToCarbon($stripeSubscription->cancel_at ?? null),
-            canceledAt: self::timestampToCarbon($stripeSubscription->canceled_at ?? null),
-            trialStart: self::timestampToCarbon($stripeSubscription->trial_start ?? null),
-            trialEnd: self::timestampToCarbon($stripeSubscription->trial_end ?? null),
-            items: $items,
-            defaultPaymentMethod: $defaultPaymentMethod,
-            metadata: $stripeSubscription->metadata->toArray(),
-            currency: $stripeSubscription->currency ?? null,
-            collectionMethod: $collectionMethod,
-            billingCycleAnchorConfig: $billingCycleAnchorConfig,
-            prorationBehavior: $prorationBehavior,
-            cancelAtPeriodEnd: $stripeSubscription->cancel_at_period_end ?? null,
-            daysUntilDue: $stripeSubscription->days_until_due ?? null,
-            description: $stripeSubscription->description ?? null
-        );
+        $instance = self::make();
+
+        if ($stripeSubscription->id) {
+            $instance = $instance->withId($stripeSubscription->id);
+        }
+        if ($customer) {
+            $instance = $instance->withCustomer($customer);
+        }
+        if ($status) {
+            $instance = $instance->withStatus($status);
+        }
+        if ($stripeSubscription->current_period_start ?? null) {
+            $instance = $instance->withCurrentPeriodStart(self::timestampToCarbon($stripeSubscription->current_period_start));
+        }
+        if ($stripeSubscription->current_period_end ?? null) {
+            $instance = $instance->withCurrentPeriodEnd(self::timestampToCarbon($stripeSubscription->current_period_end));
+        }
+        if ($stripeSubscription->cancel_at ?? null) {
+            $instance = $instance->withCancelAt(self::timestampToCarbon($stripeSubscription->cancel_at));
+        }
+        if ($stripeSubscription->canceled_at ?? null) {
+            $instance = $instance->withCanceledAt(self::timestampToCarbon($stripeSubscription->canceled_at));
+        }
+        if ($stripeSubscription->trial_start ?? null) {
+            $instance = $instance->withTrialStart(self::timestampToCarbon($stripeSubscription->trial_start));
+        }
+        if ($stripeSubscription->trial_end ?? null) {
+            $instance = $instance->withTrialEnd(self::timestampToCarbon($stripeSubscription->trial_end));
+        }
+        if ($items) {
+            $instance = $instance->withItems($items);
+        }
+        if ($defaultPaymentMethod) {
+            $instance = $instance->withDefaultPaymentMethod($defaultPaymentMethod);
+        }
+        if ($stripeSubscription->metadata) {
+            $instance = $instance->withMetadata($stripeSubscription->metadata->toArray());
+        }
+        if ($stripeSubscription->currency ?? null) {
+            $instance = $instance->withCurrency($stripeSubscription->currency);
+        }
+        if ($collectionMethod) {
+            $instance = $instance->withCollectionMethod($collectionMethod);
+        }
+        if ($billingCycleAnchorConfig) {
+            $instance = $instance->withBillingCycleAnchorConfig($billingCycleAnchorConfig);
+        }
+        if ($prorationBehavior) {
+            $instance = $instance->withProrationBehavior($prorationBehavior);
+        }
+        if (isset($stripeSubscription->cancel_at_period_end)) {
+            $instance = $instance->withCancelAtPeriodEnd($stripeSubscription->cancel_at_period_end);
+        }
+        if ($stripeSubscription->days_until_due ?? null) {
+            $instance = $instance->withDaysUntilDue($stripeSubscription->days_until_due);
+        }
+        if ($stripeSubscription->description ?? null) {
+            $instance = $instance->withDescription($stripeSubscription->description);
+        }
+
+        return $instance;
     }
 
     private static function extractItems(Subscription $stripeSubscription): ?array
@@ -151,13 +189,25 @@ class StripeSubscription
             return null;
         }
 
-        return StripeBillingCycleAnchorConfig::make(
-            dayOfMonth: $config->day_of_month ?? null,
-            month: $config->month ?? null,
-            hour: $config->hour ?? null,
-            minute: $config->minute ?? null,
-            second: $config->second ?? null
-        );
+        $instance = StripeBillingCycleAnchorConfig::make();
+
+        if (isset($config->day_of_month)) {
+            $instance = $instance->withDayOfMonth($config->day_of_month);
+        }
+        if (isset($config->month)) {
+            $instance = $instance->withMonth($config->month);
+        }
+        if (isset($config->hour)) {
+            $instance = $instance->withHour($config->hour);
+        }
+        if (isset($config->minute)) {
+            $instance = $instance->withMinute($config->minute);
+        }
+        if (isset($config->second)) {
+            $instance = $instance->withSecond($config->second);
+        }
+
+        return $instance;
     }
 
     private static function extractProrationBehavior(?string $prorationBehavior): ?ProrationBehavior
@@ -171,13 +221,12 @@ class StripeSubscription
 
     public function issueFirstInvoiceOn(CarbonInterface $date): self
     {
-        $this->billingCycleAnchorConfig = StripeBillingCycleAnchorConfig::make(
-            dayOfMonth: $date->day,
-            month: $date->month,
-            hour: $date->hour,
-            minute: $date->minute,
-            second: $date->second
-        );
+        $this->billingCycleAnchorConfig = StripeBillingCycleAnchorConfig::make()
+            ->withDayOfMonth($date->day)
+            ->withMonth($date->month)
+            ->withHour($date->hour)
+            ->withMinute($date->minute)
+            ->withSecond($date->second);
 
         return $this;
     }
@@ -238,7 +287,7 @@ class StripeSubscription
 
         // If there's an existing schedule, preserve its phases
         if ($currentSchedule) {
-            foreach ($currentSchedule->phases as $phase) {
+            foreach ($currentSchedule->phases() as $phase) {
                 $phases[] = [
                     "items" => $phase->items->toArray()
                 ];
@@ -252,17 +301,226 @@ class StripeSubscription
 
         if ($currentSchedule) {
             // Update existing schedule
-            $schedule = StripeSubscriptionSchedule::make(
-                phases: collect($phases)
-            );
-            return $scheduleService->update($currentSchedule->id, $schedule);
+            $schedule = StripeSubscriptionSchedule::make()
+                ->withPhases(collect($phases));
+            return $scheduleService->update($currentSchedule->id(), $schedule);
         }
         // Create new schedule
-        $schedule = StripeSubscriptionSchedule::make(
-            customer: $this->customer,
-            subscription: $this->id,
-            phases: collect($phases)
-        );
+        $schedule = StripeSubscriptionSchedule::make()
+            ->withCustomer($this->customer)
+            ->withSubscription($this->id)
+            ->withPhases(collect($phases));
         return $scheduleService->create($schedule);
+    }
+
+    // Fluent setters
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function withCustomer(string $customer): self
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    public function withStatus(SubscriptionStatus $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function withCurrentPeriodStart(CarbonImmutable $currentPeriodStart): self
+    {
+        $this->currentPeriodStart = $currentPeriodStart;
+        return $this;
+    }
+
+    public function withCurrentPeriodEnd(CarbonImmutable $currentPeriodEnd): self
+    {
+        $this->currentPeriodEnd = $currentPeriodEnd;
+        return $this;
+    }
+
+    public function withCancelAt(CarbonImmutable $cancelAt): self
+    {
+        $this->cancelAt = $cancelAt;
+        return $this;
+    }
+
+    public function withCanceledAt(CarbonImmutable $canceledAt): self
+    {
+        $this->canceledAt = $canceledAt;
+        return $this;
+    }
+
+    public function withTrialStart(CarbonImmutable $trialStart): self
+    {
+        $this->trialStart = $trialStart;
+        return $this;
+    }
+
+    public function withTrialEnd(CarbonImmutable $trialEnd): self
+    {
+        $this->trialEnd = $trialEnd;
+        return $this;
+    }
+
+    public function withItems(array $items): self
+    {
+        $this->items = $items;
+        return $this;
+    }
+
+    public function withDefaultPaymentMethod(string $defaultPaymentMethod): self
+    {
+        $this->defaultPaymentMethod = $defaultPaymentMethod;
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    public function withCurrency(string $currency): self
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    public function withCollectionMethod(CollectionMethod $collectionMethod): self
+    {
+        $this->collectionMethod = $collectionMethod;
+        return $this;
+    }
+
+    public function withBillingCycleAnchorConfig(StripeBillingCycleAnchorConfig $billingCycleAnchorConfig): self
+    {
+        $this->billingCycleAnchorConfig = $billingCycleAnchorConfig;
+        return $this;
+    }
+
+    public function withProrationBehavior(ProrationBehavior $prorationBehavior): self
+    {
+        $this->prorationBehavior = $prorationBehavior;
+        return $this;
+    }
+
+    public function withCancelAtPeriodEnd(bool $cancelAtPeriodEnd): self
+    {
+        $this->cancelAtPeriodEnd = $cancelAtPeriodEnd;
+        return $this;
+    }
+
+    public function withDaysUntilDue(int $daysUntilDue): self
+    {
+        $this->daysUntilDue = $daysUntilDue;
+        return $this;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    // Getter methods
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+
+    public function customer(): ?string
+    {
+        return $this->customer;
+    }
+
+    public function status(): ?SubscriptionStatus
+    {
+        return $this->status;
+    }
+
+    public function currentPeriodStart(): ?CarbonImmutable
+    {
+        return $this->currentPeriodStart;
+    }
+
+    public function currentPeriodEnd(): ?CarbonImmutable
+    {
+        return $this->currentPeriodEnd;
+    }
+
+    public function cancelAt(): ?CarbonImmutable
+    {
+        return $this->cancelAt;
+    }
+
+    public function canceledAt(): ?CarbonImmutable
+    {
+        return $this->canceledAt;
+    }
+
+    public function trialStart(): ?CarbonImmutable
+    {
+        return $this->trialStart;
+    }
+
+    public function trialEnd(): ?CarbonImmutable
+    {
+        return $this->trialEnd;
+    }
+
+    public function items(): ?array
+    {
+        return $this->items;
+    }
+
+    public function defaultPaymentMethod(): ?string
+    {
+        return $this->defaultPaymentMethod;
+    }
+
+    public function metadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function currency(): ?string
+    {
+        return $this->currency;
+    }
+
+    public function collectionMethod(): ?CollectionMethod
+    {
+        return $this->collectionMethod;
+    }
+
+    public function billingCycleAnchorConfig(): ?StripeBillingCycleAnchorConfig
+    {
+        return $this->billingCycleAnchorConfig;
+    }
+
+    public function prorationBehavior(): ?ProrationBehavior
+    {
+        return $this->prorationBehavior;
+    }
+
+    public function cancelAtPeriodEnd(): ?bool
+    {
+        return $this->cancelAtPeriodEnd;
+    }
+
+    public function daysUntilDue(): ?int
+    {
+        return $this->daysUntilDue;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
     }
 }

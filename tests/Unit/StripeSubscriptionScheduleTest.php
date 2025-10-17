@@ -18,41 +18,37 @@ test("can create StripeSubscriptionSchedule using make method", function (): voi
     $now = CarbonImmutable::now();
     $endDate = $now->addMonth();
     $phases = collect([
-        StripeSubscriptionSchedulePhase::make(
-            startDate: $now,
-            endDate: $endDate,
-        ),
+        StripeSubscriptionSchedulePhase::make()
+            ->withStartDate($now)
+            ->withEndDate($endDate),
     ]);
 
-    $schedule = StripeSubscriptionSchedule::make(
-        id: "sub_sched_test123",
-        customer: "cus_test123",
-        endBehavior: SubscriptionScheduleEndBehavior::Release,
-        status: SubscriptionScheduleStatus::Active,
-        created: $now,
-        phases: $phases,
-        metadata: ["key" => "value"],
-    );
+    $schedule = StripeSubscriptionSchedule::make()
+        ->withId("sub_sched_test123")
+        ->withCustomer("cus_test123")
+        ->withEndBehavior(SubscriptionScheduleEndBehavior::Release)
+        ->withStatus(SubscriptionScheduleStatus::Active)
+        ->withPhases($phases)
+        ->withMetadata(["key" => "value"]);
 
-    expect($schedule->id)->toBe("sub_sched_test123")
-        ->and($schedule->customer)->toBe("cus_test123")
-        ->and($schedule->endBehavior)->toBe(SubscriptionScheduleEndBehavior::Release)
-        ->and($schedule->status)->toBe(SubscriptionScheduleStatus::Active)
-        ->and($schedule->created)->toBe($now)
-        ->and($schedule->phases)->toBe($phases)
-        ->and($schedule->metadata)->toBe(["key" => "value"]);
+    expect($schedule->id())->toBe("sub_sched_test123")
+        ->and($schedule->customer())->toBe("cus_test123")
+        ->and($schedule->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Release)
+        ->and($schedule->status())->toBe(SubscriptionScheduleStatus::Active)
+        ->and($schedule->phases())->toBe($phases)
+        ->and($schedule->metadata())->toBe(["key" => "value"]);
 });
 
 test("can create StripeSubscriptionSchedule with nullable parameters", function (): void {
     $schedule = StripeSubscriptionSchedule::make();
 
-    expect($schedule->id)->toBeNull()
-        ->and($schedule->customer)->toBeNull()
-        ->and($schedule->endBehavior)->toBeNull()
-        ->and($schedule->status)->toBeNull()
-        ->and($schedule->created)->toBeNull()
-        ->and($schedule->phases)->toBeNull()
-        ->and($schedule->metadata)->toBeNull();
+    expect($schedule->id())->toBeNull()
+        ->and($schedule->customer())->toBeNull()
+        ->and($schedule->endBehavior())->toBeNull()
+        ->and($schedule->status())->toBeNull()
+        ->and($schedule->created())->toBeNull()
+        ->and($schedule->phases())->toBeNull()
+        ->and($schedule->metadata())->toBeNull();
 });
 
 test("can convert from Stripe object with all fields", function (): void {
@@ -68,15 +64,15 @@ test("can convert from Stripe object with all fields", function (): void {
 
     $schedule = StripeSubscriptionSchedule::fromStripeObject($stripeObject);
 
-    expect($schedule->id)->toBe("sub_sched_test123")
-        ->and($schedule->customer)->toBe("cus_test123")
-        ->and($schedule->status)->toBe(SubscriptionScheduleStatus::Active)
-        ->and($schedule->endBehavior)->toBe(SubscriptionScheduleEndBehavior::Release)
-        ->and($schedule->created)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($schedule->created->timestamp)->toBe(1640995200)
-        ->and($schedule->canceledAt)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($schedule->canceledAt->timestamp)->toBe(1641081600)
-        ->and($schedule->metadata)->toBe(["key" => "value"]);
+    expect($schedule->id())->toBe("sub_sched_test123")
+        ->and($schedule->customer())->toBe("cus_test123")
+        ->and($schedule->status())->toBe(SubscriptionScheduleStatus::Active)
+        ->and($schedule->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Release)
+        ->and($schedule->created())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($schedule->created()->timestamp)->toBe(1640995200)
+        ->and($schedule->canceledAt())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($schedule->canceledAt()->timestamp)->toBe(1641081600)
+        ->and($schedule->metadata())->toBe(["key" => "value"]);
 });
 
 test("handles nested customer and subscription objects in fromStripeObject", function (): void {
@@ -88,9 +84,9 @@ test("handles nested customer and subscription objects in fromStripeObject", fun
 
     $schedule = StripeSubscriptionSchedule::fromStripeObject($stripeObject);
 
-    expect($schedule->customer)->toBe("cus_from_object")
-        ->and($schedule->subscription)->toBe("sub_from_object")
-        ->and($schedule->releasedSubscription)->toBe("sub_released_from_object");
+    expect($schedule->customer())->toBe("cus_from_object")
+        ->and($schedule->subscription())->toBe("sub_from_object")
+        ->and($schedule->releasedSubscription())->toBe("sub_released_from_object");
 });
 
 test("converts phases collection from Stripe object", function (): void {
@@ -115,14 +111,14 @@ test("converts phases collection from Stripe object", function (): void {
 
     $schedule = StripeSubscriptionSchedule::fromStripeObject($stripeObject);
 
-    expect($schedule->phases)->toHaveCount(1)
-        ->and($schedule->phases->first())->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
-        ->and($schedule->phases->first()->startDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($schedule->phases->first()->endDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($schedule->phases->first()->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::None)
-        ->and($schedule->phases->first()->items)->toHaveCount(1)
-        ->and($schedule->phases->first()->items->first()["price"])->toBe("price_test123")
-        ->and($schedule->phases->first()->items->first()["quantity"])->toBe(2);
+    expect($schedule->phases())->toHaveCount(1)
+        ->and($schedule->phases()->first())->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
+        ->and($schedule->phases()->first()->startDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($schedule->phases()->first()->endDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($schedule->phases()->first()->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
+        ->and($schedule->phases()->first()->items())->toHaveCount(1)
+        ->and($schedule->phases()->first()->items()->first()["price"])->toBe("price_test123")
+        ->and($schedule->phases()->first()->items()->first()["quantity"])->toBe(2);
 });
 
 test("converts to array with all fields", function (): void {

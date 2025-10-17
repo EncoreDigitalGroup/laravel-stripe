@@ -28,27 +28,25 @@ describe("create", function (): void {
         ]);
 
         $service = StripeSubscriptionScheduleService::make();
-        $subscriptionSchedule = StripeSubscriptionSchedule::make(
-            customer: "cus_test123",
-            endBehavior: SubscriptionScheduleEndBehavior::Release,
-            phases: collect([
-                StripeSubscriptionSchedulePhase::make(
-                    startDate: CarbonImmutable::now(),
-                    endDate: CarbonImmutable::now()->addMonth(),
-                    items: collect([
+        $subscriptionSchedule = StripeSubscriptionSchedule::make()
+            ->withCustomer("cus_test123")
+            ->withEndBehavior(SubscriptionScheduleEndBehavior::Release)
+            ->withPhases(collect([
+                StripeSubscriptionSchedulePhase::make()
+                    ->withStartDate(CarbonImmutable::now())
+                    ->withEndDate(CarbonImmutable::now()->addMonth())
+                    ->withItems(collect([
                         ["price" => "price_test123", "quantity" => 1],
-                    ]),
-                ),
-            ]),
-        );
+                    ])),
+            ]));
 
         $result = $service->create($subscriptionSchedule);
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id)->toBe("sub_sched_test123")
-            ->and($result->customer)->toBe("cus_test123")
-            ->and($result->status)->toBe(SubscriptionScheduleStatus::NotStarted)
+            ->and($result->id())->toBe("sub_sched_test123")
+            ->and($result->customer())->toBe("cus_test123")
+            ->and($result->status())->toBe(SubscriptionScheduleStatus::NotStarted)
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesCreate);
     });
 
@@ -58,12 +56,8 @@ describe("create", function (): void {
         ]);
 
         $service = StripeSubscriptionScheduleService::make();
-        $subscriptionSchedule = StripeSubscriptionSchedule::make(
-            id: "should_be_removed",
-            created: CarbonImmutable::now(),
-            customer: "cus_test123",
-            status: SubscriptionScheduleStatus::Active,
-        );
+        $subscriptionSchedule = StripeSubscriptionSchedule::make()
+            ->withCustomer("cus_test123");
 
         $service->create($subscriptionSchedule);
 
@@ -92,8 +86,8 @@ describe("retrieve", function (): void {
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id)->toBe("sub_sched_test123")
-            ->and($result->customer)->toBe("cus_test123")
+            ->and($result->id())->toBe("sub_sched_test123")
+            ->and($result->customer())->toBe("cus_test123")
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRetrieve);
     });
 });
@@ -108,15 +102,14 @@ describe("update", function (): void {
         ]);
 
         $service = StripeSubscriptionScheduleService::make();
-        $subscriptionSchedule = StripeSubscriptionSchedule::make(
-            endBehavior: SubscriptionScheduleEndBehavior::Cancel,
-        );
+        $subscriptionSchedule = StripeSubscriptionSchedule::make()
+            ->withEndBehavior(SubscriptionScheduleEndBehavior::Cancel);
 
         $result = $service->update("sub_sched_test123", $subscriptionSchedule);
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->endBehavior)->toBe(SubscriptionScheduleEndBehavior::Cancel)
+            ->and($result->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Cancel)
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesUpdate);
     });
 
@@ -126,13 +119,8 @@ describe("update", function (): void {
         ]);
 
         $service = StripeSubscriptionScheduleService::make();
-        $subscriptionSchedule = StripeSubscriptionSchedule::make(
-            id: "should_be_removed",
-            created: CarbonImmutable::now(),
-            customer: "should_be_removed",
-            endBehavior: SubscriptionScheduleEndBehavior::Cancel,
-            status: SubscriptionScheduleStatus::Active,
-        );
+        $subscriptionSchedule = StripeSubscriptionSchedule::make()
+            ->withEndBehavior(SubscriptionScheduleEndBehavior::Cancel);
 
         $service->update("sub_sched_test123", $subscriptionSchedule);
 
@@ -163,9 +151,9 @@ describe("cancel", function (): void {
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id)->toBe("sub_sched_test123")
-            ->and($result->status)->toBe(SubscriptionScheduleStatus::Canceled)
-            ->and($result->canceledAt)->toBeInstanceOf(CarbonImmutable::class)
+            ->and($result->id())->toBe("sub_sched_test123")
+            ->and($result->status())->toBe(SubscriptionScheduleStatus::Canceled)
+            ->and($result->canceledAt())->toBeInstanceOf(CarbonImmutable::class)
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesCancel);
     });
 
@@ -204,10 +192,10 @@ describe("release", function (): void {
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id)->toBe("sub_sched_test123")
-            ->and($result->status)->toBe(SubscriptionScheduleStatus::Released)
-            ->and($result->releasedAt)->toBeInstanceOf(CarbonImmutable::class)
-            ->and($result->releasedSubscription)->toBe("sub_test123")
+            ->and($result->id())->toBe("sub_sched_test123")
+            ->and($result->status())->toBe(SubscriptionScheduleStatus::Released)
+            ->and($result->releasedAt())->toBeInstanceOf(CarbonImmutable::class)
+            ->and($result->releasedSubscription())->toBe("sub_test123")
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRelease);
     });
 
@@ -245,8 +233,8 @@ describe("forSubscription", function (): void {
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id)->toBe("sub_sched_1")
-            ->and($result->subscription)->toBe("sub_123")
+            ->and($result->id())->toBe("sub_sched_1")
+            ->and($result->subscription())->toBe("sub_123")
             ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesAll);
 
         $actualParams = $fake->getCall(StripeMethod::SubscriptionSchedulesAll->value);

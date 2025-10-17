@@ -23,20 +23,19 @@ test("can create a subscription", function (): void {
         ]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        customer: "cus_test",
-        items: [
+    $subscription = StripeSubscription::make()
+        ->withCustomer("cus_test")
+        ->withItems([
             ["price" => "price_test", "quantity" => 1],
-        ]
-    );
+        ]);
 
     $service = StripeSubscriptionService::make();
     $result = $service->create($subscription);
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($result->id)->toBe("sub_test123")
-        ->and($result->customer)->toBe("cus_test")
+        ->and($result->id())->toBe("sub_test123")
+        ->and($result->customer())->toBe("cus_test")
         ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionsCreate);
 });
 
@@ -53,8 +52,8 @@ test("can retrieve a subscription", function (): void {
 
     expect($subscription)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($subscription->id)->toBe("sub_existing")
-        ->and($subscription->customer)->toBe("cus_test")
+        ->and($subscription->id())->toBe("sub_existing")
+        ->and($subscription->customer())->toBe("cus_test")
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.retrieve");
 });
 
@@ -66,16 +65,15 @@ test("can update a subscription", function (): void {
         ]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        description: "Updated Description"
-    );
+    $subscription = StripeSubscription::make()
+        ->withDescription("Updated Description");
 
     $service = StripeSubscriptionService::make();
     $result = $service->update("sub_123", $subscription);
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($result->description)->toBe("Updated Description")
+        ->and($result->description())->toBe("Updated Description")
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.update");
 });
 
@@ -93,7 +91,7 @@ test("can cancel a subscription immediately", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($result->id)->toBe("sub_123")
+        ->and($result->id())->toBe("sub_123")
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.cancel");
 });
 
@@ -110,7 +108,7 @@ test("can cancel subscription at period end", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($result->cancelAtPeriodEnd)->toBeTrue()
+        ->and($result->cancelAtPeriodEnd())->toBeTrue()
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.update", [
             "cancel_at_period_end" => true,
         ]);
@@ -129,7 +127,7 @@ test("can resume a canceled subscription", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeSubscription::class)
-        ->and($result->cancelAtPeriodEnd)->toBeFalse()
+        ->and($result->cancelAtPeriodEnd())->toBeFalse()
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.update", [
             "cancel_at_period_end" => false,
         ]);
@@ -150,7 +148,7 @@ test("can list subscriptions", function (): void {
     expect($subscriptions)
         ->toHaveCount(3)
         ->and($subscriptions->first())->toBeInstanceOf(StripeSubscription::class)
-        ->and($subscriptions->first()->id)->toBe("sub_1")
+        ->and($subscriptions->first()->id())->toBe("sub_1")
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.all");
 });
 
@@ -167,7 +165,7 @@ test("can search subscriptions", function (): void {
     expect($subscriptions)
         ->toHaveCount(1)
         ->and($subscriptions->first())->toBeInstanceOf(StripeSubscription::class)
-        ->and($subscriptions->first()->customer)->toBe("cus_search")
+        ->and($subscriptions->first()->customer())->toBe("cus_search")
         ->and($fake)->toHaveCalledStripeMethod("subscriptions.search");
 });
 
@@ -176,11 +174,9 @@ test("create removes id from payload", function (): void {
         "subscriptions.create" => StripeFixtures::subscription(["id" => "sub_new"]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        id: "should_be_removed",
-        customer: "cus_test",
-        items: [["price" => "price_test"]]
-    );
+    $subscription = StripeSubscription::make()
+        ->withCustomer("cus_test")
+        ->withItems([["price" => "price_test"]]);
 
     $service = StripeSubscriptionService::make();
     $service->create($subscription);
@@ -196,10 +192,8 @@ test("update removes id from payload", function (): void {
         "subscriptions.update" => StripeFixtures::subscription(["id" => "sub_123"]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        id: "should_be_removed",
-        description: "Updated"
-    );
+    $subscription = StripeSubscription::make()
+        ->withDescription("Updated");
 
     $service = StripeSubscriptionService::make();
     $service->update("sub_123", $subscription);
@@ -223,18 +217,16 @@ test("create sends billing_cycle_anchor_config when set", function (): void {
         ]),
     ]);
 
-    $config = StripeBillingCycleAnchorConfig::make(
-        dayOfMonth: 15,
-        hour: 0,
-        minute: 0,
-        second: 0
-    );
+    $config = StripeBillingCycleAnchorConfig::make()
+        ->withDayOfMonth(15)
+        ->withHour(0)
+        ->withMinute(0)
+        ->withSecond(0);
 
-    $subscription = StripeSubscription::make(
-        customer: "cus_test",
-        items: [["price" => "price_test"]],
-        billingCycleAnchorConfig: $config
-    );
+    $subscription = StripeSubscription::make()
+        ->withCustomer("cus_test")
+        ->withItems([["price" => "price_test"]])
+        ->withBillingCycleAnchorConfig($config);
 
     $service = StripeSubscriptionService::make();
     $service->create($subscription);
@@ -255,11 +247,10 @@ test("create sends proration_behavior when set", function (): void {
         ]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        customer: "cus_test",
-        items: [["price" => "price_test"]],
-        prorationBehavior: ProrationBehavior::None
-    );
+    $subscription = StripeSubscription::make()
+        ->withCustomer("cus_test")
+        ->withItems([["price" => "price_test"]])
+        ->withProrationBehavior(ProrationBehavior::None);
 
     $service = StripeSubscriptionService::make();
     $service->create($subscription);
@@ -277,11 +268,10 @@ test("issueFirstInvoiceOn works with service create", function (): void {
         ]),
     ]);
 
-    $subscription = StripeSubscription::make(
-        customer: "cus_test",
-        items: [["price" => "price_test"]],
-        trialEnd: CarbonImmutable::now()->addDays(14)
-    );
+    $subscription = StripeSubscription::make()
+        ->withCustomer("cus_test")
+        ->withItems([["price" => "price_test"]])
+        ->withTrialEnd(CarbonImmutable::now()->addDays(14));
 
     $subscription->issueFirstInvoiceOn(
         CarbonImmutable::create(2025, 6, 15, 0, 0, 0)

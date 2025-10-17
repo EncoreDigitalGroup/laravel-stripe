@@ -8,17 +8,15 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripePhaseItem
 {
     use HasMake;
 
-    public function __construct(
-        public string $price,
-        public int $quantity = 1,
-        public ?array $metadata = null,
-    ) {}
+    private string $price;
+    private int $quantity = 1;
+    private ?array $metadata = null;
 
     public function toArray(): array
     {
@@ -27,5 +25,39 @@ class StripePhaseItem
             "quantity" => $this->quantity,
             "metadata" => $this->metadata,
         ]);
+    }
+
+    // Fluent setters
+    public function withPrice(string $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function withQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    public function price(): string
+    {
+        return $this->price;
+    }
+
+    public function quantity(): int
+    {
+        return $this->quantity;
+    }
+
+    public function metadata(): ?array
+    {
+        return $this->metadata;
     }
 }

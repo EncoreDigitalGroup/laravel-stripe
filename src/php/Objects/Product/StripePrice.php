@@ -17,7 +17,7 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Price;
 use Stripe\StripeObject;

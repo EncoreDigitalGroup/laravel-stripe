@@ -7,7 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeAddress
 {

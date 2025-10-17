@@ -60,12 +60,12 @@ describe("SubscriptionScheduleBuilder", function (): void {
 
         expect($schedule)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->id)->toBe("sub_sched_test123")
-            ->and($schedule->customer)->toBe("cus_test123")
-            ->and($schedule->endBehavior)->toBe(SubscriptionScheduleEndBehavior::Release)
-            ->and($schedule->status)->toBe(SubscriptionScheduleStatus::Active)
-            ->and($schedule->phases)->toBe($phases)
-            ->and($schedule->metadata)->toBe(["key" => "value"]);
+            ->and($schedule->id())->toBe("sub_sched_test123")
+            ->and($schedule->customer())->toBe("cus_test123")
+            ->and($schedule->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Release)
+            ->and($schedule->status())->toBe(SubscriptionScheduleStatus::Active)
+            ->and($schedule->phases())->toBe($phases)
+            ->and($schedule->metadata())->toBe(["key" => "value"]);
     });
 
     test("builds subscription schedule with minimal parameters", function (): void {
@@ -75,11 +75,11 @@ describe("SubscriptionScheduleBuilder", function (): void {
 
         expect($schedule)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->id)->toBeNull()
-            ->and($schedule->customer)->toBeNull()
-            ->and($schedule->endBehavior)->toBeNull()
-            ->and($schedule->status)->toBeNull()
-            ->and($schedule->phases)->toBeNull();
+            ->and($schedule->id())->toBeNull()
+            ->and($schedule->customer())->toBeNull()
+            ->and($schedule->endBehavior())->toBeNull()
+            ->and($schedule->status())->toBeNull()
+            ->and($schedule->phases())->toBeNull();
     });
 });
 
@@ -110,17 +110,17 @@ describe("SubscriptionSchedulePhaseBuilder", function (): void {
 
         expect($phase)
             ->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
-            ->and($phase->startDate)->toBe($now)
-            ->and($phase->endDate)->toBe($endDate)
-            ->and($phase->items)->toBe($items)
-            ->and($phase->iterations)->toBe(3)
-            ->and($phase->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::None)
-            ->and($phase->trialPeriodDays)->toBe(14)
-            ->and($phase->trialEnd)->toBe($trialEnd)
-            ->and($phase->defaultPaymentMethod)->toBe("pm_test123")
-            ->and($phase->defaultTaxRates)->toBe($taxRates)
-            ->and($phase->collectionMethod)->toBe("charge_automatically")
-            ->and($phase->metadata)->toBe(["key" => "value"]);
+            ->and($phase->startDate())->toBe($now)
+            ->and($phase->endDate())->toBe($endDate)
+            ->and($phase->items())->toBe($items)
+            ->and($phase->iterations())->toBe(3)
+            ->and($phase->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
+            ->and($phase->trialPeriodDays())->toBe(14)
+            ->and($phase->trialEnd())->toBe($trialEnd)
+            ->and($phase->defaultPaymentMethod())->toBe("pm_test123")
+            ->and($phase->defaultTaxRates())->toBe($taxRates)
+            ->and($phase->collectionMethod())->toBe("charge_automatically")
+            ->and($phase->metadata())->toBe(["key" => "value"]);
     });
 
     test("builds subscription schedule phase with minimal parameters", function (): void {
@@ -130,11 +130,11 @@ describe("SubscriptionSchedulePhaseBuilder", function (): void {
 
         expect($phase)
             ->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
-            ->and($phase->startDate)->toBeNull()
-            ->and($phase->endDate)->toBeNull()
-            ->and($phase->items)->toBeNull()
-            ->and($phase->iterations)->toBeNull()
-            ->and($phase->prorationBehavior)->toBeNull();
+            ->and($phase->startDate())->toBeNull()
+            ->and($phase->endDate())->toBeNull()
+            ->and($phase->items())->toBeNull()
+            ->and($phase->iterations())->toBeNull()
+            ->and($phase->prorationBehavior())->toBeNull();
     });
 });
 
@@ -185,14 +185,14 @@ describe("Stripe facade integration", function (): void {
 
         expect($schedule)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->customer)->toBe("cus_test123")
-            ->and($schedule->endBehavior)->toBe(SubscriptionScheduleEndBehavior::Release)
-            ->and($schedule->phases)->toHaveCount(2)
-            ->and($schedule->metadata)->toBe(["created_by" => "test"])
-            ->and($schedule->phases->first())
+            ->and($schedule->customer())->toBe("cus_test123")
+            ->and($schedule->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Release)
+            ->and($schedule->phases())->toHaveCount(2)
+            ->and($schedule->metadata())->toBe(["created_by" => "test"])
+            ->and($schedule->phases()->first())
             ->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
-            ->and($schedule->phases->first()->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::None)
-            ->and($schedule->phases->last()->prorationBehavior)->toBe(SubscriptionScheduleProrationBehavior::CreateProrations);
+            ->and($schedule->phases()->first()->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
+            ->and($schedule->phases()->last()->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::CreateProrations);
 
     });
 });

@@ -12,56 +12,26 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Illuminate\Support\Collection;
+use PHPGenesis\Common\Traits\HasMake;
 use Stripe\StripeObject;
 
 class StripeSubscriptionSchedulePhase
 {
+    use HasMake;
     use HasTimestamps;
 
-    public function __construct(
-        public ?CarbonImmutable $startDate = null,
-        public ?CarbonImmutable $endDate = null,
-        public ?Collection $items = null,
-        public ?int $iterations = null,
-        public ?SubscriptionScheduleProrationBehavior $prorationBehavior = null,
-        public ?int $trialPeriodDays = null,
-        public ?CarbonImmutable $trialEnd = null,
-        public ?string $defaultPaymentMethod = null,
-        public ?Collection $defaultTaxRates = null,
-        public ?string $collectionMethod = null,
-        public ?string $invoiceSettings = null,
-        public ?array $metadata = null,
-    ) {}
-
-    public static function make(
-        ?CarbonImmutable $startDate = null,
-        ?CarbonImmutable $endDate = null,
-        ?Collection $items = null,
-        ?int $iterations = null,
-        ?SubscriptionScheduleProrationBehavior $prorationBehavior = null,
-        ?int $trialPeriodDays = null,
-        ?CarbonImmutable $trialEnd = null,
-        ?string $defaultPaymentMethod = null,
-        ?Collection $defaultTaxRates = null,
-        ?string $collectionMethod = null,
-        ?string $invoiceSettings = null,
-        ?array $metadata = null,
-    ): self {
-        return new self(
-            startDate: $startDate,
-            endDate: $endDate,
-            items: $items,
-            iterations: $iterations,
-            prorationBehavior: $prorationBehavior,
-            trialPeriodDays: $trialPeriodDays,
-            trialEnd: $trialEnd,
-            defaultPaymentMethod: $defaultPaymentMethod,
-            defaultTaxRates: $defaultTaxRates,
-            collectionMethod: $collectionMethod,
-            invoiceSettings: $invoiceSettings,
-            metadata: $metadata,
-        );
-    }
+    private ?CarbonImmutable $startDate = null;
+    private ?CarbonImmutable $endDate = null;
+    private ?Collection $items = null;
+    private ?int $iterations = null;
+    private ?SubscriptionScheduleProrationBehavior $prorationBehavior = null;
+    private ?int $trialPeriodDays = null;
+    private ?CarbonImmutable $trialEnd = null;
+    private ?string $defaultPaymentMethod = null;
+    private ?Collection $defaultTaxRates = null;
+    private ?string $collectionMethod = null;
+    private ?string $invoiceSettings = null;
+    private ?array $metadata = null;
 
     public static function fromStripeObject(StripeObject $obj): self
     {
@@ -86,20 +56,46 @@ class StripeSubscriptionSchedulePhase
             $prorationBehavior = SubscriptionScheduleProrationBehavior::from($obj->proration_behavior);
         }
 
-        return self::make(
-            startDate: isset($obj->start_date) ? self::timestampToCarbon($obj->start_date) : null,
-            endDate: isset($obj->end_date) ? self::timestampToCarbon($obj->end_date) : null,
-            items: $items,
-            iterations: $obj->iterations ?? null,
-            prorationBehavior: $prorationBehavior,
-            trialPeriodDays: $obj->trial_period_days ?? null,
-            trialEnd: isset($obj->trial_end) ? self::timestampToCarbon($obj->trial_end) : null,
-            defaultPaymentMethod: $obj->default_payment_method ?? null,
-            defaultTaxRates: $defaultTaxRates,
-            collectionMethod: $obj->collection_method ?? null,
-            invoiceSettings: $obj->invoice_settings ?? null,
-            metadata: isset($obj->metadata) ? $obj->metadata->toArray() : null,
-        );
+        $instance = self::make();
+
+        if (isset($obj->start_date)) {
+            $instance->startDate = self::timestampToCarbon($obj->start_date);
+        }
+        if (isset($obj->end_date)) {
+            $instance->endDate = self::timestampToCarbon($obj->end_date);
+        }
+        if ($items) {
+            $instance->items = $items;
+        }
+        if ($obj->iterations ?? null) {
+            $instance->iterations = $obj->iterations;
+        }
+        if ($prorationBehavior) {
+            $instance->prorationBehavior = $prorationBehavior;
+        }
+        if ($obj->trial_period_days ?? null) {
+            $instance->trialPeriodDays = $obj->trial_period_days;
+        }
+        if (isset($obj->trial_end)) {
+            $instance->trialEnd = self::timestampToCarbon($obj->trial_end);
+        }
+        if ($obj->default_payment_method ?? null) {
+            $instance->defaultPaymentMethod = $obj->default_payment_method;
+        }
+        if ($defaultTaxRates) {
+            $instance->defaultTaxRates = $defaultTaxRates;
+        }
+        if ($obj->collection_method ?? null) {
+            $instance->collectionMethod = $obj->collection_method;
+        }
+        if ($obj->invoice_settings ?? null) {
+            $instance->invoiceSettings = $obj->invoice_settings;
+        }
+        if (isset($obj->metadata)) {
+            $instance->metadata = $obj->metadata->toArray();
+        }
+
+        return $instance;
     }
 
     public function toArray(): array
@@ -120,5 +116,138 @@ class StripeSubscriptionSchedulePhase
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    // Fluent setters
+    public function withStartDate(CarbonImmutable $startDate): self
+    {
+        $this->startDate = $startDate;
+        return $this;
+    }
+
+    public function withEndDate(CarbonImmutable $endDate): self
+    {
+        $this->endDate = $endDate;
+        return $this;
+    }
+
+    public function withItems(Collection $items): self
+    {
+        $this->items = $items;
+        return $this;
+    }
+
+    public function withIterations(int $iterations): self
+    {
+        $this->iterations = $iterations;
+        return $this;
+    }
+
+    public function withProrationBehavior(SubscriptionScheduleProrationBehavior $prorationBehavior): self
+    {
+        $this->prorationBehavior = $prorationBehavior;
+        return $this;
+    }
+
+    public function withTrialPeriodDays(int $trialPeriodDays): self
+    {
+        $this->trialPeriodDays = $trialPeriodDays;
+        return $this;
+    }
+
+    public function withTrialEnd(CarbonImmutable $trialEnd): self
+    {
+        $this->trialEnd = $trialEnd;
+        return $this;
+    }
+
+    public function withDefaultPaymentMethod(string $defaultPaymentMethod): self
+    {
+        $this->defaultPaymentMethod = $defaultPaymentMethod;
+        return $this;
+    }
+
+    public function withDefaultTaxRates(Collection $defaultTaxRates): self
+    {
+        $this->defaultTaxRates = $defaultTaxRates;
+        return $this;
+    }
+
+    public function withCollectionMethod(string $collectionMethod): self
+    {
+        $this->collectionMethod = $collectionMethod;
+        return $this;
+    }
+
+    public function withInvoiceSettings(string $invoiceSettings): self
+    {
+        $this->invoiceSettings = $invoiceSettings;
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    public function startDate(): ?CarbonImmutable
+    {
+        return $this->startDate;
+    }
+
+    public function endDate(): ?CarbonImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function items(): ?Collection
+    {
+        return $this->items;
+    }
+
+    public function iterations(): ?int
+    {
+        return $this->iterations;
+    }
+
+    public function prorationBehavior(): ?SubscriptionScheduleProrationBehavior
+    {
+        return $this->prorationBehavior;
+    }
+
+    public function trialPeriodDays(): ?int
+    {
+        return $this->trialPeriodDays;
+    }
+
+    public function trialEnd(): ?CarbonImmutable
+    {
+        return $this->trialEnd;
+    }
+
+    public function defaultPaymentMethod(): ?string
+    {
+        return $this->defaultPaymentMethod;
+    }
+
+    public function defaultTaxRates(): ?Collection
+    {
+        return $this->defaultTaxRates;
+    }
+
+    public function collectionMethod(): ?string
+    {
+        return $this->collectionMethod;
+    }
+
+    public function invoiceSettings(): ?string
+    {
+        return $this->invoiceSettings;
+    }
+
+    public function metadata(): ?array
+    {
+        return $this->metadata;
     }
 }
