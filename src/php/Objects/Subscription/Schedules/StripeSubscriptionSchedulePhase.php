@@ -67,11 +67,11 @@ class StripeSubscriptionSchedulePhase
     {
         $items = null;
         if (isset($obj->items->data)) {
-            $items = collect($obj->items->data)->map(function ($item) {
+            $items = collect($obj->items->data)->map(function ($item): array {
                 return [
-                    'price' => $item->price ?? null,
-                    'quantity' => $item->quantity ?? null,
-                    'metadata' => isset($item->metadata) ? $item->metadata->toArray() : null,
+                    "price" => $item->price ?? null,
+                    "quantity" => $item->quantity ?? null,
+                    "metadata" => isset($item->metadata) ? $item->metadata->toArray() : null,
                 ];
             });
         }
@@ -105,18 +105,18 @@ class StripeSubscriptionSchedulePhase
     public function toArray(): array
     {
         $array = [
-            'start_date' => self::carbonToTimestamp($this->startDate),
-            'end_date' => self::carbonToTimestamp($this->endDate),
-            'items' => $this->items?->toArray(),
-            'iterations' => $this->iterations,
-            'proration_behavior' => $this->prorationBehavior?->value,
-            'trial_period_days' => $this->trialPeriodDays,
-            'trial_end' => self::carbonToTimestamp($this->trialEnd),
-            'default_payment_method' => $this->defaultPaymentMethod,
-            'default_tax_rates' => $this->defaultTaxRates?->toArray(),
-            'collection_method' => $this->collectionMethod,
-            'invoice_settings' => $this->invoiceSettings,
-            'metadata' => $this->metadata,
+            "start_date" => self::carbonToTimestamp($this->startDate),
+            "end_date" => self::carbonToTimestamp($this->endDate),
+            "items" => $this->items?->toArray(),
+            "iterations" => $this->iterations,
+            "proration_behavior" => $this->prorationBehavior?->value,
+            "trial_period_days" => $this->trialPeriodDays,
+            "trial_end" => self::carbonToTimestamp($this->trialEnd),
+            "default_payment_method" => $this->defaultPaymentMethod,
+            "default_tax_rates" => $this->defaultTaxRates?->toArray(),
+            "collection_method" => $this->collectionMethod,
+            "invoice_settings" => $this->invoiceSettings,
+            "metadata" => $this->metadata,
         ];
 
         return Arr::whereNotNull($array);

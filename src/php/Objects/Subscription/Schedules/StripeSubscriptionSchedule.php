@@ -80,7 +80,7 @@ class StripeSubscriptionSchedule
     {
         $phases = null;
         if (isset($obj->phases)) {
-            $phases = collect($obj->phases)->map(function ($phase) {
+            $phases = collect($obj->phases)->map(function ($phase): \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedulePhase {
                 return StripeSubscriptionSchedulePhase::fromStripeObject($phase);
             });
         }
@@ -123,22 +123,22 @@ class StripeSubscriptionSchedule
     public function toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'object' => $this->object,
-            'canceled_at' => self::carbonToTimestamp($this->canceledAt),
-            'completed_at' => self::carbonToTimestamp($this->completedAt),
-            'created' => self::carbonToTimestamp($this->created),
-            'customer' => $this->customer,
-            'default_settings' => $this->defaultSettings?->toArray(),
-            'end_behavior' => $this->endBehavior?->value,
-            'livemode' => $this->livemode,
-            'metadata' => $this->metadata,
-            'phases' => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
-            'released_at' => self::carbonToTimestamp($this->releasedAt),
-            'released_subscription' => $this->releasedSubscription,
-            'status' => $this->status?->value,
-            'subscription' => $this->subscription,
-            'test_clock' => $this->testClock,
+            "id" => $this->id,
+            "object" => $this->object,
+            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
+            "completed_at" => self::carbonToTimestamp($this->completedAt),
+            "created" => self::carbonToTimestamp($this->created),
+            "customer" => $this->customer,
+            "default_settings" => $this->defaultSettings?->toArray(),
+            "end_behavior" => $this->endBehavior?->value,
+            "livemode" => $this->livemode,
+            "metadata" => $this->metadata,
+            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
+            "released_at" => self::carbonToTimestamp($this->releasedAt),
+            "released_subscription" => $this->releasedSubscription,
+            "status" => $this->status?->value,
+            "subscription" => $this->subscription,
+            "test_clock" => $this->testClock,
         ];
 
         return Arr::whereNotNull($array);

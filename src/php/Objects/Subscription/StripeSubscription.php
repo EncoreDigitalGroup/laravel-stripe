@@ -13,6 +13,10 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Stripe\Subscription;
@@ -203,5 +207,62 @@ class StripeSubscription
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    public function get(string $subscriptionId): self
+    {
+        $service = app(StripeSubscriptionService::class);
+
+        return $service->get($subscriptionId);
+    }
+
+    public function save(): self
+    {
+        $service = app(StripeSubscriptionService::class);
+
+        if(is_null($this->id)) {
+            return $service->create($this);
+        }
+
+        return $service->update($this->id, $this);
+    }
+
+    public function addSchedulePhase(StripePhaseItem $phaseItem): StripeSubscriptionSchedule
+    {
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
+
+        // Get existing schedule for this subscription
+        $currentSchedule = $scheduleService->forSubscription($this->id);
+
+        $phases = [];
+
+        // If there's an existing schedule, preserve its phases
+        if ($currentSchedule) {
+            foreach ($currentSchedule->phases as $phase) {
+                $phases[] = [
+                    "items" => $phase->items->toArray()
+                ];
+            }
+        }
+
+        // Add the new phase
+        $phases[] = [
+            "items" => [$phaseItem->toArray()]
+        ];
+
+        if ($currentSchedule) {
+            // Update existing schedule
+            $schedule = StripeSubscriptionSchedule::make(
+                phases: collect($phases)
+            );
+            return $scheduleService->update($currentSchedule->id, $schedule);
+        }
+        // Create new schedule
+        $schedule = StripeSubscriptionSchedule::make(
+            customer: $this->customer,
+            subscription: $this->id,
+            phases: collect($phases)
+        );
+        return $scheduleService->create($schedule);
     }
 }
