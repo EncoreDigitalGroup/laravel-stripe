@@ -4,7 +4,8 @@
       "Bash(./vendor/bin/pest --stop-on-failure)",
       "Bash(./vendor/bin/pest:*)",
       "WebFetch(domain:docs.stripe.com)",
-      "Bash(./vendor/bin/phpstan analyse:*)"
+      "Bash(./vendor/bin/phpstan analyse:*)",
+      "Read(//Users/marcbeinder/Documents/GitHub/laravel-cpq/src/CPQ/src/Actions/Webhooks/**)"
     ],
     "deny": [],
     "ask": []
