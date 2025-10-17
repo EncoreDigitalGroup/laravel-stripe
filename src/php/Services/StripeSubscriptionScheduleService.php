@@ -10,6 +10,7 @@ namespace EncoreDigitalGroup\Stripe\Services;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 
+/** @internal */
 class StripeSubscriptionScheduleService
 {
     use HasStripe;
