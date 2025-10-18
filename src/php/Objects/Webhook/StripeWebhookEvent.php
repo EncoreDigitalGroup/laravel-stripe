@@ -18,16 +18,18 @@ class StripeWebhookEvent
     use HasTimestamps;
 
     public function __construct(
-        public ?string $id = null,
-        public ?string $type = null,
+        public ?string                                                            $id = null,
+        public ?string                                                            $type = null,
         public StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data = null,
-        public ?CarbonImmutable $created = null,
-        public ?bool $livemode = null,
-        public ?string $apiVersion = null
+        public ?CarbonImmutable                                                   $created = null,
+        public ?bool                                                              $livemode = null,
+        public ?string                                                            $apiVersion = null
     ) {}
 
     /**
      * Create a StripeWebhookEvent instance from a Stripe webhook event array
+     *
+     * TODO: Utilize StripeWebhookHelper
      */
     public static function fromWebhookData(array $event): self
     {
