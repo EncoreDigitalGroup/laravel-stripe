@@ -7,6 +7,7 @@
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripePaymentIntentWebhookData;
+use Stripe\StripeObject;
 
 test("can create StripePaymentIntentWebhookData using make method", function (): void {
     $paymentIntent = StripePaymentIntentWebhookData::make()
@@ -24,7 +25,7 @@ test("can create StripePaymentIntentWebhookData using make method", function ():
 });
 
 test("can create StripePaymentIntentWebhookData from Stripe object", function (): void {
-    $stripePaymentIntent = \Stripe\StripeObject::constructFrom([
+    $stripePaymentIntent = StripeObject::constructFrom([
         "id" => "pi_123",
         "status" => "succeeded",
         "amount" => 2000,
@@ -58,7 +59,7 @@ test("can create StripePaymentIntentWebhookData from Stripe object", function ()
 });
 
 test("fromStripeObject handles payment failure data", function (): void {
-    $stripePaymentIntent = \Stripe\StripeObject::constructFrom([
+    $stripePaymentIntent = StripeObject::constructFrom([
         "id" => "pi_123",
         "status" => "failed",
         "amount" => 2000,
@@ -80,7 +81,7 @@ test("fromStripeObject handles payment failure data", function (): void {
 });
 
 test("fromStripeObject handles missing fields", function (): void {
-    $stripePaymentIntent = \Stripe\StripeObject::constructFrom([
+    $stripePaymentIntent = StripeObject::constructFrom([
         "id" => "pi_123",
         "status" => "succeeded",
     ]);

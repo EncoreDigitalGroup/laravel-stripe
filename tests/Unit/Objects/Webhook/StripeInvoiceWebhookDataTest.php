@@ -8,6 +8,7 @@
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceLineItemWebhookData;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
+use Stripe\StripeObject;
 
 test("can create StripeInvoiceWebhookData using make method", function (): void {
     $invoice = StripeInvoiceWebhookData::make()
@@ -27,7 +28,7 @@ test("can create StripeInvoiceWebhookData using make method", function (): void 
 });
 
 test("can create StripeInvoiceWebhookData from Stripe object", function (): void {
-    $stripeInvoice = \Stripe\StripeObject::constructFrom([
+    $stripeInvoice = StripeObject::constructFrom([
         "id" => "in_123",
         "number" => "INV-001",
         "subscription" => "sub_123",
@@ -91,7 +92,7 @@ test("can create StripeInvoiceWebhookData from Stripe object", function (): void
 });
 
 test("fromStripeObject handles missing lines", function (): void {
-    $stripeInvoice = \Stripe\StripeObject::constructFrom([
+    $stripeInvoice = StripeObject::constructFrom([
         "id" => "in_123",
         "total" => 2000,
     ]);
@@ -103,7 +104,7 @@ test("fromStripeObject handles missing lines", function (): void {
 });
 
 test("fromStripeObject handles missing timestamps", function (): void {
-    $stripeInvoice = \Stripe\StripeObject::constructFrom([
+    $stripeInvoice = StripeObject::constructFrom([
         "id" => "in_123",
     ]);
 

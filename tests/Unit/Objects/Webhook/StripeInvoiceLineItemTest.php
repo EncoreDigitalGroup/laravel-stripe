@@ -6,6 +6,7 @@
  */
 
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceLineItemWebhookData;
+use Stripe\StripeObject;
 
 test("can create StripeInvoiceLineItem using make method", function (): void {
     $lineItem = StripeInvoiceLineItemWebhookData::make()
@@ -25,7 +26,7 @@ test("can create StripeInvoiceLineItem using make method", function (): void {
 });
 
 test("can create StripeInvoiceLineItem from Stripe object", function (): void {
-    $stripeLineItem = \Stripe\StripeObject::constructFrom([
+    $stripeLineItem = StripeObject::constructFrom([
         "id" => "il_123",
         "description" => "Subscription Item",
         "amount" => 2000,
@@ -59,7 +60,7 @@ test("can create StripeInvoiceLineItem from Stripe object", function (): void {
 });
 
 test("fromStripeObject handles missing fields", function (): void {
-    $stripeLineItem = \Stripe\StripeObject::constructFrom([
+    $stripeLineItem = StripeObject::constructFrom([
         "id" => "il_123",
     ]);
 

@@ -8,41 +8,38 @@
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 
 test("can create address with all fields", function (): void {
-    $address = StripeAddress::make(
-        line1: "123 Main St",
-        line2: "Apt 4B",
-        city: "San Francisco",
-        state: "CA",
-        postalCode: "94102",
-        country: "US"
-    );
+    $address = StripeAddress::make()
+        ->withLine1("123 Main St")
+        ->withLine2("Apt 4B")
+        ->withCity("San Francisco")
+        ->withState("CA")
+        ->withPostalCode("94102")
+        ->withCountry("US");
 
-    expect($address->line1)->toBe("123 Main St")
-        ->and($address->line2)->toBe("Apt 4B")
-        ->and($address->city)->toBe("San Francisco")
-        ->and($address->state)->toBe("CA")
-        ->and($address->postalCode)->toBe("94102")
-        ->and($address->country)->toBe("US");
+    expect($address->line1())->toBe("123 Main St")
+        ->and($address->line2())->toBe("Apt 4B")
+        ->and($address->city())->toBe("San Francisco")
+        ->and($address->state())->toBe("CA")
+        ->and($address->postalCode())->toBe("94102")
+        ->and($address->country())->toBe("US");
 });
 
 test("can create address with minimal fields", function (): void {
-    $address = StripeAddress::make(
-        line1: "456 Oak Ave",
-        city: "Portland"
-    );
+    $address = StripeAddress::make()
+        ->withLine1("456 Oak Ave")
+        ->withCity("Portland");
 
-    expect($address->line1)->toBe("456 Oak Ave")
-        ->and($address->city)->toBe("Portland")
-        ->and($address->line2)->toBeNull()
-        ->and($address->state)->toBeNull();
+    expect($address->line1())->toBe("456 Oak Ave")
+        ->and($address->city())->toBe("Portland")
+        ->and($address->line2())->toBeNull()
+        ->and($address->state())->toBeNull();
 });
 
 test("toArray converts postalCode to postal_code", function (): void {
-    $address = StripeAddress::make(
-        line1: "123 Main St",
-        city: "Seattle",
-        postalCode: "98101"
-    );
+    $address = StripeAddress::make()
+        ->withLine1("123 Main St")
+        ->withCity("Seattle")
+        ->withPostalCode("98101");
 
     $array = $address->toArray();
 

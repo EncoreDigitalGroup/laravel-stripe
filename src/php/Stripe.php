@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe;
 
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
@@ -25,6 +26,11 @@ class Stripe
     use HasStripe;
 
     #region Shortcuts
+
+    public static function customer(): StripeCustomer
+    {
+        return StripeCustomer::make();
+    }
 
     public static function subscription(): StripeSubscription
     {

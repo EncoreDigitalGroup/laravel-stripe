@@ -12,6 +12,7 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Product;
+use Stripe\StripeObject;
 
 class StripeProduct
 {
@@ -19,18 +20,18 @@ class StripeProduct
     use HasTimestamps;
 
     public function __construct(
-        public ?string $id = null,
-        public ?string $name = null,
-        public ?string $description = null,
-        public ?bool $active = null,
-        public ?array $images = null,
-        public ?array $metadata = null,
-        public ?string $defaultPrice = null,
-        public ?string $taxCode = null,
-        public ?string $unitLabel = null,
-        public ?string $url = null,
-        public ?bool $shippable = null,
-        public ?array $packageDimensions = null,
+        public ?string          $id = null,
+        public ?string          $name = null,
+        public ?string          $description = null,
+        public ?bool            $active = null,
+        public ?array           $images = null,
+        public ?array           $metadata = null,
+        public ?string          $defaultPrice = null,
+        public ?string          $taxCode = null,
+        public ?string          $unitLabel = null,
+        public ?string          $url = null,
+        public ?bool            $shippable = null,
+        public ?array           $packageDimensions = null,
         public ?CarbonImmutable $created = null,
         public ?CarbonImmutable $updated = null
     ) {}
@@ -42,7 +43,7 @@ class StripeProduct
     {
         $packageDimensions = null;
         if (isset($stripeProduct->package_dimensions)) {
-            /** @var \Stripe\StripeObject $pkgDim */
+            /** @var StripeObject $pkgDim */
             $pkgDim = $stripeProduct->package_dimensions;
             $packageDimensions = [
                 "height" => $pkgDim->height ?? null,

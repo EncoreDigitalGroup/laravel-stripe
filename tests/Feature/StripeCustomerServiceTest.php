@@ -22,10 +22,9 @@ test("can create a customer using faked stripe client", function (): void {
     ]);
 
     // Act: Create a customer through the service
-    $customer = StripeCustomer::make(
-        email: "john@example.com",
-        name: "John Doe"
-    );
+    $customer = StripeCustomer::make()
+        ->withEmail("john@example.com")
+        ->withName("John Doe");
 
     $service = StripeCustomerService::make();
     $result = $service->create($customer);
@@ -33,9 +32,9 @@ test("can create a customer using faked stripe client", function (): void {
     // Assert: Verify the response
     expect($result)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($result->id)->toBe("cus_test123")
-        ->and($result->email)->toBe("john@example.com")
-        ->and($result->name)->toBe("John Doe")
+        ->and($result->id())->toBe("cus_test123")
+        ->and($result->email())->toBe("john@example.com")
+        ->and($result->name())->toBe("John Doe")
         // Assert: Verify the Stripe API was called (can use enum or string)
         ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersCreate);
 
@@ -57,8 +56,8 @@ test("can retrieve a customer using faked stripe client", function (): void {
     // Assert
     expect($customer)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($customer->id)->toBe("cus_existing")
-        ->and($customer->email)->toBe("existing@example.com")
+        ->and($customer->id())->toBe("cus_existing")
+        ->and($customer->email())->toBe("existing@example.com")
         ->and($fake)->toHaveCalledStripeMethod("customers.retrieve");
 });
 
@@ -73,10 +72,9 @@ test("can update a customer using faked stripe client", function (): void {
     ]);
 
     // Act
-    $customer = StripeCustomer::make(
-        email: "updated@example.com",
-        name: "Updated Name"
-    );
+    $customer = StripeCustomer::make()
+        ->withEmail("updated@example.com")
+        ->withName("Updated Name");
 
     $service = StripeCustomerService::make();
     $result = $service->update("cus_123", $customer);
@@ -84,8 +82,8 @@ test("can update a customer using faked stripe client", function (): void {
     // Assert
     expect($result)
         ->toBeInstanceOf(StripeCustomer::class)
-        ->and($result->email)->toBe("updated@example.com")
-        ->and($result->name)->toBe("Updated Name")
+        ->and($result->email())->toBe("updated@example.com")
+        ->and($result->name())->toBe("Updated Name")
         ->and($fake)->toHaveCalledStripeMethod("customers.update");
 });
 
@@ -122,7 +120,7 @@ test("can list customers using faked stripe client", function (): void {
     expect($customers)
         ->toHaveCount(3)
         ->and($customers->first())->toBeInstanceOf(StripeCustomer::class)
-        ->and($customers->first()->id)->toBe("cus_1")
+        ->and($customers->first()->id())->toBe("cus_1")
         ->and($fake)->toHaveCalledStripeMethod("customers.all");
 });
 
@@ -139,17 +137,16 @@ test("can use callable responses for dynamic fake responses", function (): void 
     ]);
 
     // Act
-    $customer = StripeCustomer::make(
-        email: "dynamic@example.com",
-        name: "Dynamic Name"
-    );
+    $customer = StripeCustomer::make()
+        ->withEmail("dynamic@example.com")
+        ->withName("Dynamic Name");
 
     $service = StripeCustomerService::make();
     $result = $service->create($customer);
 
     // Assert: The callable should have used our params
-    expect($result->email)->toBe("dynamic@example.com")
-        ->and($result->name)->toBe("Dynamic Name");
+    expect($result->email())->toBe("dynamic@example.com")
+        ->and($result->name())->toBe("Dynamic Name");
 });
 
 test("can use wildcard patterns for fake responses", function (): void {
@@ -167,8 +164,8 @@ test("can use wildcard patterns for fake responses", function (): void {
     $created = $service->create(StripeCustomer::make());
 
     // Assert: Both should work with the wildcard fake
-    expect($retrieved->id)->toBe("cus_wildcard")
-        ->and($created->id)->toBe("cus_wildcard");
+    expect($retrieved->id())->toBe("cus_wildcard")
+        ->and($created->id())->toBe("cus_wildcard");
 });
 
 test("throws exception when no fake is registered", function (): void {

@@ -24,7 +24,7 @@ class StripeFinancialConnection
         return [
             "account_holder" => [
                 "type" => "customer",
-                "customer" => $this->customer->id,
+                "customer" => $this->customer->id(),
             ],
             "permissions" => $this->permissions,
         ];
