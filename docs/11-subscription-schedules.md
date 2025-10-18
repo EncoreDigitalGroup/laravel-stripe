@@ -52,6 +52,55 @@ $schedule = Stripe::subscriptionSchedules()->update('sub_sched_123', $updatedSch
 
 The subscription schedule service (accessed via `Stripe::subscriptionSchedules()`) provides methods for schedule management.
 
+### Accessing Schedules from Subscriptions
+
+Schedules can be accessed directly from subscription objects using the fluent nested object pattern:
+
+```php
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;
+
+// Get subscription and access its schedule
+$subscription = StripeSubscription::make()->get('sub_123');
+
+// Pattern 1: Fetch and modify schedule
+$subscription->schedule()
+    ->get()                                    // Fetch schedule from Stripe
+    ->addPhase(                               // Add a new phase
+        StripePhaseItem::make()
+            ->withPrice('price_new')
+            ->withQuantity(1)
+    )
+    ->save();                                  // Save schedule to Stripe
+
+// Pattern 2: Save subscription and schedule together
+$subscription = StripeSubscription::make()->get('sub_123');
+$subscription->schedule()
+    ->get()
+    ->addPhase(
+        StripePhaseItem::make()
+            ->withPrice('price_upgraded')
+            ->withQuantity(1)
+    );
+$subscription->save();                         // Saves both subscription AND schedule
+
+// Pattern 3: Standalone schedule access
+$schedule = StripeSubscriptionSchedule::make()
+    ->get('sub_123')                          // Fetch by subscription ID
+    ->addPhase(
+        StripePhaseItem::make()
+            ->withPrice('price_new')
+            ->withQuantity(1)
+    )
+    ->save();
+```
+
+**Key Features:**
+- **Fluent API** - Chain methods for clean, readable code
+- **Immutability** - `get()` and `save()` return new instances with fresh data
+- **Auto-caching** - Schedule is cached on the subscription to avoid redundant API calls
+- **Automatic parent reference** - The schedule always knows its parent subscription
+
 ### Creating Subscription Schedules
 
 ```php
