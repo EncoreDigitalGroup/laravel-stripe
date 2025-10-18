@@ -189,7 +189,11 @@ $service = StripeCustomerService::make($fakeClient); // Uses injected client
 
 Data Transfer Objects provide type-safe representations of Stripe data:
 
-#### HasMake Trait
+#### Common Traits
+
+DTOs use several shared traits to provide consistent functionality:
+
+##### HasMake Trait
 
 All DTOs use the `HasMake` trait for consistent factory method pattern:
 
@@ -207,6 +211,114 @@ $customer = StripeCustomer::make(
     email: 'test@example.com',
     name: 'Test User'
 );
+```
+
+##### HasIdentifier Trait
+
+Webhook objects and some DTOs use the `HasIdentifier` trait for consistent ID handling:
+
+```php
+trait HasIdentifier
+{
+    private ?string $id = null;
+
+    public function withId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+}
+
+// Used by webhook objects:
+$event->withId('evt_abc123');
+$eventId = $event->id();
+```
+
+##### HasMetadata Trait
+
+Provides metadata handling with safe extraction from Stripe objects:
+
+```php
+trait HasMetadata
+{
+    private ?array $metadata = null;
+
+    public function withMetadata(?array $metadata): self
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    public function metadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    protected static function extractMetadata(object $stripeObject): ?array
+    {
+        if (!isset($stripeObject->metadata)) {
+            return null;
+        }
+        $metadataJson = json_encode($stripeObject->metadata);
+        return $metadataJson !== false ? json_decode($metadataJson, true) : null;
+    }
+}
+
+// Used in fromStripeObject() methods:
+return self::make()
+    ->withMetadata(self::extractMetadata($stripeInvoice));
+```
+
+##### HasLivemode Trait
+
+Indicates whether an object is in live or test mode:
+
+```php
+trait HasLivemode
+{
+    private ?bool $livemode = null;
+
+    public function withLivemode(?bool $livemode): self
+    {
+        $this->livemode = $livemode;
+        return $this;
+    }
+
+    public function livemode(): ?bool
+    {
+        return $this->livemode;
+    }
+}
+
+// Used by webhook endpoints and events:
+$isLive = $endpoint->livemode();
+```
+
+##### HasTimestamps Trait
+
+Provides helpers for converting between Unix timestamps and Carbon dates:
+
+```php
+trait HasTimestamps
+{
+    protected static function timestampToCarbon(?int $timestamp): ?CarbonImmutable
+    {
+        return $timestamp ? CarbonImmutable::createFromTimestamp($timestamp) : null;
+    }
+
+    protected static function carbonToTimestamp(?CarbonImmutable $carbon): ?int
+    {
+        return $carbon?->timestamp;
+    }
+}
+
+// Used in fromStripeObject() and toArray() methods:
+->withCreated(self::timestampToCarbon($invoice->created))
 ```
 
 #### Conversion Pattern
@@ -259,6 +371,91 @@ echo $address->postalCode; // '12345' (camelCase again)
 ```
 
 ### Support Layer
+
+#### Trait-Based Code Consolidation
+
+The library uses traits extensively to eliminate code duplication and provide consistent APIs across similar objects. This is especially important for webhook-related objects which share common properties.
+
+##### Benefits of Trait Consolidation
+
+```php
+// Before: Each class duplicated this code
+class StripeWebhookEvent
+{
+    private ?string $id = null;
+
+    public function withId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+}
+
+// After: Single trait used by all classes
+trait HasIdentifier
+{
+    private ?string $id = null;
+
+    public function withId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+}
+
+// Classes simply use the trait
+class StripeWebhookEvent
+{
+    use HasIdentifier;
+    use HasLivemode;
+    // Only event-specific properties and methods here
+}
+```
+
+##### Trait Usage Across Objects
+
+Different objects use different combinations of traits based on their needs:
+
+| Object | HasIdentifier | HasMetadata | HasLivemode | HasTimestamps |
+|--------|---------------|-------------|-------------|---------------|
+| StripeWebhookEndpoint | ✓ | ✓ | ✓ | - |
+| StripeWebhookEvent | ✓ | - | ✓ | - |
+| StripeInvoiceWebhookData | ✓ | ✓ | - | ✓ |
+| StripePaymentIntentWebhookData | ✓ | ✓ | - | ✓ |
+| StripeInvoiceLineItemWebhookData | ✓ | ✓ | - | - |
+
+##### Metadata Extraction Helper
+
+The `HasMetadata` trait includes a `protected static extractMetadata()` helper that safely converts Stripe metadata objects to arrays:
+
+```php
+// Before: Manual extraction in every class
+$metadata = null;
+if (isset($invoice->metadata)) {
+    $metadataJson = json_encode($invoice->metadata);
+    $metadata = $metadataJson !== false ? json_decode($metadataJson, true) : null;
+}
+
+// After: Simple helper call
+return self::make()
+    ->withMetadata(self::extractMetadata($invoice));
+```
+
+This pattern:
+- **Reduces duplication**: ~30 lines of code eliminated per class
+- **Improves consistency**: All objects handle metadata identically
+- **Simplifies maintenance**: Bug fixes apply to all classes automatically
+- **Enables testing**: Trait behavior can be tested once and trusted everywhere
 
 #### Configuration System
 

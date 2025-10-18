@@ -622,50 +622,6 @@ $shipping = Stripe::builder()->shipping()->build(
 - `phone` - Contact phone (optional)
 - `address` - Shipping address (StripeAddress)
 
-### webhook()
-
-Creates `StripeWebhook` objects for webhook configuration.
-
-```php
-use EncoreDigitalGroup\Stripe\Stripe;
-
-// Basic webhook
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: ['customer.created', 'customer.updated']
-);
-
-// Comprehensive webhook
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: [
-        // Customer events
-        'customer.created',
-        'customer.updated',
-        'customer.deleted',
-
-        // Subscription events
-        'customer.subscription.created',
-        'customer.subscription.updated',
-        'customer.subscription.deleted',
-
-        // Invoice events
-        'invoice.paid',
-        'invoice.payment_failed',
-        'invoice.upcoming',
-
-        // Payment events
-        'payment_intent.succeeded',
-        'payment_intent.payment_failed'
-    ]
-);
-```
-
-**Webhook Properties:**
-
-- `url` - Webhook endpoint URL
-- `events` - Array of event types to subscribe to
-
 ## Sub-Object Builders
 
 These builders create specialized objects used within pricing and other complex structures.
@@ -875,7 +831,6 @@ $builder->financialConnection()->build(...);
 // Support objects
 $builder->address()->build(...);
 $builder->shipping()->build(...);
-$builder->webhook()->build(...);
 
 // Sub-objects
 $builder->product()->recurring()->build(...);
@@ -907,7 +862,6 @@ $builder->financialConnection()->build(...);
 // Support objects
 $builder->address()->build(...);
 $builder->shipping()->build(...);
-$builder->webhook()->build(...);
 
 // Sub-objects
 $builder->product()->recurring()->build(...);

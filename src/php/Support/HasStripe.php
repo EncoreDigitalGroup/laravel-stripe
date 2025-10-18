@@ -17,14 +17,12 @@ trait HasStripe
 
     public function __construct(?StripeClient $client = null)
     {
-        // Allow dependency injection of StripeClient (useful for testing)
-        if ($client instanceof \Stripe\StripeClient) {
+        if ($client instanceof StripeClient) {
             $this->stripe = $client;
 
             return;
         }
 
-        // Try to resolve from container (Laravel)
         if (function_exists("app") && app()->bound(StripeClient::class)) {
             $this->stripe = app(StripeClient::class);
 

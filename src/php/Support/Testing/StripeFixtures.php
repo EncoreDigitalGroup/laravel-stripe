@@ -7,6 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
+use Carbon\CarbonImmutable;
+
 /**
  * StripeFixtures provides common test data for Stripe API responses
  *
@@ -301,7 +303,7 @@ class StripeFixtures
 
     public static function subscriptionSchedule(array $overrides = []): array
     {
-        $now = \Carbon\CarbonImmutable::now()->timestamp;
+        $now = CarbonImmutable::now()->timestamp;
 
         return array_merge([
             "id" => "sub_sched_" . self::randomId(),
@@ -353,7 +355,7 @@ class StripeFixtures
                     "default_tax_rates" => [],
                     "description" => null,
                     "discounts" => [],
-                    "end_date" => \Carbon\CarbonImmutable::now()->addMonth()->timestamp,
+                    "end_date" => CarbonImmutable::now()->addMonth()->timestamp,
                     "invoice_settings" => null,
                     "items" => [
                         [
@@ -389,6 +391,34 @@ class StripeFixtures
             "data" => $subscriptionSchedules,
             "has_more" => false,
             "url" => "/v1/subscription_schedules",
+        ], $overrides);
+    }
+
+    public static function webhookEndpoint(array $overrides = []): array
+    {
+        return array_merge([
+            "id" => "we_" . self::randomId(),
+            "object" => "webhook_endpoint",
+            "api_version" => "2023-10-16",
+            "application" => null,
+            "created" => time(),
+            "description" => "Test webhook endpoint",
+            "enabled_events" => ["customer.created", "customer.updated"],
+            "livemode" => false,
+            "metadata" => [],
+            "secret" => "whsec_" . self::randomString(32),
+            "status" => "enabled",
+            "url" => "https://example.com/webhook",
+        ], $overrides);
+    }
+
+    public static function webhookEndpointList(array $webhookEndpoints = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $webhookEndpoints,
+            "has_more" => false,
+            "url" => "/v1/webhook_endpoints",
         ], $overrides);
     }
 

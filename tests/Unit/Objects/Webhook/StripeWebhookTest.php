@@ -9,20 +9,18 @@ use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use Illuminate\Support\Facades\Request;
 
 test("can create webhook with url and events", function (): void {
-    $webhook = StripeWebhook::make(
-        url: "https://example.com/webhook",
-        events: ["customer.created", "invoice.paid"]
-    );
+    $webhook = StripeWebhook::make()
+        ->withUrl("https://example.com/webhook")
+        ->withEvents(["customer.created", "invoice.paid"]);
 
-    expect($webhook->url)->toBe("https://example.com/webhook")
-        ->and($webhook->events)->toBe(["customer.created", "invoice.paid"]);
+    expect($webhook->url())->toBe("https://example.com/webhook")
+        ->and($webhook->events())->toBe(["customer.created", "invoice.paid"]);
 });
 
 test("toArray returns correct structure", function (): void {
-    $webhook = StripeWebhook::make(
-        url: "https://example.com/webhook",
-        events: ["customer.created"]
-    );
+    $webhook = StripeWebhook::make()
+        ->withUrl("https://example.com/webhook")
+        ->withEvents(["customer.created"]);
 
     $array = $webhook->toArray();
 

@@ -18,7 +18,6 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
-use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;
 
 class StripeBuilder
 {
@@ -56,11 +55,6 @@ class StripeBuilder
     public function shipping(): ShippingBuilder
     {
         return new ShippingBuilder;
-    }
-
-    public function webhook(): WebhookBuilder
-    {
-        return new WebhookBuilder;
     }
 
     #endregion

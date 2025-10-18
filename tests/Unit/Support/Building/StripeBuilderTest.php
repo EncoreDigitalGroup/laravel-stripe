@@ -16,7 +16,6 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
-use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 
 describe("StripeBuilder", function (): void {
@@ -63,13 +62,6 @@ describe("StripeBuilder", function (): void {
             $shippingBuilder = $builder->shipping();
 
             expect($shippingBuilder)->toBeInstanceOf(ShippingBuilder::class);
-        });
-
-        test("can create webhook builder", function (): void {
-            $builder = new StripeBuilder;
-            $webhookBuilder = $builder->webhook();
-
-            expect($webhookBuilder)->toBeInstanceOf(WebhookBuilder::class);
         });
     });
 
