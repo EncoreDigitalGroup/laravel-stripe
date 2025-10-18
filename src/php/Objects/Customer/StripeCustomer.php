@@ -10,7 +10,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Customer;
 
 class StripeCustomer

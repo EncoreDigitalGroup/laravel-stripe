@@ -8,8 +8,8 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Str;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use Illuminate\Support\Facades\Request;
+use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Event as StripeEvent;
 use Stripe\Webhook;
 

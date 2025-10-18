@@ -8,7 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeProductTier
 {

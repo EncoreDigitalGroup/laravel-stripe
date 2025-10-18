@@ -12,6 +12,7 @@ use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
 
+/** @internal */
 class StripeSubscriptionService
 {
     use HasStripe;
