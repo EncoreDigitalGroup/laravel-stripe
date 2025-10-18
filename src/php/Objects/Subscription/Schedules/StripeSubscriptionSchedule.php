@@ -137,7 +137,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,
@@ -328,6 +328,34 @@ class StripeSubscriptionSchedule
         return $schedule;
     }
 
+    public function addPhase(StripePhaseItem $phaseItem): self
+    {
+        $newPhase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(collect([$phaseItem]));
+
+        $this->phases = ($this->phases ?? collect())->push($newPhase);
+
+        return $this;
+    }
+
+    public function save(): self
+    {
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
+
+        if ($this->id !== null && $this->id !== "" && $this->id !== "0") {
+            // Update existing schedule
+            $result = $scheduleService->update($this->id, $this);
+        } else {
+            // Create new schedule
+            $result = $scheduleService->create($this);
+        }
+
+        // Preserve the parent subscription reference
+        $result->parentSubscription = $this->parentSubscription;
+
+        return $result;
+    }
+
     private function resolveSubscriptionId(?string $subscriptionId): string
     {
         $targetSubscriptionId = $subscriptionId ?? $this->parentSubscription?->id() ?? $this->subscription;
@@ -367,33 +395,5 @@ class StripeSubscriptionSchedule
         }
 
         return $schedule;
-    }
-
-    public function addPhase(StripePhaseItem $phaseItem): self
-    {
-        $newPhase = StripeSubscriptionSchedulePhase::make()
-            ->withItems(collect([$phaseItem]));
-
-        $this->phases = ($this->phases ?? collect())->push($newPhase);
-
-        return $this;
-    }
-
-    public function save(): self
-    {
-        $scheduleService = app(StripeSubscriptionScheduleService::class);
-
-        if ($this->id !== null && $this->id !== "" && $this->id !== "0") {
-            // Update existing schedule
-            $result = $scheduleService->update($this->id, $this);
-        } else {
-            // Create new schedule
-            $result = $scheduleService->create($this);
-        }
-
-        // Preserve the parent subscription reference
-        $result->parentSubscription = $this->parentSubscription;
-
-        return $result;
     }
 }
