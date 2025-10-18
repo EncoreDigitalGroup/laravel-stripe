@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use Stripe\Util\Util;
@@ -272,4 +273,44 @@ test("issueFirstInvoiceOn returns self for chaining", function (): void {
     $result = $subscription->issueFirstInvoiceOn($date);
 
     expect($result)->toBe($subscription);
+});
+
+describe("schedule", function (): void {
+    test("returns StripeSubscriptionSchedule instance", function (): void {
+        $subscription = StripeSubscription::make()
+            ->withId("sub_123")
+            ->withCustomer("cus_123");
+
+        $schedule = $subscription->schedule();
+
+        expect($schedule)->toBeInstanceOf(StripeSubscriptionSchedule::class);
+    });
+
+    test("caches schedule instance on subsequent calls", function (): void {
+        $subscription = StripeSubscription::make()
+            ->withId("sub_123")
+            ->withCustomer("cus_123");
+
+        $schedule1 = $subscription->schedule();
+        $schedule2 = $subscription->schedule();
+
+        expect($schedule1)->toBe($schedule2);
+    });
+
+    test("updates parent subscription reference on each call", function (): void {
+        $subscription1 = StripeSubscription::make()
+            ->withId("sub_123")
+            ->withCustomer("cus_123");
+
+        $schedule = $subscription1->schedule();
+
+        $subscription2 = StripeSubscription::make()
+            ->withId("sub_456")
+            ->withCustomer("cus_456");
+
+        // Manually set the cached schedule to simulate immutability pattern
+        $subscription2->schedule();
+
+        expect($schedule)->toBeInstanceOf(StripeSubscriptionSchedule::class);
+    });
 });

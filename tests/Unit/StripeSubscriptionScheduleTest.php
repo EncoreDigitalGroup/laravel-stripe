@@ -9,9 +9,14 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedulePhase;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
+use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
 test("can create StripeSubscriptionSchedule using make method", function (): void {
@@ -184,4 +189,178 @@ test("formats timestamps correctly in toArray", function (): void {
 
     expect($array["created"])->toBe(1640995200)
         ->and($array["canceled_at"])->toBe(1641081600);
+});
+
+describe("get", function (): void {
+    test("fetches schedule from API when schedule exists", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
+                StripeFixtures::subscriptionSchedule([
+                    "id" => "sub_sched_123",
+                    "subscription" => "sub_123",
+                    "customer" => "cus_123",
+                ]),
+            ]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()->get("sub_123");
+
+        expect($schedule)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($schedule->id())->toBe("sub_sched_123")
+            ->and($schedule->subscription())->toBe("sub_123")
+            ->and($schedule->customer())->toBe("cus_123");
+    });
+
+    test("returns new empty instance when no schedule exists", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()->get("sub_nonexistent");
+
+        expect($schedule)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($schedule->id())->toBeNull()
+            ->and($schedule->subscription())->toBe("sub_nonexistent")
+            ->and($schedule->phases())->toBeInstanceOf(Collection::class)
+            ->and($schedule->phases())->toHaveCount(0);
+    });
+
+    test("uses parent subscription ID when no parameter provided", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
+                StripeFixtures::subscriptionSchedule([
+                    "id" => "sub_sched_123",
+                    "subscription" => "sub_123",
+                ]),
+            ]),
+        ]);
+
+        $subscription = StripeSubscription::make()
+            ->withId("sub_123")
+            ->withCustomer("cus_123");
+
+        $schedule = $subscription->schedule()->get();
+
+        expect($schedule->id())->toBe("sub_sched_123")
+            ->and($schedule->subscription())->toBe("sub_123");
+    });
+});
+
+describe("addPhase", function (): void {
+    test("adds phase to empty schedule", function (): void {
+        $schedule = StripeSubscriptionSchedule::make()
+            ->withPhases(collect([]));
+
+        $phaseItem = StripePhaseItem::make()
+            ->withPrice("price_123")
+            ->withQuantity(1);
+
+        $result = $schedule->addPhase($phaseItem);
+
+        expect($result)->toBe($schedule)
+            ->and($schedule->phases())->toHaveCount(1)
+            ->and($schedule->phases()->first())->toBeInstanceOf(StripeSubscriptionSchedulePhase::class)
+            ->and($schedule->phases()->first()->items())->toHaveCount(1);
+    });
+
+    test("adds phase to existing phases", function (): void {
+        $existingPhase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(collect([
+                StripePhaseItem::make()
+                    ->withPrice("price_existing")
+                    ->withQuantity(1),
+            ]));
+
+        $schedule = StripeSubscriptionSchedule::make()
+            ->withPhases(collect([$existingPhase]));
+
+        $newPhaseItem = StripePhaseItem::make()
+            ->withPrice("price_new")
+            ->withQuantity(2);
+
+        $schedule->addPhase($newPhaseItem);
+
+        expect($schedule->phases())->toHaveCount(2)
+            ->and($schedule->phases()->last()->items()->first()->price())->toBe("price_new")
+            ->and($schedule->phases()->last()->items()->first()->quantity())->toBe(2);
+    });
+
+    test("initializes phases collection if null", function (): void {
+        $schedule = StripeSubscriptionSchedule::make();
+
+        expect($schedule->phases())->toBeNull();
+
+        $phaseItem = StripePhaseItem::make()
+            ->withPrice("price_123")
+            ->withQuantity(1);
+
+        $schedule->addPhase($phaseItem);
+
+        expect($schedule->phases())->toBeInstanceOf(Collection::class)
+            ->and($schedule->phases())->toHaveCount(1);
+    });
+});
+
+describe("save", function (): void {
+    test("creates new schedule when ID is null", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesCreate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_new",
+                "customer" => "cus_123",
+                "subscription" => "sub_123",
+            ]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()
+            ->withCustomer("cus_123")
+            ->withSubscription("sub_123");
+
+        $result = $schedule->save();
+
+        expect($result)->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($result->id())->toBe("sub_sched_new")
+            ->and($result)->not()->toBe($schedule);
+    });
+
+    test("updates existing schedule when ID is present", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesUpdate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_123",
+                "end_behavior" => "cancel",
+            ]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()
+            ->withId("sub_sched_123")
+            ->withEndBehavior(SubscriptionScheduleEndBehavior::Cancel);
+
+        $result = $schedule->save();
+
+        expect($result)->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($result->id())->toBe("sub_sched_123")
+            ->and($result->endBehavior())->toBe(SubscriptionScheduleEndBehavior::Cancel)
+            ->and($result)->not()->toBe($schedule);
+    });
+
+    test("preserves parent subscription reference", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesCreate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_new",
+                "customer" => "cus_123",
+            ]),
+        ]);
+
+        $subscription = StripeSubscription::make()
+            ->withId("sub_123")
+            ->withCustomer("cus_123");
+
+        $schedule = $subscription->schedule()
+            ->withCustomer("cus_123");
+
+        $result = $schedule->save();
+
+        expect($result)->toBeInstanceOf(StripeSubscriptionSchedule::class);
+    });
 });

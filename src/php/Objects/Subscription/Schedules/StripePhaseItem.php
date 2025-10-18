@@ -31,18 +31,21 @@ class StripePhaseItem
     public function withPrice(string $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
     public function withQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
+
         return $this;
     }
 
     public function withMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
+
         return $this;
     }
 

@@ -11,6 +11,8 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
@@ -37,6 +39,7 @@ class StripeSubscriptionSchedule
     private ?SubscriptionScheduleStatus $status = null;
     private ?string $subscription = null;
     private ?string $testClock = null;
+    private ?StripeSubscription $parentSubscription = null;
 
     public static function fromStripeObject(StripeObject $obj): self
     {
@@ -83,7 +86,7 @@ class StripeSubscriptionSchedule
         if ($customer) {
             $instance->customer = $customer;
         }
-        if ($defaultSettings) {
+        if ($defaultSettings instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedulePhase) {
             $instance->defaultSettings = $defaultSettings;
         }
         if ($endBehavior) {
@@ -132,7 +135,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,
@@ -147,66 +150,77 @@ class StripeSubscriptionSchedule
     public function withId(string $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
     public function withCustomer(string $customer): self
     {
         $this->customer = $customer;
+
         return $this;
     }
 
     public function withSubscription(string $subscription): self
     {
         $this->subscription = $subscription;
+
         return $this;
     }
 
     public function withEndBehavior(SubscriptionScheduleEndBehavior $endBehavior): self
     {
         $this->endBehavior = $endBehavior;
+
         return $this;
     }
 
     public function withStatus(SubscriptionScheduleStatus $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
     public function withPhases(Collection $phases): self
     {
         $this->phases = $phases;
+
         return $this;
     }
 
     public function withMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
+
         return $this;
     }
 
     public function withDefaultSettings(StripeSubscriptionSchedulePhase $defaultSettings): self
     {
         $this->defaultSettings = $defaultSettings;
+
         return $this;
     }
 
     public function withReleasedAt(CarbonImmutable $releasedAt): self
     {
         $this->releasedAt = $releasedAt;
+
         return $this;
     }
 
     public function withCanceledAt(CarbonImmutable $canceledAt): self
     {
         $this->canceledAt = $canceledAt;
+
         return $this;
     }
 
     public function withCompletedAt(CarbonImmutable $completedAt): self
     {
         $this->completedAt = $completedAt;
+
         return $this;
     }
 
@@ -288,5 +302,96 @@ class StripeSubscriptionSchedule
     public function testClock(): ?string
     {
         return $this->testClock;
+    }
+
+    public function setParentSubscription(StripeSubscription $subscription): self
+    {
+        $this->parentSubscription = $subscription;
+
+        return $this;
+    }
+
+    public function get(?string $subscriptionId = null): self
+    {
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
+
+        // Use provided subscriptionId, fall back to parent subscription, or use existing subscription property
+        $targetSubscriptionId = $subscriptionId ?? $this->parentSubscription?->id() ?? $this->subscription;
+
+        if ($targetSubscriptionId === null) {
+            throw new \InvalidArgumentException("Subscription ID is required to fetch schedule");
+        }
+
+        $schedule = $scheduleService->forSubscription($targetSubscriptionId);
+
+        if ($schedule === null) {
+            // No schedule exists yet, create new empty instance
+            $newSchedule = self::make()
+                ->withPhases(collect([]));
+
+            if ($this->parentSubscription) {
+                $customer = $this->parentSubscription->customer();
+                $subId = $this->parentSubscription->id();
+                if ($customer !== null) {
+                    $newSchedule = $newSchedule->withCustomer($customer);
+                }
+                if ($subId !== null) {
+                    $newSchedule = $newSchedule->withSubscription($subId);
+                }
+            } elseif ($subscriptionId) {
+                $newSchedule = $newSchedule->withSubscription($subscriptionId);
+            }
+
+            // Preserve parent subscription reference
+            $newSchedule->parentSubscription = $this->parentSubscription;
+
+            return $newSchedule;
+        }
+
+        // Preserve parent subscription reference
+        $schedule->parentSubscription = $this->parentSubscription;
+
+        return $schedule;
+    }
+
+    public function addPhase(StripePhaseItem $phaseItem): self
+    {
+        if ($this->phases === null) {
+            $this->phases = collect([]);
+        }
+
+        // Convert existing phases to array format for consistency
+        $phasesArray = [];
+        foreach ($this->phases as $phase) {
+            $phasesArray[] = $phase;
+        }
+
+        // Create new phase from the item
+        $newPhase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(collect([$phaseItem]));
+
+        $phasesArray[] = $newPhase;
+
+        $this->phases = collect($phasesArray);
+
+        return $this;
+    }
+
+    public function save(): self
+    {
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
+
+        if ($this->id) {
+            // Update existing schedule
+            $result = $scheduleService->update($this->id, $this);
+        } else {
+            // Create new schedule
+            $result = $scheduleService->create($this);
+        }
+
+        // Preserve the parent subscription reference
+        $result->parentSubscription = $this->parentSubscription;
+
+        return $result;
     }
 }

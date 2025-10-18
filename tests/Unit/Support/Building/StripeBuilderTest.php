@@ -14,7 +14,6 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\PriceBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ProductBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
-use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;

@@ -37,30 +37,35 @@ class StripeBillingCycleAnchorConfig
     public function withDayOfMonth(int $dayOfMonth): self
     {
         $this->dayOfMonth = $dayOfMonth;
+
         return $this;
     }
 
     public function withMonth(int $month): self
     {
         $this->month = $month;
+
         return $this;
     }
 
     public function withHour(int $hour): self
     {
         $this->hour = $hour;
+
         return $this;
     }
 
     public function withMinute(int $minute): self
     {
         $this->minute = $minute;
+
         return $this;
     }
 
     public function withSecond(int $second): self
     {
         $this->second = $second;
+
         return $this;
     }
 

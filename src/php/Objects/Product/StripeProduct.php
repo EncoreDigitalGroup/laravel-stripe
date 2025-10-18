@@ -9,8 +9,8 @@ namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use PHPGenesis\Common\Traits\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Product;
 
 class StripeProduct

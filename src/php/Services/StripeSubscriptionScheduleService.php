@@ -22,12 +22,14 @@ class StripeSubscriptionScheduleService
         unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"]);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($data);
+
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
     public function get(string $subscriptionScheduleId): StripeSubscriptionSchedule
     {
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->retrieve($subscriptionScheduleId);
+
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
@@ -38,6 +40,7 @@ class StripeSubscriptionScheduleService
         unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"]);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
+
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
@@ -54,6 +57,7 @@ class StripeSubscriptionScheduleService
         }
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->cancel($subscriptionScheduleId, $params);
+
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
@@ -66,6 +70,7 @@ class StripeSubscriptionScheduleService
         }
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->release($subscriptionScheduleId, $params);
+
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 

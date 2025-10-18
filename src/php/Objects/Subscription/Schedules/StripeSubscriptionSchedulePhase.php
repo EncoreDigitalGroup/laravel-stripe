@@ -82,7 +82,7 @@ class StripeSubscriptionSchedulePhase
         if ($obj->default_payment_method ?? null) {
             $instance->defaultPaymentMethod = $obj->default_payment_method;
         }
-        if ($defaultTaxRates) {
+        if ($defaultTaxRates instanceof \Illuminate\Support\Collection) {
             $instance->defaultTaxRates = $defaultTaxRates;
         }
         if ($obj->collection_method ?? null) {
@@ -122,72 +122,84 @@ class StripeSubscriptionSchedulePhase
     public function withStartDate(CarbonImmutable $startDate): self
     {
         $this->startDate = $startDate;
+
         return $this;
     }
 
     public function withEndDate(CarbonImmutable $endDate): self
     {
         $this->endDate = $endDate;
+
         return $this;
     }
 
     public function withItems(Collection $items): self
     {
         $this->items = $items;
+
         return $this;
     }
 
     public function withIterations(int $iterations): self
     {
         $this->iterations = $iterations;
+
         return $this;
     }
 
     public function withProrationBehavior(SubscriptionScheduleProrationBehavior $prorationBehavior): self
     {
         $this->prorationBehavior = $prorationBehavior;
+
         return $this;
     }
 
     public function withTrialPeriodDays(int $trialPeriodDays): self
     {
         $this->trialPeriodDays = $trialPeriodDays;
+
         return $this;
     }
 
     public function withTrialEnd(CarbonImmutable $trialEnd): self
     {
         $this->trialEnd = $trialEnd;
+
         return $this;
     }
 
     public function withDefaultPaymentMethod(string $defaultPaymentMethod): self
     {
         $this->defaultPaymentMethod = $defaultPaymentMethod;
+
         return $this;
     }
 
     public function withDefaultTaxRates(Collection $defaultTaxRates): self
     {
         $this->defaultTaxRates = $defaultTaxRates;
+
         return $this;
     }
 
     public function withCollectionMethod(string $collectionMethod): self
     {
         $this->collectionMethod = $collectionMethod;
+
         return $this;
     }
 
     public function withInvoiceSettings(string $invoiceSettings): self
     {
         $this->invoiceSettings = $invoiceSettings;
+
         return $this;
     }
 
     public function withMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
+
         return $this;
     }
 

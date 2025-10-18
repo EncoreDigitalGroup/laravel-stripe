@@ -223,7 +223,7 @@ describe("forSubscription", function (): void {
             StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
                 StripeFixtures::subscriptionSchedule([
                     "id" => "sub_sched_1",
-                    "subscription" => "sub_123"
+                    "subscription" => "sub_123",
                 ]),
             ]),
         ]);

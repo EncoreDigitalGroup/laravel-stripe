@@ -7,11 +7,12 @@
 
 namespace EncoreDigitalGroup\Stripe;
 
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
-use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
@@ -20,6 +21,15 @@ use Stripe\StripeClient;
 class Stripe
 {
     use HasStripe;
+
+    #region Shortcuts
+
+    public static function subscription(): StripeSubscription
+    {
+        return StripeSubscription::make();
+    }
+
+    #endregion
 
     #region Builder Methods - Access fluent builders
 
