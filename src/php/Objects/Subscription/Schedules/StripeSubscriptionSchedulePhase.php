@@ -105,10 +105,21 @@ class StripeSubscriptionSchedulePhase
 
     public function toArray(): array
     {
+        $items = null;
+        if ($this->items !== null) {
+            $items = $this->items->map(function ($item) {
+                if ($item instanceof StripePhaseItem) {
+                    return $item->toArray();
+                }
+
+                return $item;
+            })->toArray();
+        }
+
         $array = [
             "start_date" => self::carbonToTimestamp($this->startDate),
             "end_date" => self::carbonToTimestamp($this->endDate),
-            "items" => $this->items?->toArray(),
+            "items" => $items,
             "iterations" => $this->iterations,
             "proration_behavior" => $this->prorationBehavior?->value,
             "trial_period_days" => $this->trialPeriodDays,
