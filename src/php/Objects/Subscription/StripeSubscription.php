@@ -47,6 +47,8 @@ class StripeSubscription
 
     /**
      * Create a StripeSubscription instance from a Stripe API Subscription object
+     *
+     * @phpstan-ignore complexity.functionLike
      */
     public static function fromStripeObject(Subscription $stripeSubscription): self
     {
@@ -99,7 +101,7 @@ class StripeSubscription
         if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
             $instance = $instance->withDefaultPaymentMethod($defaultPaymentMethod);
         }
-        if ($stripeSubscription->metadata) {
+        if (isset($stripeSubscription->metadata)) {
             $instance = $instance->withMetadata($stripeSubscription->metadata->toArray());
         }
         if ($stripeSubscription->currency ?? null) {

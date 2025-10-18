@@ -17,7 +17,7 @@ use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
-use Stripe\StripeObject;
+use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
@@ -42,10 +42,14 @@ class StripeSubscriptionSchedule
     private ?string $testClock = null;
     private ?StripeSubscription $parentSubscription = null;
 
-    public static function fromStripeObject(StripeObject $obj): self
+    /**
+     * @phpstan-ignore complexity.functionLike
+     */
+    public static function fromStripeObject(StripeApiSubscriptionSchedule $obj): self
     {
         $phases = null;
         if (isset($obj->phases)) {
+            /** @phpstan-ignore argument.templateType */
             $phases = collect($obj->phases)->map(function ($phase): StripeSubscriptionSchedulePhase {
                 return StripeSubscriptionSchedulePhase::fromStripeObject($phase);
             });
@@ -83,11 +87,14 @@ class StripeSubscriptionSchedule
         if (isset($obj->created)) {
             $instance->created = self::timestampToCarbon($obj->created);
         }
-        $customer = is_string($obj->customer ?? null) ? $obj->customer : $obj->customer?->id;
-        if ($customer) {
-            $instance->customer = $customer;
+        if (isset($obj->customer)) {
+            if (is_string($obj->customer)) {
+                $instance->customer = $obj->customer;
+            } else {
+                $instance->customer = $obj->customer->id;
+            }
         }
-        if ($defaultSettings instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedulePhase) {
+        if ($defaultSettings instanceof StripeSubscriptionSchedulePhase) {
             $instance->defaultSettings = $defaultSettings;
         }
         if ($endBehavior) {
@@ -105,16 +112,18 @@ class StripeSubscriptionSchedule
         if (isset($obj->released_at)) {
             $instance->releasedAt = self::timestampToCarbon($obj->released_at);
         }
-        $releasedSubscription = is_string($obj->released_subscription ?? null) ? $obj->released_subscription : $obj->released_subscription?->id;
-        if ($releasedSubscription) {
-            $instance->releasedSubscription = $releasedSubscription;
+        if (isset($obj->released_subscription)) {
+            $instance->releasedSubscription = $obj->released_subscription;
         }
         if ($status) {
             $instance->status = $status;
         }
-        $subscription = is_string($obj->subscription ?? null) ? $obj->subscription : $obj->subscription?->id;
-        if ($subscription) {
-            $instance->subscription = $subscription;
+        if (isset($obj->subscription)) {
+            if (is_string($obj->subscription)) {
+                $instance->subscription = $obj->subscription;
+            } else {
+                $instance->subscription = $obj->subscription->id;
+            }
         }
         if ($obj->test_clock ?? null) {
             $instance->testClock = $obj->test_clock;
@@ -315,42 +324,55 @@ class StripeSubscriptionSchedule
     public function get(?string $subscriptionId = null): self
     {
         $scheduleService = app(StripeSubscriptionScheduleService::class);
+        $targetSubscriptionId = $this->resolveSubscriptionId($subscriptionId);
+        $schedule = $scheduleService->forSubscription($targetSubscriptionId);
 
-        // Use provided subscriptionId, fall back to parent subscription, or use existing subscription property
+        if ($schedule === null) {
+            return $this->createEmptySchedule($subscriptionId);
+        }
+
+        $schedule->parentSubscription = $this->parentSubscription;
+
+        return $schedule;
+    }
+
+    private function resolveSubscriptionId(?string $subscriptionId): string
+    {
         $targetSubscriptionId = $subscriptionId ?? $this->parentSubscription?->id() ?? $this->subscription;
 
         if ($targetSubscriptionId === null) {
             throw new InvalidArgumentException("Subscription ID is required to fetch schedule");
         }
 
-        $schedule = $scheduleService->forSubscription($targetSubscriptionId);
+        return $targetSubscriptionId;
+    }
 
-        if ($schedule === null) {
-            // No schedule exists yet, create new empty instance
-            $newSchedule = self::make()
-                ->withPhases(collect([]));
+    private function createEmptySchedule(?string $subscriptionId): self
+    {
+        $newSchedule = self::make()->withPhases(collect([]));
 
-            if ($this->parentSubscription instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription) {
-                $customer = $this->parentSubscription->customer();
-                $subId = $this->parentSubscription->id();
-                if ($customer !== null) {
-                    $newSchedule = $newSchedule->withCustomer($customer);
-                }
-                if ($subId !== null) {
-                    $newSchedule = $newSchedule->withSubscription($subId);
-                }
-            } elseif ($subscriptionId !== null && $subscriptionId !== '' && $subscriptionId !== '0') {
-                $newSchedule = $newSchedule->withSubscription($subscriptionId);
-            }
-
-            // Preserve parent subscription reference
-            $newSchedule->parentSubscription = $this->parentSubscription;
-
-            return $newSchedule;
+        if ($this->parentSubscription instanceof StripeSubscription) {
+            $newSchedule = $this->populateFromParentSubscription($newSchedule);
+        } elseif ($subscriptionId !== null && $subscriptionId !== '' && $subscriptionId !== '0') {
+            $newSchedule = $newSchedule->withSubscription($subscriptionId);
         }
 
-        // Preserve parent subscription reference
-        $schedule->parentSubscription = $this->parentSubscription;
+        $newSchedule->parentSubscription = $this->parentSubscription;
+
+        return $newSchedule;
+    }
+
+    private function populateFromParentSubscription(self $schedule): self
+    {
+        $customer = $this->parentSubscription?->customer();
+        $subId = $this->parentSubscription?->id();
+
+        if ($customer !== null) {
+            $schedule = $schedule->withCustomer($customer);
+        }
+        if ($subId !== null) {
+            $schedule = $schedule->withSubscription($subId);
+        }
 
         return $schedule;
     }

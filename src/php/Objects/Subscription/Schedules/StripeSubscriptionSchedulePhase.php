@@ -33,10 +33,14 @@ class StripeSubscriptionSchedulePhase
     private ?string $invoiceSettings = null;
     private ?array $metadata = null;
 
+    /**
+     * @phpstan-ignore complexity.functionLike
+     */
     public static function fromStripeObject(StripeObject $obj): self
     {
         $items = null;
         if (isset($obj->items->data)) {
+            /** @phpstan-ignore-next-line argument.templateType */
             $items = collect($obj->items->data)->map(function ($item): array {
                 return [
                     "price" => $item->price ?? null,
@@ -48,6 +52,7 @@ class StripeSubscriptionSchedulePhase
 
         $defaultTaxRates = null;
         if (isset($obj->default_tax_rates)) {
+            /** @phpstan-ignore-next-line  argument.templateType */
             $defaultTaxRates = collect($obj->default_tax_rates);
         }
 

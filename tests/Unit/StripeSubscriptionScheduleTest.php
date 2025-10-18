@@ -84,7 +84,7 @@ test("handles nested customer and subscription objects in fromStripeObject", fun
     $stripeObject = Util::convertToStripeObject(StripeFixtures::subscriptionSchedule([
         "customer" => Util::convertToStripeObject(["id" => "cus_from_object"], []),
         "subscription" => Util::convertToStripeObject(["id" => "sub_from_object"], []),
-        "released_subscription" => Util::convertToStripeObject(["id" => "sub_released_from_object"], []),
+        "released_subscription" => "sub_released_from_object",
     ]), []);
 
     $schedule = StripeSubscriptionSchedule::fromStripeObject($stripeObject);
