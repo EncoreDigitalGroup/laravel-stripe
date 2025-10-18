@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Subscription;
 
 /** @internal */
 class StripeSubscriptionService
@@ -35,6 +36,27 @@ class StripeSubscriptionService
         $stripeSubscription = $this->stripe->subscriptions->create($data);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
+    }
+
+    /**
+     * @return Collection<StripeSubscription>
+     * @throws ApiErrorException
+     */
+    public function getAllForCustomer(string $customerId): Collection
+    {
+        $subscriptions = $this->stripe->customers->retrieve($customerId)->subscriptions;
+        $subscriptionDTOs = new Collection;
+
+        if (is_null($subscriptions)) {
+            return $subscriptionDTOs;
+        }
+
+        /** @var Subscription $subscription */
+        foreach ($subscriptions as $subscription) {
+            $subscriptionDTOs->add(StripeSubscription::fromStripeObject($subscription));
+        }
+
+        return $subscriptionDTOs;
     }
 
     /** @throws ApiErrorException */

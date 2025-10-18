@@ -7,9 +7,13 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Customer;
 use Stripe\StripeObject;
@@ -25,6 +29,7 @@ class StripeCustomer
     private ?string $name = null;
     private ?string $phone = null;
     private ?StripeShipping $shipping = null;
+    private ?Collection $subscriptions = null;
 
     /**
      * Create a StripeCustomer instance from a Stripe API Customer object
@@ -236,5 +241,23 @@ class StripeCustomer
     public function shipping(): ?StripeShipping
     {
         return $this->shipping;
+    }
+
+    /** @returns Collection<StripeSubscription> */
+    public function subscriptions(bool $refresh = false): Collection
+    {
+        if ($this->subscriptions instanceof Collection && !$refresh) {
+            return $this->subscriptions;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $stripeSubscriptionService = app(StripeSubscriptionService::class);
+
+        $this->subscriptions = $stripeSubscriptionService->getAllForCustomer($this->id);
+
+        return $this->subscriptions;
     }
 }
