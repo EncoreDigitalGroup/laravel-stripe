@@ -11,9 +11,9 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
-describe("StripeWebhookEndpointService", function () {
-    describe("create", function () {
-        test("creates webhook endpoint via service", function () {
+describe("StripeWebhookEndpointService", function (): void {
+    describe("create", function (): void {
+        test("creates webhook endpoint via service", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsCreate->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_test123",
@@ -37,7 +37,7 @@ describe("StripeWebhookEndpointService", function () {
                 ->and($fake)->toHaveCalledStripeMethod(StripeMethod::WebhookEndpointsCreate);
         });
 
-        test("removes read-only fields from create request", function () {
+        test("removes read-only fields from create request", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsCreate->value => StripeFixtures::webhookEndpoint(),
             ]);
@@ -63,8 +63,8 @@ describe("StripeWebhookEndpointService", function () {
         });
     });
 
-    describe("get", function () {
-        test("retrieves webhook endpoint by id", function () {
+    describe("get", function (): void {
+        test("retrieves webhook endpoint by id", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsRetrieve->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_test123",
@@ -83,8 +83,8 @@ describe("StripeWebhookEndpointService", function () {
         });
     });
 
-    describe("update", function () {
-        test("updates webhook endpoint", function () {
+    describe("update", function (): void {
+        test("updates webhook endpoint", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsUpdate->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_test123",
@@ -107,7 +107,7 @@ describe("StripeWebhookEndpointService", function () {
                 ->and($fake)->toHaveCalledStripeMethod(StripeMethod::WebhookEndpointsUpdate);
         });
 
-        test("removes read-only fields from update request", function () {
+        test("removes read-only fields from update request", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsUpdate->value => StripeFixtures::webhookEndpoint(),
             ]);
@@ -130,8 +130,8 @@ describe("StripeWebhookEndpointService", function () {
         });
     });
 
-    describe("delete", function () {
-        test("deletes webhook endpoint", function () {
+    describe("delete", function (): void {
+        test("deletes webhook endpoint", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsDelete->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_test123",
@@ -148,8 +148,8 @@ describe("StripeWebhookEndpointService", function () {
         });
     });
 
-    describe("list", function () {
-        test("lists webhook endpoints", function () {
+    describe("list", function (): void {
+        test("lists webhook endpoints", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsAll->value => StripeFixtures::webhookEndpointList([
                     StripeFixtures::webhookEndpoint(["id" => "we_1"]),
@@ -168,7 +168,7 @@ describe("StripeWebhookEndpointService", function () {
                 ->and($fake)->toHaveCalledStripeMethod(StripeMethod::WebhookEndpointsAll);
         });
 
-        test("passes params to list method", function () {
+        test("passes params to list method", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsAll->value => StripeFixtures::webhookEndpointList(),
             ]);

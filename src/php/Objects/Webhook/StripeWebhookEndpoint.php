@@ -7,8 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
-use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
@@ -58,7 +58,7 @@ class StripeWebhookEndpoint
 
         $created = self::timestampToCarbon($stripeEndpoint->created ?? null);
         if ($created instanceof CarbonImmutable) {
-            $instance = $instance->withCreated($created);
+            return $instance->withCreated($created);
         }
 
         return $instance;
@@ -79,7 +79,7 @@ class StripeWebhookEndpoint
             $instance = $instance->withSecret($stripeEndpoint->secret);
         }
         if ($stripeEndpoint->status ?? null) {
-            $instance = $instance->withStatus($stripeEndpoint->status);
+            return $instance->withStatus($stripeEndpoint->status);
         }
 
         return $instance;

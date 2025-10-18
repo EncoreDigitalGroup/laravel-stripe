@@ -18,26 +18,26 @@ class StripeInvoiceWebhookData
     use HasTimestamps;
 
     /**
-     * @param array<StripeInvoiceLineItem> $lines
+     * @param  array<StripeInvoiceLineItem>  $lines
      */
     public function __construct(
-        public ?string          $id = null,
-        public ?string          $number = null,
-        public ?string          $subscription = null,
-        public ?string          $paymentIntent = null,
-        public ?string          $customer = null,
-        public ?int             $subtotal = null,
-        public ?int             $tax = null,
-        public ?int             $total = null,
-        public ?int             $amountDue = null,
-        public ?int             $amountPaid = null,
-        public ?int             $amountRemaining = null,
-        public ?string          $status = null,
-        public ?string          $currency = null,
+        public ?string $id = null,
+        public ?string $number = null,
+        public ?string $subscription = null,
+        public ?string $paymentIntent = null,
+        public ?string $customer = null,
+        public ?int $subtotal = null,
+        public ?int $tax = null,
+        public ?int $total = null,
+        public ?int $amountDue = null,
+        public ?int $amountPaid = null,
+        public ?int $amountRemaining = null,
+        public ?string $status = null,
+        public ?string $currency = null,
         public ?CarbonImmutable $created = null,
         public ?CarbonImmutable $dueDate = null,
-        public ?array           $lines = null,
-        public ?array           $metadata = null
+        public ?array $lines = null,
+        public ?array $metadata = null
     ) {}
 
     /**
@@ -91,7 +91,7 @@ class StripeInvoiceWebhookData
             "currency" => $this->currency,
             "created" => self::carbonToTimestamp($this->created),
             "due_date" => self::carbonToTimestamp($this->dueDate),
-            "lines" => $this->lines ? array_map(fn($line) => $line->toArray(), $this->lines) : null,
+            "lines" => $this->lines !== null && $this->lines !== [] ? array_map(fn ($line): array => $line->toArray(), $this->lines) : null,
             "metadata" => $this->metadata,
         ];
 

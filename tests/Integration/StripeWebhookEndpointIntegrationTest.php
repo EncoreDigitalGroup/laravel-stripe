@@ -10,15 +10,15 @@ use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 
-describe("Webhook Endpoint Integration", function () {
-    describe("Stripe facade shortcuts", function () {
-        test("creates webhook endpoint via Stripe facade shortcut", function () {
+describe("Webhook Endpoint Integration", function (): void {
+    describe("Stripe facade shortcuts", function (): void {
+        test("creates webhook endpoint via Stripe facade shortcut", function (): void {
             $endpoint = Stripe::webhookEndpoint();
 
             expect($endpoint)->toBeInstanceOf(StripeWebhookEndpoint::class);
         });
 
-        test("accesses service via Stripe facade", function () {
+        test("accesses service via Stripe facade", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsAll->value => StripeFixtures::webhookEndpointList(),
             ]);
@@ -30,8 +30,8 @@ describe("Webhook Endpoint Integration", function () {
         });
     });
 
-    describe("fluent workflow", function () {
-        test("creates and updates webhook endpoint fluently", function () {
+    describe("fluent workflow", function (): void {
+        test("creates and updates webhook endpoint fluently", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsCreate->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_new123",
@@ -62,7 +62,7 @@ describe("Webhook Endpoint Integration", function () {
                 ->and($fake)->toHaveCalledStripeMethodTimes(StripeMethod::WebhookEndpointsUpdate, 1);
         });
 
-        test("retrieves and deletes webhook endpoint fluently", function () {
+        test("retrieves and deletes webhook endpoint fluently", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsRetrieve->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_test123",
@@ -82,8 +82,8 @@ describe("Webhook Endpoint Integration", function () {
         });
     });
 
-    describe("complete workflow example", function () {
-        test("demonstrates full webhook endpoint lifecycle", function () {
+    describe("complete workflow example", function (): void {
+        test("demonstrates full webhook endpoint lifecycle", function (): void {
             $fake = Stripe::fake([
                 StripeMethod::WebhookEndpointsCreate->value => StripeFixtures::webhookEndpoint([
                     "id" => "we_lifecycle123",

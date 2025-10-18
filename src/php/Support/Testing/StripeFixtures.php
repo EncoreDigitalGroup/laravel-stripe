@@ -7,6 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
+use Carbon\CarbonImmutable;
+
 /**
  * StripeFixtures provides common test data for Stripe API responses
  *
@@ -301,7 +303,7 @@ class StripeFixtures
 
     public static function subscriptionSchedule(array $overrides = []): array
     {
-        $now = \Carbon\CarbonImmutable::now()->timestamp;
+        $now = CarbonImmutable::now()->timestamp;
 
         return array_merge([
             "id" => "sub_sched_" . self::randomId(),
@@ -353,7 +355,7 @@ class StripeFixtures
                     "default_tax_rates" => [],
                     "description" => null,
                     "discounts" => [],
-                    "end_date" => \Carbon\CarbonImmutable::now()->addMonth()->timestamp,
+                    "end_date" => CarbonImmutable::now()->addMonth()->timestamp,
                     "invoice_settings" => null,
                     "items" => [
                         [

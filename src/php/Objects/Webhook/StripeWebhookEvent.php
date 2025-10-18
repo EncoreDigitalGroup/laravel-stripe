@@ -18,12 +18,12 @@ class StripeWebhookEvent
     use HasTimestamps;
 
     public function __construct(
-        public ?string                                                            $id = null,
-        public ?string                                                            $type = null,
+        public ?string $id = null,
+        public ?string $type = null,
         public StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data = null,
-        public ?CarbonImmutable                                                   $created = null,
-        public ?bool                                                              $livemode = null,
-        public ?string                                                            $apiVersion = null
+        public ?CarbonImmutable $created = null,
+        public ?bool $livemode = null,
+        public ?string $apiVersion = null
     ) {}
 
     /**
@@ -92,7 +92,7 @@ class StripeWebhookEvent
         $array = [
             "id" => $this->id,
             "type" => $this->type,
-            "data" => $dataArray ? ["object" => $dataArray] : null,
+            "data" => $dataArray !== null && $dataArray !== [] ? ["object" => $dataArray] : null,
             "created" => self::carbonToTimestamp($this->created),
             "livemode" => $this->livemode,
             "api_version" => $this->apiVersion,
