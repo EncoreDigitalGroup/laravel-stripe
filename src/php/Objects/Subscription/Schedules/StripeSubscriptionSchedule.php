@@ -356,24 +356,11 @@ class StripeSubscriptionSchedule
     }
 
     public function addPhase(StripePhaseItem $phaseItem): self
-    {
-        if (!$this->phases instanceof \Illuminate\Support\Collection) {
-            $this->phases = collect([]);
-        }
-
-        // Convert existing phases to array format for consistency
-        $phasesArray = [];
-        foreach ($this->phases as $phase) {
-            $phasesArray[] = $phase;
-        }
-
         // Create new phase from the item
         $newPhase = StripeSubscriptionSchedulePhase::make()
             ->withItems(collect([$phaseItem]));
 
-        $phasesArray[] = $newPhase;
-
-        $this->phases = collect($phasesArray);
+        $this->phases = ($this->phases ?? collect())->push($newPhase);
 
         return $this;
     }
