@@ -17,12 +17,10 @@ class StripeTransactionRefresh
     use HasMake;
     use HasTimestamps;
 
-    public function __construct(
-        public ?string $id = null,
-        public ?CarbonImmutable $lastAttemptedAt = null,
-        public ?CarbonImmutable $nextRefreshAvailableAt = null,
-        public ?string $status = null
-    ) {}
+    private ?string $id = null;
+    private ?CarbonImmutable $lastAttemptedAt = null;
+    private ?CarbonImmutable $nextRefreshAvailableAt = null;
+    private ?string $status = null;
 
     public function toArray(): array
     {
@@ -34,5 +32,55 @@ class StripeTransactionRefresh
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    // Fluent setters
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withLastAttemptedAt(CarbonImmutable $lastAttemptedAt): self
+    {
+        $this->lastAttemptedAt = $lastAttemptedAt;
+
+        return $this;
+    }
+
+    public function withNextRefreshAvailableAt(CarbonImmutable $nextRefreshAvailableAt): self
+    {
+        $this->nextRefreshAvailableAt = $nextRefreshAvailableAt;
+
+        return $this;
+    }
+
+    public function withStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    // Getter methods
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+
+    public function lastAttemptedAt(): ?CarbonImmutable
+    {
+        return $this->lastAttemptedAt;
+    }
+
+    public function nextRefreshAvailableAt(): ?CarbonImmutable
+    {
+        return $this->nextRefreshAvailableAt;
+    }
+
+    public function status(): ?string
+    {
+        return $this->status;
     }
 }

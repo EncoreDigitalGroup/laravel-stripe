@@ -39,8 +39,7 @@ test("can set and get security keys from array", function (): void {
 });
 
 test("can set accounts array", function (): void {
-    $bankAccount = new StripeBankAccount;
-    $bankAccount->id = "ba_test123";
+    $bankAccount = StripeBankAccount::make()->withId("ba_test123");
 
     $payload = new StripeBankAccountConnectedPayload;
     $payload->accounts = [$bankAccount];
@@ -48,7 +47,7 @@ test("can set accounts array", function (): void {
     expect($payload->accounts)->toBeArray()
         ->and($payload->accounts)->toHaveCount(1)
         ->and($payload->accounts[0])->toBeInstanceOf(StripeBankAccount::class)
-        ->and($payload->accounts[0]->id)->toBe("ba_test123");
+        ->and($payload->accounts[0]->id())->toBe("ba_test123");
 });
 
 test("can chain setters", function (): void {
@@ -89,20 +88,15 @@ test("setSecurityKeys creates new SecurityKeyPair instance", function (): void {
 });
 
 test("accounts array can contain multiple bank accounts", function (): void {
-    $bankAccount1 = new StripeBankAccount;
-    $bankAccount1->id = "ba_1";
-
-    $bankAccount2 = new StripeBankAccount;
-    $bankAccount2->id = "ba_2";
-
-    $bankAccount3 = new StripeBankAccount;
-    $bankAccount3->id = "ba_3";
+    $bankAccount1 = StripeBankAccount::make()->withId("ba_1");
+    $bankAccount2 = StripeBankAccount::make()->withId("ba_2");
+    $bankAccount3 = StripeBankAccount::make()->withId("ba_3");
 
     $payload = new StripeBankAccountConnectedPayload;
     $payload->accounts = [$bankAccount1, $bankAccount2, $bankAccount3];
 
     expect($payload->accounts)->toHaveCount(3)
-        ->and($payload->accounts[0]->id)->toBe("ba_1")
-        ->and($payload->accounts[1]->id)->toBe("ba_2")
-        ->and($payload->accounts[2]->id)->toBe("ba_3");
+        ->and($payload->accounts[0]->id())->toBe("ba_1")
+        ->and($payload->accounts[1]->id())->toBe("ba_2")
+        ->and($payload->accounts[2]->id())->toBe("ba_3");
 });

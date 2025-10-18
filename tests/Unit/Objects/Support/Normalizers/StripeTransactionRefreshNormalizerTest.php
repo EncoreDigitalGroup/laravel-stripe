@@ -10,19 +10,22 @@ use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefr
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeTransactionRefreshNormalizer;
 
 test("can normalize StripeTransactionRefresh to array", function (): void {
-    $transactionRefresh = new StripeTransactionRefresh;
-    $transactionRefresh->id = "txn_refresh_123";
-    $transactionRefresh->lastAttemptedAt = CarbonImmutable::now();
-    $transactionRefresh->nextRefreshAvailableAt = $transactionRefresh->lastAttemptedAt->addDay();
-    $transactionRefresh->status = "pending";
+    $lastAttemptedAt = CarbonImmutable::now();
+    $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
+
+    $transactionRefresh = StripeTransactionRefresh::make()
+        ->withId("txn_refresh_123")
+        ->withLastAttemptedAt($lastAttemptedAt)
+        ->withNextRefreshAvailableAt($nextRefreshAvailableAt)
+        ->withStatus("pending");
 
     $normalizer = new StripeTransactionRefreshNormalizer;
     $result = $normalizer->normalize($transactionRefresh);
 
     expect($result)->toBe([
         "id" => "txn_refresh_123",
-        "lastAttemptedAt" => $transactionRefresh->lastAttemptedAt,
-        "nextRefreshAvailableAt" => $transactionRefresh->nextRefreshAvailableAt,
+        "lastAttemptedAt" => $lastAttemptedAt,
+        "nextRefreshAvailableAt" => $nextRefreshAvailableAt,
         "status" => "pending",
     ]);
 });
@@ -49,15 +52,14 @@ test("can denormalize array to StripeTransactionRefresh", function (): void {
     $result = $normalizer->denormalize($data, StripeTransactionRefresh::class);
 
     expect($result)->toBeInstanceOf(StripeTransactionRefresh::class)
-        ->and($result->id)->toBe("txn_refresh_456")
-        ->and($result->lastAttemptedAt->timestamp)->toBe($lastAttemptedAt->timestamp)
-        ->and($result->nextRefreshAvailableAt->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
-        ->and($result->status)->toBe("succeeded");
+        ->and($result->id())->toBe("txn_refresh_456")
+        ->and($result->lastAttemptedAt()->timestamp)->toBe($lastAttemptedAt->timestamp)
+        ->and($result->nextRefreshAvailableAt()->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
+        ->and($result->status())->toBe("succeeded");
 });
 
 test("denormalize returns object if already correct type", function (): void {
-    $transactionRefresh = new StripeTransactionRefresh;
-    $transactionRefresh->id = "txn_refresh_789";
+    $transactionRefresh = StripeTransactionRefresh::make()->withId("txn_refresh_789");
 
     $normalizer = new StripeTransactionRefreshNormalizer;
     $result = $normalizer->denormalize($transactionRefresh, StripeTransactionRefresh::class);
@@ -74,7 +76,7 @@ test("denormalize throws exception for non-array data", function (): void {
 
 test("supports normalization for StripeTransactionRefresh", function (): void {
     $normalizer = new StripeTransactionRefreshNormalizer;
-    $transactionRefresh = new StripeTransactionRefresh;
+    $transactionRefresh = StripeTransactionRefresh::make();
 
     expect($normalizer->supportsNormalization($transactionRefresh))->toBeTrue()
         ->and($normalizer->supportsNormalization(new stdClass))->toBeFalse();

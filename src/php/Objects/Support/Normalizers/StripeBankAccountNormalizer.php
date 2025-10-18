@@ -23,17 +23,17 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         }
 
         return [
-            "id" => $data->id,
-            "category" => $data->category,
-            "created" => $data->created?->timestamp,
-            "display_name" => $data->displayName,
-            "institution_name" => $data->institutionName,
-            "last4" => $data->last4,
-            "livemode" => $data->liveMode,
-            "permissions" => $data->permissions,
-            "subscriptions" => $data->subscriptions,
-            "supported_payment_method_types" => $data->supportedPaymentMethodTypes,
-            "transaction_refresh" => $data->transactionRefresh,
+            "id" => $data->id(),
+            "category" => $data->category(),
+            "created" => $data->created()?->timestamp,
+            "display_name" => $data->displayName(),
+            "institution_name" => $data->institutionName(),
+            "last4" => $data->last4(),
+            "livemode" => $data->liveMode(),
+            "permissions" => $data->permissions(),
+            "subscriptions" => $data->subscriptions(),
+            "supported_payment_method_types" => $data->supportedPaymentMethodTypes(),
+            "transaction_refresh" => $data->transactionRefresh(),
         ];
     }
 
@@ -47,23 +47,61 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
             throw new InvalidArgumentException("Data must be an array for denormalization");
         }
 
-        $bankAccount = new StripeBankAccount;
+        $bankAccount = $this->setBasicProperties(StripeBankAccount::make(), $data);
+        $bankAccount = $this->setArrayProperties($bankAccount, $data);
+        $bankAccount = $this->setTransactionRefresh($bankAccount, $data, $format, $context);
 
-        $bankAccount->id = $data["id"] ?? null;
-        $bankAccount->category = $data["category"] ?? null;
-        $bankAccount->created = isset($data["created"]) ? CarbonImmutable::createFromTimestamp($data["created"]) : null;
-        $bankAccount->displayName = $data["display_name"] ?? null;
-        $bankAccount->institutionName = $data["institution_name"] ?? null;
-        $bankAccount->last4 = $data["last4"] ?? null;
-        $bankAccount->liveMode = $data["livemode"] ?? null;
-        $bankAccount->permissions = $data["permissions"] ?? [];
-        $bankAccount->subscriptions = $data["subscriptions"] ?? [];
-        $bankAccount->supportedPaymentMethodTypes = $data["supported_payment_method_types"] ?? [];
-        $bankAccount->transactionRefresh = null;
+        return $bankAccount;
+    }
 
+    private function setBasicProperties(StripeBankAccount $bankAccount, array $data): StripeBankAccount
+    {
+        if (isset($data["id"])) {
+            $bankAccount = $bankAccount->withId($data["id"]);
+        }
+        if (isset($data["category"])) {
+            $bankAccount = $bankAccount->withCategory($data["category"]);
+        }
+        if (isset($data["created"])) {
+            $bankAccount = $bankAccount->withCreated(CarbonImmutable::createFromTimestamp($data["created"]));
+        }
+        if (isset($data["display_name"])) {
+            $bankAccount = $bankAccount->withDisplayName($data["display_name"]);
+        }
+        if (isset($data["institution_name"])) {
+            $bankAccount = $bankAccount->withInstitutionName($data["institution_name"]);
+        }
+        if (isset($data["last4"])) {
+            $bankAccount = $bankAccount->withLast4($data["last4"]);
+        }
+        if (isset($data["livemode"])) {
+            $bankAccount = $bankAccount->withLiveMode($data["livemode"]);
+        }
+
+        return $bankAccount;
+    }
+
+    private function setArrayProperties(StripeBankAccount $bankAccount, array $data): StripeBankAccount
+    {
+        if (isset($data["permissions"])) {
+            $bankAccount = $bankAccount->withPermissions($data["permissions"]);
+        }
+        if (isset($data["subscriptions"])) {
+            $bankAccount = $bankAccount->withSubscriptions($data["subscriptions"]);
+        }
+        if (isset($data["supported_payment_method_types"])) {
+            $bankAccount = $bankAccount->withSupportedPaymentMethodTypes($data["supported_payment_method_types"]);
+        }
+
+        return $bankAccount;
+    }
+
+    private function setTransactionRefresh(StripeBankAccount $bankAccount, array $data, ?string $format, array $context): StripeBankAccount
+    {
         if (isset($data["transaction_refresh"])) {
             $normalizer = new StripeTransactionRefreshNormalizer($this->objectNormalizer);
-            $bankAccount->transactionRefresh = $normalizer->denormalize($data["transaction_refresh"], StripeTransactionRefresh::class, $format, $context);
+            $transactionRefresh = $normalizer->denormalize($data["transaction_refresh"], StripeTransactionRefresh::class, $format, $context);
+            $bankAccount = $bankAccount->withTransactionRefresh($transactionRefresh);
         }
 
         return $bankAccount;
