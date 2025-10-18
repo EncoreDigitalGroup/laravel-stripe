@@ -46,7 +46,7 @@ test("can normalize StripeBankAccount to array", function (): void {
 test("normalize throws exception for invalid type", function (): void {
     $normalizer = new StripeBankAccountNormalizer;
 
-    expect(fn (): array => $normalizer->normalize(new stdClass))
+    expect(fn(): array => $normalizer->normalize(new stdClass))
         ->toThrow(InvalidArgumentException::class, "The object must be an instance of StripeBankAccount");
 });
 
@@ -106,7 +106,7 @@ test("denormalize returns object if already correct type", function (): void {
 test("denormalize throws exception for non-array data", function (): void {
     $normalizer = new StripeBankAccountNormalizer;
 
-    expect(fn (): \EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
+    expect(fn(): StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
         ->toThrow(InvalidArgumentException::class, "Data must be an array for denormalization");
 });
 

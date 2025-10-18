@@ -47,7 +47,7 @@ class StripeProductTierCollection extends Collection
     /** Convert the collection to an array suitable for API requests. */
     public function toArray(): array
     {
-        return $this->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->toArray();
+        return $this->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->toArray();
     }
 
     /**
@@ -55,12 +55,11 @@ class StripeProductTierCollection extends Collection
      */
     public function addTier(
         int|string $upTo,
-        ?int       $unitAmount = null,
-        ?string    $unitAmountDecimal = null,
-        ?int       $flatAmount = null,
-        ?string    $flatAmountDecimal = null
-    ): self
-    {
+        ?int $unitAmount = null,
+        ?string $unitAmountDecimal = null,
+        ?int $flatAmount = null,
+        ?string $flatAmountDecimal = null
+    ): self {
         $tier = StripeProductTier::make(
             upTo: $upTo,
             unitAmount: $unitAmount,
@@ -104,7 +103,7 @@ class StripeProductTierCollection extends Collection
     public function withFlatAmounts(): self
     {
         return $this->filter(
-            fn(StripeProductTier $tier): bool => !is_null($tier->flatAmount()) || !is_null($tier->flatAmountDecimal())
+            fn (StripeProductTier $tier): bool => !is_null($tier->flatAmount()) || !is_null($tier->flatAmountDecimal())
         );
     }
 
@@ -114,7 +113,7 @@ class StripeProductTierCollection extends Collection
     public function withUnitAmounts(): self
     {
         return $this->filter(
-            fn(StripeProductTier $tier): bool => !is_null($tier->unitAmount()) || !is_null($tier->unitAmountDecimal())
+            fn (StripeProductTier $tier): bool => !is_null($tier->unitAmount()) || !is_null($tier->unitAmountDecimal())
         );
     }
 }

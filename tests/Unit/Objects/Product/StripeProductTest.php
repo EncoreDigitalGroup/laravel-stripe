@@ -5,6 +5,7 @@
  * All Right Reserved.
  */
 
+use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
 use Stripe\Util\Util;
@@ -63,9 +64,9 @@ test("can create StripeProduct from Stripe object", function (): void {
         ->and($product->url())->toBe("https://example.com")
         ->and($product->shippable())->toBeTrue()
         ->and($product->packageDimensions())->toBeArray()
-        ->and($product->created())->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->created())->toBeInstanceOf(CarbonImmutable::class)
         ->and($product->created()->timestamp)->toBe(1234567890)
-        ->and($product->updated())->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->updated())->toBeInstanceOf(CarbonImmutable::class)
         ->and($product->updated()->timestamp)->toBe(1234567891);
 });
 
@@ -139,7 +140,7 @@ test("toArray returns correct structure", function (): void {
 test("toArray filters null values", function (): void {
     $product = StripeProduct::make(
         name: "Test Product"
-        // All other fields are null
+    // All other fields are null
     );
 
     $array = $product->toArray();
