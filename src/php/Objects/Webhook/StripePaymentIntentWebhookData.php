@@ -9,8 +9,8 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripePaymentIntentWebhookData
 {
@@ -18,19 +18,19 @@ class StripePaymentIntentWebhookData
     use HasTimestamps;
 
     public function __construct(
-        public ?string $id = null,
-        public ?string $status = null,
-        public ?int $amount = null,
-        public ?int $amountReceived = null,
-        public ?string $currency = null,
-        public ?string $customer = null,
-        public ?string $invoice = null,
-        public ?string $paymentMethod = null,
-        public ?string $description = null,
-        public ?string $cancellationReason = null,
-        public ?array $lastPaymentError = null,
+        public ?string          $id = null,
+        public ?string          $status = null,
+        public ?int             $amount = null,
+        public ?int             $amountReceived = null,
+        public ?string          $currency = null,
+        public ?string          $customer = null,
+        public ?string          $invoice = null,
+        public ?string          $paymentMethod = null,
+        public ?string          $description = null,
+        public ?string          $cancellationReason = null,
+        public ?array           $lastPaymentError = null,
         public ?CarbonImmutable $created = null,
-        public ?array $metadata = null
+        public ?array           $metadata = null
     ) {}
 
     /**

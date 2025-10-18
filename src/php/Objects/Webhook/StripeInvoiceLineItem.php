@@ -8,7 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeInvoiceLineItem
 {
@@ -17,13 +17,13 @@ class StripeInvoiceLineItem
     public function __construct(
         public ?string $id = null,
         public ?string $description = null,
-        public ?int $amount = null,
-        public ?int $quantity = null,
-        public ?int $unitAmount = null,
+        public ?int    $amount = null,
+        public ?int    $quantity = null,
+        public ?int    $unitAmount = null,
         public ?string $priceId = null,
         public ?string $productId = null,
-        public ?array $price = null,
-        public ?array $metadata = null
+        public ?array  $price = null,
+        public ?array  $metadata = null
     ) {}
 
     /**

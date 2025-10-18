@@ -9,8 +9,8 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeInvoiceWebhookData
 {
@@ -18,26 +18,26 @@ class StripeInvoiceWebhookData
     use HasTimestamps;
 
     /**
-     * @param  array<StripeInvoiceLineItem>  $lines
+     * @param array<StripeInvoiceLineItem> $lines
      */
     public function __construct(
-        public ?string $id = null,
-        public ?string $number = null,
-        public ?string $subscription = null,
-        public ?string $paymentIntent = null,
-        public ?string $customer = null,
-        public ?int $subtotal = null,
-        public ?int $tax = null,
-        public ?int $total = null,
-        public ?int $amountDue = null,
-        public ?int $amountPaid = null,
-        public ?int $amountRemaining = null,
-        public ?string $status = null,
-        public ?string $currency = null,
+        public ?string          $id = null,
+        public ?string          $number = null,
+        public ?string          $subscription = null,
+        public ?string          $paymentIntent = null,
+        public ?string          $customer = null,
+        public ?int             $subtotal = null,
+        public ?int             $tax = null,
+        public ?int             $total = null,
+        public ?int             $amountDue = null,
+        public ?int             $amountPaid = null,
+        public ?int             $amountRemaining = null,
+        public ?string          $status = null,
+        public ?string          $currency = null,
         public ?CarbonImmutable $created = null,
         public ?CarbonImmutable $dueDate = null,
-        public ?array $lines = null,
-        public ?array $metadata = null
+        public ?array           $lines = null,
+        public ?array           $metadata = null
     ) {}
 
     /**

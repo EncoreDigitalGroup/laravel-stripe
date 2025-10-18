@@ -8,11 +8,13 @@
 namespace EncoreDigitalGroup\Stripe;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
 use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
@@ -27,6 +29,11 @@ class Stripe
     public static function subscription(): StripeSubscription
     {
         return StripeSubscription::make();
+    }
+
+    public static function webhookEndpoint(): StripeWebhookEndpoint
+    {
+        return StripeWebhookEndpoint::make();
     }
 
     #endregion
@@ -65,6 +72,11 @@ class Stripe
     public static function subscriptionSchedules(): StripeSubscriptionScheduleService
     {
         return StripeSubscriptionScheduleService::make();
+    }
+
+    public static function webhookEndpoints(): StripeWebhookEndpointService
+    {
+        return StripeWebhookEndpointService::make();
     }
 
     #endregion

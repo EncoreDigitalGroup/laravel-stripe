@@ -392,6 +392,34 @@ class StripeFixtures
         ], $overrides);
     }
 
+    public static function webhookEndpoint(array $overrides = []): array
+    {
+        return array_merge([
+            "id" => "we_" . self::randomId(),
+            "object" => "webhook_endpoint",
+            "api_version" => "2023-10-16",
+            "application" => null,
+            "created" => time(),
+            "description" => "Test webhook endpoint",
+            "enabled_events" => ["customer.created", "customer.updated"],
+            "livemode" => false,
+            "metadata" => [],
+            "secret" => "whsec_" . self::randomString(32),
+            "status" => "enabled",
+            "url" => "https://example.com/webhook",
+        ], $overrides);
+    }
+
+    public static function webhookEndpointList(array $webhookEndpoints = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $webhookEndpoints,
+            "has_more" => false,
+            "url" => "/v1/webhook_endpoints",
+        ], $overrides);
+    }
+
     protected static function randomId(int $length = 24): string
     {
         return self::randomString($length);

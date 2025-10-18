@@ -9,8 +9,8 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeWebhookEvent
 {

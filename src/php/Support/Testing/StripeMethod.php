@@ -80,6 +80,13 @@ enum StripeMethod: string
     case RefundsUpdate = "refunds.update";
     case RefundsAll = "refunds.all";
 
+    // Webhook Endpoint methods
+    case WebhookEndpointsCreate = "webhookEndpoints.create";
+    case WebhookEndpointsRetrieve = "webhookEndpoints.retrieve";
+    case WebhookEndpointsUpdate = "webhookEndpoints.update";
+    case WebhookEndpointsDelete = "webhookEndpoints.delete";
+    case WebhookEndpointsAll = "webhookEndpoints.all";
+
     // Wildcard patterns for matching any method on a service
     case CustomersAny = "customers.*";
     case ProductsAny = "products.*";
@@ -90,4 +97,5 @@ enum StripeMethod: string
     case InvoicesAny = "invoices.*";
     case ChargesAny = "charges.*";
     case RefundsAny = "refunds.*";
+    case WebhookEndpointsAny = "webhookEndpoints.*";
 }
