@@ -17,13 +17,11 @@ class StripeRecurring
 {
     use HasMake;
 
-    public function __construct(
-        public ?RecurringInterval $interval = null,
-        public ?int $intervalCount = null,
-        public ?int $trialPeriodDays = null,
-        public ?RecurringUsageType $usageType = null,
-        public ?RecurringAggregateUsage $aggregateUsage = null
-    ) {}
+    private ?RecurringInterval $interval = null;
+    private ?int $intervalCount = null;
+    private ?int $trialPeriodDays = null;
+    private ?RecurringUsageType $usageType = null;
+    private ?RecurringAggregateUsage $aggregateUsage = null;
 
     public function toArray(): array
     {
@@ -36,5 +34,67 @@ class StripeRecurring
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    // Fluent setters
+    public function withInterval(RecurringInterval $interval): self
+    {
+        $this->interval = $interval;
+
+        return $this;
+    }
+
+    public function withIntervalCount(int $intervalCount): self
+    {
+        $this->intervalCount = $intervalCount;
+
+        return $this;
+    }
+
+    public function withTrialPeriodDays(int $trialPeriodDays): self
+    {
+        $this->trialPeriodDays = $trialPeriodDays;
+
+        return $this;
+    }
+
+    public function withUsageType(RecurringUsageType $usageType): self
+    {
+        $this->usageType = $usageType;
+
+        return $this;
+    }
+
+    public function withAggregateUsage(RecurringAggregateUsage $aggregateUsage): self
+    {
+        $this->aggregateUsage = $aggregateUsage;
+
+        return $this;
+    }
+
+    // Getters
+    public function interval(): ?RecurringInterval
+    {
+        return $this->interval;
+    }
+
+    public function intervalCount(): ?int
+    {
+        return $this->intervalCount;
+    }
+
+    public function trialPeriodDays(): ?int
+    {
+        return $this->trialPeriodDays;
+    }
+
+    public function usageType(): ?RecurringUsageType
+    {
+        return $this->usageType;
+    }
+
+    public function aggregateUsage(): ?RecurringAggregateUsage
+    {
+        return $this->aggregateUsage;
     }
 }

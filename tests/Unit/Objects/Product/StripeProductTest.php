@@ -18,9 +18,9 @@ test("can create StripeProduct using make method", function (): void {
 
     expect($product)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($product->name)->toBe("Test Product")
-        ->and($product->description)->toBe("Test Description")
-        ->and($product->active)->toBeTrue();
+        ->and($product->name())->toBe("Test Product")
+        ->and($product->description())->toBe("Test Description")
+        ->and($product->active())->toBeTrue();
 });
 
 test("can create StripeProduct from Stripe object", function (): void {
@@ -51,22 +51,22 @@ test("can create StripeProduct from Stripe object", function (): void {
 
     expect($product)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($product->id)->toBe("prod_123")
-        ->and($product->name)->toBe("Test Product")
-        ->and($product->description)->toBe("Test Description")
-        ->and($product->active)->toBeTrue()
-        ->and($product->images)->toBe(["image1.jpg", "image2.jpg"])
-        ->and($product->metadata)->toBe(["key" => "value"])
-        ->and($product->defaultPrice)->toBe("price_123")
-        ->and($product->taxCode)->toBe("txcd_123")
-        ->and($product->unitLabel)->toBe("unit")
-        ->and($product->url)->toBe("https://example.com")
-        ->and($product->shippable)->toBeTrue()
-        ->and($product->packageDimensions)->toBeArray()
-        ->and($product->created)->toBeInstanceOf(\Carbon\CarbonImmutable::class)
-        ->and($product->created->timestamp)->toBe(1234567890)
-        ->and($product->updated)->toBeInstanceOf(\Carbon\CarbonImmutable::class)
-        ->and($product->updated->timestamp)->toBe(1234567891);
+        ->and($product->id())->toBe("prod_123")
+        ->and($product->name())->toBe("Test Product")
+        ->and($product->description())->toBe("Test Description")
+        ->and($product->active())->toBeTrue()
+        ->and($product->images())->toBe(["image1.jpg", "image2.jpg"])
+        ->and($product->metadata())->toBe(["key" => "value"])
+        ->and($product->defaultPrice())->toBe("price_123")
+        ->and($product->taxCode())->toBe("txcd_123")
+        ->and($product->unitLabel())->toBe("unit")
+        ->and($product->url())->toBe("https://example.com")
+        ->and($product->shippable())->toBeTrue()
+        ->and($product->packageDimensions())->toBeArray()
+        ->and($product->created())->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->created()->timestamp)->toBe(1234567890)
+        ->and($product->updated())->toBeInstanceOf(\Carbon\CarbonImmutable::class)
+        ->and($product->updated()->timestamp)->toBe(1234567891);
 });
 
 test("fromStripeObject handles nested default_price object", function (): void {
@@ -83,7 +83,7 @@ test("fromStripeObject handles nested default_price object", function (): void {
 
     $product = StripeProduct::fromStripeObject($stripeObject);
 
-    expect($product->defaultPrice)->toBe("price_123");
+    expect($product->defaultPrice())->toBe("price_123");
 });
 
 test("fromStripeObject handles nested tax_code object", function (): void {
@@ -100,7 +100,7 @@ test("fromStripeObject handles nested tax_code object", function (): void {
 
     $product = StripeProduct::fromStripeObject($stripeObject);
 
-    expect($product->taxCode)->toBe("txcd_123");
+    expect($product->taxCode())->toBe("txcd_123");
 });
 
 test("toArray returns correct structure", function (): void {

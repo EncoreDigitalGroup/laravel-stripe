@@ -58,7 +58,7 @@ class StripeTransactionRefreshNormalizer extends AbstractNormalizer implements D
         }
 
         if (isset($data["status"])) {
-            $transactionRefresh = $transactionRefresh->withStatus($data["status"]);
+            return $transactionRefresh->withStatus($data["status"]);
         }
 
         return $transactionRefresh;

@@ -14,11 +14,9 @@ class StripeCustomUnitAmount
 {
     use HasMake;
 
-    public function __construct(
-        public ?int $minimum = null,
-        public ?int $maximum = null,
-        public ?int $preset = null
-    ) {}
+    private ?int $minimum = null;
+    private ?int $maximum = null;
+    private ?int $preset = null;
 
     public function toArray(): array
     {
@@ -29,5 +27,43 @@ class StripeCustomUnitAmount
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    // Fluent setters
+    public function withMinimum(int $minimum): self
+    {
+        $this->minimum = $minimum;
+
+        return $this;
+    }
+
+    public function withMaximum(int $maximum): self
+    {
+        $this->maximum = $maximum;
+
+        return $this;
+    }
+
+    public function withPreset(int $preset): self
+    {
+        $this->preset = $preset;
+
+        return $this;
+    }
+
+    // Getters
+    public function minimum(): ?int
+    {
+        return $this->minimum;
+    }
+
+    public function maximum(): ?int
+    {
+        return $this->maximum;
+    }
+
+    public function preset(): ?int
+    {
+        return $this->preset;
     }
 }

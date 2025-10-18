@@ -14,13 +14,11 @@ class StripeProductTier
 {
     use HasMake;
 
-    public function __construct(
-        public int|string|null $upTo = null,
-        public ?int $unitAmount = null,
-        public ?string $unitAmountDecimal = null,
-        public ?int $flatAmount = null,
-        public ?string $flatAmountDecimal = null
-    ) {}
+    private int|string|null $upTo = null;
+    private ?int $unitAmount = null;
+    private ?string $unitAmountDecimal = null;
+    private ?int $flatAmount = null;
+    private ?string $flatAmountDecimal = null;
 
     public function toArray(): array
     {
@@ -33,5 +31,67 @@ class StripeProductTier
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    // Fluent setters
+    public function withUpTo(int|string $upTo): self
+    {
+        $this->upTo = $upTo;
+
+        return $this;
+    }
+
+    public function withUnitAmount(int $unitAmount): self
+    {
+        $this->unitAmount = $unitAmount;
+
+        return $this;
+    }
+
+    public function withUnitAmountDecimal(string $unitAmountDecimal): self
+    {
+        $this->unitAmountDecimal = $unitAmountDecimal;
+
+        return $this;
+    }
+
+    public function withFlatAmount(int $flatAmount): self
+    {
+        $this->flatAmount = $flatAmount;
+
+        return $this;
+    }
+
+    public function withFlatAmountDecimal(string $flatAmountDecimal): self
+    {
+        $this->flatAmountDecimal = $flatAmountDecimal;
+
+        return $this;
+    }
+
+    // Getters
+    public function upTo(): int|string|null
+    {
+        return $this->upTo;
+    }
+
+    public function unitAmount(): ?int
+    {
+        return $this->unitAmount;
+    }
+
+    public function unitAmountDecimal(): ?string
+    {
+        return $this->unitAmountDecimal;
+    }
+
+    public function flatAmount(): ?int
+    {
+        return $this->flatAmount;
+    }
+
+    public function flatAmountDecimal(): ?string
+    {
+        return $this->flatAmountDecimal;
     }
 }

@@ -54,6 +54,24 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         return $bankAccount;
     }
 
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof StripeBankAccount;
+    }
+
+    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            StripeBankAccount::class => true,
+            StripeBankAccount::class . "[]" => true,
+        ];
+    }
+
     private function setBasicProperties(StripeBankAccount $bankAccount, array $data): StripeBankAccount
     {
         if (isset($data["id"])) {
@@ -75,7 +93,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
             $bankAccount = $bankAccount->withLast4($data["last4"]);
         }
         if (isset($data["livemode"])) {
-            $bankAccount = $bankAccount->withLiveMode($data["livemode"]);
+            return $bankAccount->withLiveMode($data["livemode"]);
         }
 
         return $bankAccount;
@@ -90,7 +108,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
             $bankAccount = $bankAccount->withSubscriptions($data["subscriptions"]);
         }
         if (isset($data["supported_payment_method_types"])) {
-            $bankAccount = $bankAccount->withSupportedPaymentMethodTypes($data["supported_payment_method_types"]);
+            return $bankAccount->withSupportedPaymentMethodTypes($data["supported_payment_method_types"]);
         }
 
         return $bankAccount;
@@ -105,23 +123,5 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         }
 
         return $bankAccount;
-    }
-
-    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
-    {
-        return $data instanceof StripeBankAccount;
-    }
-
-    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
-    {
-        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
-    }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [
-            StripeBankAccount::class => true,
-            StripeBankAccount::class . "[]" => true,
-        ];
     }
 }

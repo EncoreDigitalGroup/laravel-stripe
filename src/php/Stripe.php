@@ -16,7 +16,6 @@ use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
-use EncoreDigitalGroup\Stripe\Support\Building\StripeBuilder;
 use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 use Stripe\StripeClient;
@@ -40,15 +39,6 @@ class Stripe
     public static function webhook(): StripeWebhookEndpoint
     {
         return StripeWebhookEndpoint::make();
-    }
-
-    #endregion
-
-    #region Builder Methods - Access fluent builders
-
-    public static function builder(): StripeBuilder
-    {
-        return new StripeBuilder;
     }
 
     #endregion

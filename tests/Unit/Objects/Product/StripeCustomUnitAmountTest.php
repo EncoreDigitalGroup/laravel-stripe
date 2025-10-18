@@ -17,9 +17,9 @@ describe("StripeCustomUnitAmount", function (): void {
 
         expect($customUnitAmount)
             ->toBeInstanceOf(StripeCustomUnitAmount::class)
-            ->and($customUnitAmount->minimum)->toBe(500)
-            ->and($customUnitAmount->maximum)->toBe(10000)
-            ->and($customUnitAmount->preset)->toBe(2000);
+            ->and($customUnitAmount->minimum())->toBe(500)
+            ->and($customUnitAmount->maximum())->toBe(10000)
+            ->and($customUnitAmount->preset())->toBe(2000);
     });
 
     test("can create StripeCustomUnitAmount with partial parameters", function (): void {
@@ -29,9 +29,9 @@ describe("StripeCustomUnitAmount", function (): void {
 
         expect($customUnitAmount)
             ->toBeInstanceOf(StripeCustomUnitAmount::class)
-            ->and($customUnitAmount->minimum)->toBe(100)
-            ->and($customUnitAmount->maximum)->toBeNull()
-            ->and($customUnitAmount->preset)->toBeNull();
+            ->and($customUnitAmount->minimum())->toBe(100)
+            ->and($customUnitAmount->maximum())->toBeNull()
+            ->and($customUnitAmount->preset())->toBeNull();
     });
 
     test("can create StripeCustomUnitAmount with no parameters", function (): void {
@@ -39,9 +39,9 @@ describe("StripeCustomUnitAmount", function (): void {
 
         expect($customUnitAmount)
             ->toBeInstanceOf(StripeCustomUnitAmount::class)
-            ->and($customUnitAmount->minimum)->toBeNull()
-            ->and($customUnitAmount->maximum)->toBeNull()
-            ->and($customUnitAmount->preset)->toBeNull();
+            ->and($customUnitAmount->minimum())->toBeNull()
+            ->and($customUnitAmount->maximum())->toBeNull()
+            ->and($customUnitAmount->preset())->toBeNull();
     });
 
     test("toArray returns correct structure", function (): void {

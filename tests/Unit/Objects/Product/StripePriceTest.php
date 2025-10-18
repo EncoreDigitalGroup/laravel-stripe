@@ -27,10 +27,10 @@ test("can create StripePrice using make method", function (): void {
 
     expect($price)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($price->product)->toBe("prod_123")
-        ->and($price->unitAmount)->toBe(2000)
-        ->and($price->currency)->toBe("usd")
-        ->and($price->active)->toBeTrue();
+        ->and($price->product())->toBe("prod_123")
+        ->and($price->unitAmount())->toBe(2000)
+        ->and($price->currency())->toBe("usd")
+        ->and($price->active())->toBeTrue();
 });
 
 test("can create StripePrice from Stripe object with recurring", function (): void {
@@ -60,16 +60,16 @@ test("can create StripePrice from Stripe object with recurring", function (): vo
 
     expect($price)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($price->id)->toBe("price_123")
-        ->and($price->product)->toBe("prod_123")
-        ->and($price->type)->toBe(PriceType::Recurring)
-        ->and($price->billingScheme)->toBe(BillingScheme::PerUnit)
-        ->and($price->recurring)->toBeInstanceOf(StripeRecurring::class)
-        ->and($price->recurring->interval)->toBe(RecurringInterval::Month)
-        ->and($price->recurring->intervalCount)->toBe(1)
-        ->and($price->recurring->trialPeriodDays)->toBe(14)
-        ->and($price->recurring->usageType)->toBe(RecurringUsageType::Licensed)
-        ->and($price->taxBehavior)->toBe(TaxBehavior::Exclusive);
+        ->and($price->id())->toBe("price_123")
+        ->and($price->product())->toBe("prod_123")
+        ->and($price->type())->toBe(PriceType::Recurring)
+        ->and($price->billingScheme())->toBe(BillingScheme::PerUnit)
+        ->and($price->recurring())->toBeInstanceOf(StripeRecurring::class)
+        ->and($price->recurring()->interval())->toBe(RecurringInterval::Month)
+        ->and($price->recurring()->intervalCount())->toBe(1)
+        ->and($price->recurring()->trialPeriodDays())->toBe(14)
+        ->and($price->recurring()->usageType())->toBe(RecurringUsageType::Licensed)
+        ->and($price->taxBehavior())->toBe(TaxBehavior::Exclusive);
 });
 
 test("fromStripeObject handles nested product object", function (): void {
@@ -86,7 +86,7 @@ test("fromStripeObject handles nested product object", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->product)->toBe("prod_123");
+    expect($price->product())->toBe("prod_123");
 });
 
 test("toArray converts recurring enums to values", function (): void {
@@ -152,9 +152,9 @@ test("fromStripeObject handles tiers", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->tiers)->toBeInstanceOf(StripeProductTierCollection::class)
-        ->and($price->tiers)->toHaveCount(2)
-        ->and($price->tiersMode)->toBe(TiersMode::Graduated);
+    expect($price->tiers())->toBeInstanceOf(StripeProductTierCollection::class)
+        ->and($price->tiers())->toHaveCount(2)
+        ->and($price->tiersMode())->toBe(TiersMode::Graduated);
 });
 
 test("fromStripeObject handles custom unit amount", function (): void {
@@ -173,8 +173,8 @@ test("fromStripeObject handles custom unit amount", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->customUnitAmount)->toBeInstanceOf(StripeCustomUnitAmount::class)
-        ->and($price->customUnitAmount->minimum)->toBe(500)
-        ->and($price->customUnitAmount->maximum)->toBe(5000)
-        ->and($price->customUnitAmount->preset)->toBe(1000);
+    expect($price->customUnitAmount())->toBeInstanceOf(StripeCustomUnitAmount::class)
+        ->and($price->customUnitAmount()->minimum())->toBe(500)
+        ->and($price->customUnitAmount()->maximum())->toBe(5000)
+        ->and($price->customUnitAmount()->preset())->toBe(1000);
 });
