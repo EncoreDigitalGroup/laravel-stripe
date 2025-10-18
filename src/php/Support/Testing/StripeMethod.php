@@ -41,6 +41,14 @@ enum StripeMethod: string
     case SubscriptionsSearch = "subscriptions.search";
     case SubscriptionsCancel = "subscriptions.cancel";
 
+    // Subscription Schedule methods
+    case SubscriptionSchedulesCreate = "subscriptionSchedules.create";
+    case SubscriptionSchedulesRetrieve = "subscriptionSchedules.retrieve";
+    case SubscriptionSchedulesUpdate = "subscriptionSchedules.update";
+    case SubscriptionSchedulesCancel = "subscriptionSchedules.cancel";
+    case SubscriptionSchedulesRelease = "subscriptionSchedules.release";
+    case SubscriptionSchedulesAll = "subscriptionSchedules.all";
+
     // Payment Method methods
     case PaymentMethodsCreate = "paymentMethods.create";
     case PaymentMethodsRetrieve = "paymentMethods.retrieve";
@@ -77,6 +85,7 @@ enum StripeMethod: string
     case ProductsAny = "products.*";
     case PricesAny = "prices.*";
     case SubscriptionsAny = "subscriptions.*";
+    case SubscriptionSchedulesAny = "subscriptionSchedules.*";
     case PaymentMethodsAny = "paymentMethods.*";
     case InvoicesAny = "invoices.*";
     case ChargesAny = "charges.*";

@@ -14,7 +14,6 @@ use EncoreDigitalGroup\Stripe\Support\Building\Builders\PriceBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ProductBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\RecurringBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\ShippingBuilder;
-use EncoreDigitalGroup\Stripe\Support\Building\Builders\SubscriptionBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TierBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\TransactionRefreshBuilder;
 use EncoreDigitalGroup\Stripe\Support\Building\Builders\WebhookBuilder;
@@ -41,13 +40,6 @@ describe("StripeBuilder", function (): void {
             $priceBuilder = $builder->price();
 
             expect($priceBuilder)->toBeInstanceOf(PriceBuilder::class);
-        });
-
-        test("can create subscription builder", function (): void {
-            $builder = new StripeBuilder;
-            $subscriptionBuilder = $builder->subscription();
-
-            expect($subscriptionBuilder)->toBeInstanceOf(SubscriptionBuilder::class);
         });
 
         test("can create financial connection builder", function (): void {

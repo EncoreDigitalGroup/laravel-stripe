@@ -52,6 +52,7 @@ Every supported Stripe resource has a corresponding service accessible via the S
 - `Stripe::products()` - Product management
 - `Stripe::prices()` - Price management
 - `Stripe::subscriptions()` - Subscription management
+- `Stripe::subscriptionSchedules()` - Time-based subscription changes
 
 Services provide clean, typed methods that correspond to Stripe API operations:
 
@@ -189,6 +190,7 @@ Now that you understand the basics, let"s dive into specific resources:
 - **[Customers](02-customers.md)** - Customer management, addresses, and shipping
 - **[Products](03-products.md)** - Product creation and lifecycle management
 - **[Prices](04-prices.md)** - Complex pricing including recurring billing and tiers
+- **[Subscription Schedules](11-subscription-schedules.md)** - Plan complex subscription changes over time
 - **[Testing](05-testing.md)** - How to test your Stripe integration
 
 Or explore the architectural patterns:
@@ -201,7 +203,7 @@ Or explore the architectural patterns:
 
 ```php
 // All services follow this pattern:
-$service = Stripe::customers(); // or products(), prices(), subscriptions()
+$service = Stripe::customers(); // or products(), prices(), subscriptions(), subscriptionSchedules()
 
 // CRUD operations:
 $entity = $service->create($dto);

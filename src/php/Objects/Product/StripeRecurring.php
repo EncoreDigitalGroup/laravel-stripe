@@ -11,7 +11,7 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\RecurringAggregateUsage;
 use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
-use EncoreDigitalGroup\Stripe\Support\HasMake;
+use PHPGenesis\Common\Traits\HasMake;
 
 class StripeRecurring
 {

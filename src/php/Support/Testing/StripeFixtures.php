@@ -299,6 +299,99 @@ class StripeFixtures
         ], $overrides);
     }
 
+    public static function subscriptionSchedule(array $overrides = []): array
+    {
+        $now = \Carbon\CarbonImmutable::now()->timestamp;
+
+        return array_merge([
+            "id" => "sub_sched_" . self::randomId(),
+            "object" => "subscription_schedule",
+            "canceled_at" => null,
+            "completed_at" => null,
+            "created" => $now,
+            "customer" => "cus_" . self::randomId(),
+            "default_settings" => [
+                "application_fee_percent" => null,
+                "automatic_tax" => [
+                    "enabled" => false,
+                ],
+                "billing_cycle_anchor" => "automatic",
+                "billing_thresholds" => null,
+                "collection_method" => "charge_automatically",
+                "default_payment_method" => null,
+                "default_source" => null,
+                "default_tax_rates" => [],
+                "description" => null,
+                "invoice_settings" => [
+                    "account_tax_ids" => null,
+                    "custom_fields" => null,
+                    "days_until_due" => null,
+                    "default_payment_method" => null,
+                    "footer" => null,
+                    "issuer" => null,
+                    "rendering_options" => null,
+                ],
+                "on_behalf_of" => null,
+                "transfer_data" => null,
+            ],
+            "end_behavior" => "release",
+            "livemode" => false,
+            "metadata" => [],
+            "phases" => [
+                [
+                    "add_invoice_items" => [],
+                    "application_fee_percent" => null,
+                    "automatic_tax" => [
+                        "enabled" => false,
+                    ],
+                    "billing_cycle_anchor" => null,
+                    "billing_thresholds" => null,
+                    "collection_method" => null,
+                    "coupon" => null,
+                    "currency" => "usd",
+                    "default_payment_method" => null,
+                    "default_tax_rates" => [],
+                    "description" => null,
+                    "discounts" => [],
+                    "end_date" => \Carbon\CarbonImmutable::now()->addMonth()->timestamp,
+                    "invoice_settings" => null,
+                    "items" => [
+                        [
+                            "billing_thresholds" => null,
+                            "metadata" => [],
+                            "plan" => null,
+                            "price" => "price_" . self::randomId(),
+                            "quantity" => 1,
+                            "tax_rates" => [],
+                        ],
+                    ],
+                    "iterations" => null,
+                    "metadata" => [],
+                    "on_behalf_of" => null,
+                    "proration_behavior" => "create_prorations",
+                    "start_date" => $now,
+                    "transfer_data" => null,
+                    "trial_end" => null,
+                ],
+            ],
+            "released_at" => null,
+            "released_subscription" => null,
+            "status" => "not_started",
+            "subscription" => null,
+            "test_clock" => null,
+        ], $overrides);
+    }
+
+    public static function subscriptionScheduleList(array $subscriptionSchedules = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $subscriptionSchedules,
+            "has_more" => false,
+            "url" => "/v1/subscription_schedules",
+        ], $overrides);
+    }
+
     protected static function randomId(int $length = 24): string
     {
         return self::randomString($length);

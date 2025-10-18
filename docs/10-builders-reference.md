@@ -380,6 +380,123 @@ $subscription = Stripe::builder()->subscription()->build(
 - `daysUntilDue` - Days until invoice due
 - `description` - Subscription description
 
+### subscriptionSchedule()
+
+Creates `StripeSubscriptionSchedule` objects for managing complex subscription changes over time.
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\{SubscriptionScheduleEndBehavior, SubscriptionScheduleProrationBehavior};
+use Carbon\Carbon;
+
+// Simple future subscription start
+$schedule = Stripe::builder()->subscriptionSchedule()->build(
+    customer: 'cus_abc123',
+    startDate: Carbon::now()->addDays(7),
+    phases: [
+        [
+            'items' => [['price' => 'price_monthly', 'quantity' => 1]]
+        ]
+    ]
+);
+
+// Multi-phase promotional pricing
+$schedule = Stripe::builder()->subscriptionSchedule()->build(
+    customer: 'cus_abc123',
+    startDate: Carbon::now()->addDay(),
+    phases: [
+        [
+            // 3-month intro pricing
+            'items' => [['price' => 'price_intro_50_off', 'quantity' => 1]],
+            'duration' => ['interval' => 'month', 'interval_count' => 3],
+            'proration_behavior' => SubscriptionScheduleProrationBehavior::None->value
+        ],
+        [
+            // Regular pricing thereafter
+            'items' => [['price' => 'price_regular', 'quantity' => 1]]
+        ]
+    ],
+    endBehavior: SubscriptionScheduleEndBehavior::Release,
+    metadata: [
+        'promotion' => 'new_customer_discount',
+        'created_by' => 'admin'
+    ]
+);
+
+// Contract-based stepped pricing
+$schedule = Stripe::builder()->subscriptionSchedule()->build(
+    customer: 'cus_enterprise',
+    phases: [
+        [
+            'items' => [['price' => 'price_startup', 'quantity' => 1]],
+            'duration' => ['interval' => 'month', 'interval_count' => 6],
+            'metadata' => ['tier' => 'startup']
+        ],
+        [
+            'items' => [['price' => 'price_growth', 'quantity' => 1]],
+            'duration' => ['interval' => 'month', 'interval_count' => 6],
+            'metadata' => ['tier' => 'growth']
+        ],
+        [
+            'items' => [['price' => 'price_enterprise', 'quantity' => 1]],
+            'metadata' => ['tier' => 'enterprise']
+        ]
+    ]
+);
+```
+
+**Subscription Schedule Properties:**
+
+- `id` - Schedule ID (read-only on create)
+- `customer` - Customer ID
+- `subscription` - Created subscription ID (read-only)
+- `status` - Schedule status enum (not_started, active, completed, released, canceled)
+- `startDate` - Schedule start date (CarbonImmutable)
+- `endBehavior` - What happens when complete (release or cancel)
+- `canceledAt` - When canceled (CarbonImmutable)
+- `completedAt` - When completed (CarbonImmutable)
+- `releasedAt` - When released (CarbonImmutable)
+- `phases` - Array of schedule phases
+- `currentPhase` - Current active phase
+- `defaultSettings` - Default phase settings
+- `metadata` - Custom key-value data
+
+### subscriptionSchedulePhase()
+
+Creates `StripeSubscriptionSchedulePhase` objects for individual phases within a schedule.
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
+
+// Individual phase definition
+$phase = Stripe::builder()->subscriptionSchedulePhase()->build(
+    startDate: now(),
+    endDate: now()->addMonths(3),
+    items: [
+        ['price' => 'price_intro', 'quantity' => 1]
+    ],
+    prorationBehavior: SubscriptionScheduleProrationBehavior::CreateProrations,
+    currency: 'usd',
+    defaultPaymentMethod: 'pm_card123',
+    description: 'Introductory pricing phase',
+    metadata: ['phase' => 'intro']
+);
+```
+
+**Subscription Schedule Phase Properties:**
+
+- `startDate` - Phase start date (CarbonImmutable)
+- `endDate` - Phase end date (CarbonImmutable)
+- `items` - Phase subscription items array
+- `prorationBehavior` - Proration behavior for this phase
+- `currency` - Currency for this phase
+- `defaultPaymentMethod` - Payment method for this phase
+- `description` - Phase description
+- `discounts` - Phase-specific discounts
+- `invoiceSettings` - Phase invoice settings
+- `metadata` - Phase metadata
+
 ### financialConnection()
 
 Creates `StripeFinancialConnection` objects for bank account linking.
@@ -752,6 +869,7 @@ $builder->customer()->build(...);
 $builder->product()->build(...);
 $builder->price()->build(...);
 $builder->subscription()->build(...);
+$builder->subscriptionSchedule()->build(...);
 $builder->financialConnection()->build(...);
 
 // Support objects
@@ -766,6 +884,7 @@ $builder->product()->customUnitAmount()->build(...);
 $builder->financialConnection()->bankAccount()->build(...);
 $builder->financialConnection()->transactionRefresh()->build(...);
 $builder->subscription()->billingCycleAnchorConfig()->build(...);
+$builder->subscriptionSchedulePhase()->build(...);
 ```
 
 ### Using the Builder Pattern
@@ -782,6 +901,7 @@ $builder->customer()->build(...);
 $builder->product()->build(...);
 $builder->price()->build(...);
 $builder->subscription()->build(...);
+$builder->subscriptionSchedule()->build(...);
 $builder->financialConnection()->build(...);
 
 // Support objects
@@ -796,6 +916,7 @@ $builder->product()->customUnitAmount()->build(...);
 $builder->financialConnection()->bankAccount()->build(...);
 $builder->financialConnection()->transactionRefresh()->build(...);
 $builder->subscription()->billingCycleAnchorConfig()->build(...);
+$builder->subscriptionSchedulePhase()->build(...);
 ```
 
 ## Practical Examples
@@ -1022,6 +1143,7 @@ Now that you understand the builder pattern, explore how to use these objects:
 - **[Products](03-products.md)** - Product catalog management
 - **[Prices](04-prices.md)** - Pricing configurations
 - **[Subscriptions](07-subscriptions.md)** - Subscription lifecycle
+- **[Subscription Schedules](11-subscription-schedules.md)** - Complex time-based subscription changes
 - **[Financial Connections](08-financial-connections.md)** - Bank account linking
 - **[Webhooks](09-webhooks.md)** - Event handling
 - **[Testing](05-testing.md)** - Testing strategies

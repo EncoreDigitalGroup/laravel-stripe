@@ -265,7 +265,7 @@ Subscriptions move through various states during their lifecycle. The library pr
 
 ```php
 // Immediate cancellation
-$canceledSubscription = Stripe::subscriptions()->cancel('sub_abc123');
+$canceledSubscription = Stripe::subscriptions()->cancelImmediately('sub_abc123');
 
 echo $canceledSubscription->status->value; // "canceled"
 echo $canceledSubscription->canceledAt->toDateTimeString(); // When it was canceled
@@ -488,6 +488,8 @@ $subscription = Stripe::subscriptions()->update('sub_123', Stripe::builder()->su
 ));
 ```
 
+**For complex scheduled changes** (multi-phase pricing, promotional periods, contract-based pricing), consider using **[Subscription Schedules](11-subscription-schedules.md)** which provide more flexibility and control over time-based subscription modifications.
+
 ## Testing Subscriptions
 
 The library provides comprehensive testing utilities for subscriptions.
@@ -534,7 +536,7 @@ test('can cancel subscription immediately', function () {
         ])
     ]);
 
-    $subscription = Stripe::subscriptions()->cancel('sub_123');
+    $subscription = Stripe::subscriptions()->cancelImmediately('sub_123');
 
     expect($subscription->status)->toBe(SubscriptionStatus::Canceled)
         ->and($subscription->canceledAt)->not->toBeNull()
@@ -639,7 +641,7 @@ class SubscriptionManager
     public function cancel(User $user, bool $immediately = false): StripeSubscription
     {
         if ($immediately) {
-            return $this->subscriptionService->cancel($user->stripe_subscription_id);
+            return $this->subscriptionService->cancelImmediately($user->stripe_subscription_id);
         }
 
         return $this->subscriptionService->cancelAtPeriodEnd($user->stripe_subscription_id);
@@ -794,6 +796,7 @@ Now that you understand subscription management, you can explore related topics:
 - **[Customers](02-customers.md)** - Managing customer data and payment methods
 - **[Products](03-products.md)** - Product catalog management
 - **[Prices](04-prices.md)** - Complex pricing models
+- **[Subscription Schedules](11-subscription-schedules.md)** - Plan complex subscription changes over time
 - **[Testing](05-testing.md)** - Comprehensive testing strategies
 
 Or explore advanced features:
