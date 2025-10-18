@@ -31,7 +31,7 @@ class Stripe
         return StripeSubscription::make();
     }
 
-    public static function webhookEndpoint(): StripeWebhookEndpoint
+    public static function webhook(): StripeWebhookEndpoint
     {
         return StripeWebhookEndpoint::make();
     }

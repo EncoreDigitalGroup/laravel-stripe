@@ -9,53 +9,113 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripePaymentIntentWebhookData;
+use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\HasLivemode;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
 use PHPGenesis\Common\Traits\HasMake;
+use Stripe\Event as StripeEvent;
 
 class StripeWebhookEvent
 {
+    use HasIdentifier;
+    use HasLivemode;
     use HasMake;
     use HasTimestamps;
 
-    public function __construct(
-        public ?string                                                            $id = null,
-        public ?string                                                            $type = null,
-        public StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data = null,
-        public ?CarbonImmutable                                                   $created = null,
-        public ?bool                                                              $livemode = null,
-        public ?string                                                            $apiVersion = null
-    ) {}
+    private ?string $type = null;
+    private StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data = null;
+    private ?CarbonImmutable $created = null;
+    private ?string $apiVersion = null;
 
     /**
-     * Create a StripeWebhookEvent instance from a Stripe webhook event array
-     *
-     * TODO: Utilize StripeWebhookHelper
+     * Create a StripeWebhookEvent from a verified Stripe Event object
      */
-    public static function fromWebhookData(array $event): self
+    public static function fromStripeEvent(StripeEvent $event): self
     {
         $data = null;
-        $eventData = $event["data"]["object"] ?? null;
+        $eventData = $event->data->object ?? null;
 
-        if (is_array($eventData)) {
-            $eventType = $event["type"] ?? "";
+        if ($eventData !== null) {
+            $eventType = $event->type ?? "";
 
             if (str_starts_with($eventType, "invoice.")) {
-                $data = StripeInvoiceWebhookData::fromWebhookData($eventData);
+                $data = StripeInvoiceWebhookData::fromStripeObject($eventData);
             } elseif (str_starts_with($eventType, "payment_intent.")) {
-                $data = StripePaymentIntentWebhookData::fromWebhookData($eventData);
+                $data = StripePaymentIntentWebhookData::fromStripeObject($eventData);
             } else {
-                $data = $eventData;
+                $dataJson = json_encode($eventData);
+                $data = $dataJson !== false ? json_decode($dataJson, true) : [];
             }
         }
 
-        return self::make(
-            id: $event["id"] ?? null,
-            type: $event["type"] ?? null,
-            data: $data,
-            created: self::timestampToCarbon($event["created"] ?? null),
-            livemode: $event["livemode"] ?? null,
-            apiVersion: $event["api_version"] ?? null
-        );
+        return self::make()
+            ->withId($event->id)
+            ->withType($event->type)
+            ->withData($data)
+            ->withCreated(self::timestampToCarbon($event->created))
+            ->withLivemode($event->livemode ?? false)
+            ->withApiVersion($event->api_version ?? null);
+    }
+
+    /**
+     * Create a StripeWebhookEvent from raw webhook request data
+     */
+    public static function fromRequest(string $payload, string $signature, string $secret): self
+    {
+        $event = StripeWebhookHelper::constructEvent($payload, $signature, $secret);
+
+        return self::fromStripeEvent($event);
+    }
+
+    public function withType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function type(): ?string
+    {
+        return $this->type;
+    }
+
+    public function withData(StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data): self
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    public function data(): StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null
+    {
+        return $this->data;
+    }
+
+    public function withCreated(?CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function created(): ?CarbonImmutable
+    {
+        return $this->created;
+    }
+
+    public function withApiVersion(?string $apiVersion): self
+    {
+        $this->apiVersion = $apiVersion;
+
+        return $this;
+    }
+
+    public function apiVersion(): ?string
+    {
+        return $this->apiVersion;
     }
 
     /**

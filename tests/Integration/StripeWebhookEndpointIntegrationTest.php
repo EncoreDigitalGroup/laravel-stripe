@@ -13,7 +13,7 @@ use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 describe("Webhook Endpoint Integration", function (): void {
     describe("Stripe facade shortcuts", function (): void {
         test("creates webhook endpoint via Stripe facade shortcut", function (): void {
-            $endpoint = Stripe::webhookEndpoint();
+            $endpoint = Stripe::webhook();
 
             expect($endpoint)->toBeInstanceOf(StripeWebhookEndpoint::class);
         });
@@ -45,7 +45,7 @@ describe("Webhook Endpoint Integration", function (): void {
                 ]),
             ]);
 
-            $endpoint = Stripe::webhookEndpoint()
+            $endpoint = Stripe::webhook()
                 ->withUrl("https://example.com/webhook")
                 ->withEnabledEvents(["customer.created"])
                 ->save();
@@ -72,7 +72,7 @@ describe("Webhook Endpoint Integration", function (): void {
                 ]),
             ]);
 
-            $endpoint = Stripe::webhookEndpoint()->get("we_test123");
+            $endpoint = Stripe::webhook()->get("we_test123");
 
             expect($endpoint->id())->toBe("we_test123");
 
@@ -106,7 +106,7 @@ describe("Webhook Endpoint Integration", function (): void {
                 ]),
             ]);
 
-            $endpoint = Stripe::webhookEndpoint()
+            $endpoint = Stripe::webhook()
                 ->withUrl("https://example.com/webhook")
                 ->withEnabledEvents(["customer.created"])
                 ->save();
@@ -122,7 +122,7 @@ describe("Webhook Endpoint Integration", function (): void {
             expect($endpoint->description())->toBe("Updated webhook")
                 ->and($endpoint->enabledEvents())->toHaveCount(2);
 
-            $retrieved = Stripe::webhookEndpoint()->get("we_lifecycle123");
+            $retrieved = Stripe::webhook()->get("we_lifecycle123");
             expect($retrieved->id())->toBe("we_lifecycle123");
 
             $retrieved->delete();

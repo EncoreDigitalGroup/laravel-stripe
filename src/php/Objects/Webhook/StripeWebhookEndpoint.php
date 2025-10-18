@@ -10,22 +10,25 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
+use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\HasLivemode;
+use EncoreDigitalGroup\Stripe\Support\HasMetadata;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\WebhookEndpoint;
 
 class StripeWebhookEndpoint
 {
+    use HasIdentifier;
+    use HasLivemode;
     use HasMake;
+    use HasMetadata;
     use HasTimestamps;
 
-    private ?string $id = null;
     private ?string $url = null;
     private ?array $enabledEvents = null;
     private ?string $description = null;
     private ?bool $disabled = null;
-    private ?bool $livemode = null;
-    private ?array $metadata = null;
     private ?string $secret = null;
     private ?string $status = null;
     private ?CarbonImmutable $created = null;
@@ -73,7 +76,8 @@ class StripeWebhookEndpoint
             $instance = $instance->withLivemode($stripeEndpoint->livemode);
         }
         if (isset($stripeEndpoint->metadata)) {
-            $instance = $instance->withMetadata($stripeEndpoint->metadata->toArray());
+            $metadataArray = $stripeEndpoint->metadata->toArray();
+            $instance = $instance->withMetadata($metadataArray);
         }
         if ($stripeEndpoint->secret ?? null) {
             $instance = $instance->withSecret($stripeEndpoint->secret);
@@ -129,13 +133,6 @@ class StripeWebhookEndpoint
     }
 
     // Fluent setters
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function withUrl(string $url): self
     {
         $this->url = $url;
@@ -164,20 +161,6 @@ class StripeWebhookEndpoint
         return $this;
     }
 
-    public function withLivemode(bool $livemode): self
-    {
-        $this->livemode = $livemode;
-
-        return $this;
-    }
-
-    public function withMetadata(array $metadata): self
-    {
-        $this->metadata = $metadata;
-
-        return $this;
-    }
-
     public function withSecret(string $secret): self
     {
         $this->secret = $secret;
@@ -200,11 +183,6 @@ class StripeWebhookEndpoint
     }
 
     // Getter methods
-    public function id(): ?string
-    {
-        return $this->id;
-    }
-
     public function url(): ?string
     {
         return $this->url;
@@ -223,16 +201,6 @@ class StripeWebhookEndpoint
     public function disabled(): ?bool
     {
         return $this->disabled;
-    }
-
-    public function livemode(): ?bool
-    {
-        return $this->livemode;
-    }
-
-    public function metadata(): ?array
-    {
-        return $this->metadata;
     }
 
     public function secret(): ?string

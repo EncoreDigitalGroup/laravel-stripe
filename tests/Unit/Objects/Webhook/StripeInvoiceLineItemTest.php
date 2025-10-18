@@ -5,28 +5,27 @@
  * All Right Reserved.
  */
 
-use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeInvoiceLineItem;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceLineItemWebhookData;
 
 test("can create StripeInvoiceLineItem using make method", function (): void {
-    $lineItem = StripeInvoiceLineItem::make(
-        id: "il_123",
-        description: "Test Line Item",
-        amount: 1000,
-        quantity: 2,
-        unitAmount: 500
-    );
+    $lineItem = StripeInvoiceLineItemWebhookData::make()
+        ->withId("il_123")
+        ->withDescription("Test Line Item")
+        ->withAmount(1000)
+        ->withQuantity(2)
+        ->withUnitAmount(500);
 
     expect($lineItem)
-        ->toBeInstanceOf(StripeInvoiceLineItem::class)
-        ->and($lineItem->id)->toBe("il_123")
-        ->and($lineItem->description)->toBe("Test Line Item")
-        ->and($lineItem->amount)->toBe(1000)
-        ->and($lineItem->quantity)->toBe(2)
-        ->and($lineItem->unitAmount)->toBe(500);
+        ->toBeInstanceOf(StripeInvoiceLineItemWebhookData::class)
+        ->and($lineItem->id())->toBe("il_123")
+        ->and($lineItem->description())->toBe("Test Line Item")
+        ->and($lineItem->amount())->toBe(1000)
+        ->and($lineItem->quantity())->toBe(2)
+        ->and($lineItem->unitAmount())->toBe(500);
 });
 
-test("can create StripeInvoiceLineItem from webhook data", function (): void {
-    $webhookData = [
+test("can create StripeInvoiceLineItem from Stripe object", function (): void {
+    $stripeLineItem = \Stripe\StripeObject::constructFrom([
         "id" => "il_123",
         "description" => "Subscription Item",
         "amount" => 2000,
@@ -42,46 +41,45 @@ test("can create StripeInvoiceLineItem from webhook data", function (): void {
         "metadata" => [
             "key" => "value",
         ],
-    ];
+    ]);
 
-    $lineItem = StripeInvoiceLineItem::fromWebhookData($webhookData);
+    $lineItem = StripeInvoiceLineItemWebhookData::fromStripeObject($stripeLineItem);
 
     expect($lineItem)
-        ->toBeInstanceOf(StripeInvoiceLineItem::class)
-        ->and($lineItem->id)->toBe("il_123")
-        ->and($lineItem->description)->toBe("Subscription Item")
-        ->and($lineItem->amount)->toBe(2000)
-        ->and($lineItem->quantity)->toBe(1)
-        ->and($lineItem->unitAmount)->toBe(2000)
-        ->and($lineItem->priceId)->toBe("price_123")
-        ->and($lineItem->productId)->toBe("prod_123")
-        ->and($lineItem->price)->toBeArray()
-        ->and($lineItem->metadata)->toBeArray();
+        ->toBeInstanceOf(StripeInvoiceLineItemWebhookData::class)
+        ->and($lineItem->id())->toBe("il_123")
+        ->and($lineItem->description())->toBe("Subscription Item")
+        ->and($lineItem->amount())->toBe(2000)
+        ->and($lineItem->quantity())->toBe(1)
+        ->and($lineItem->unitAmount())->toBe(2000)
+        ->and($lineItem->priceId())->toBe("price_123")
+        ->and($lineItem->productId())->toBe("prod_123")
+        ->and($lineItem->price())->toBeArray()
+        ->and($lineItem->metadata())->toBeArray();
 });
 
-test("fromWebhookData handles missing fields", function (): void {
-    $webhookData = [
+test("fromStripeObject handles missing fields", function (): void {
+    $stripeLineItem = \Stripe\StripeObject::constructFrom([
         "id" => "il_123",
-    ];
+    ]);
 
-    $lineItem = StripeInvoiceLineItem::fromWebhookData($webhookData);
+    $lineItem = StripeInvoiceLineItemWebhookData::fromStripeObject($stripeLineItem);
 
-    expect($lineItem->id)->toBe("il_123")
-        ->and($lineItem->description)->toBeNull()
-        ->and($lineItem->amount)->toBeNull()
-        ->and($lineItem->quantity)->toBeNull();
+    expect($lineItem->id())->toBe("il_123")
+        ->and($lineItem->description())->toBeNull()
+        ->and($lineItem->amount())->toBeNull()
+        ->and($lineItem->quantity())->toBeNull();
 });
 
 test("toArray returns correct structure", function (): void {
-    $lineItem = StripeInvoiceLineItem::make(
-        id: "il_123",
-        description: "Test Item",
-        amount: 1000,
-        quantity: 1,
-        unitAmount: 1000,
-        priceId: "price_123",
-        productId: "prod_123"
-    );
+    $lineItem = StripeInvoiceLineItemWebhookData::make()
+        ->withId("il_123")
+        ->withDescription("Test Item")
+        ->withAmount(1000)
+        ->withQuantity(1)
+        ->withUnitAmount(1000)
+        ->withPriceId("price_123")
+        ->withProductId("prod_123");
 
     $array = $lineItem->toArray();
 
@@ -96,10 +94,9 @@ test("toArray returns correct structure", function (): void {
 });
 
 test("toArray filters null values", function (): void {
-    $lineItem = StripeInvoiceLineItem::make(
-        id: "il_123",
-        amount: 1000
-    );
+    $lineItem = StripeInvoiceLineItemWebhookData::make()
+        ->withId("il_123")
+        ->withAmount(1000);
 
     $array = $lineItem->toArray();
 

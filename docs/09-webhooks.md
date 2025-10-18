@@ -95,7 +95,7 @@ The `StripeWebhookEndpoint` object uses a fluent API to configure and manage web
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$endpoint = Stripe::webhookEndpoint()
+$endpoint = Stripe::webhook()
     ->withUrl('https://myapp.com/webhooks/stripe')
     ->withEnabledEvents([
         'customer.created',
@@ -114,7 +114,7 @@ Create webhook endpoints using the fluent API:
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Create and register webhook endpoint
-$endpoint = Stripe::webhookEndpoint()
+$endpoint = Stripe::webhook()
     ->withUrl('https://myapp.com/webhooks/stripe')
     ->withEnabledEvents(['customer.created', 'customer.updated'])
     ->withDescription('Customer events webhook')
@@ -134,7 +134,7 @@ class WebhookSetupController extends Controller
 {
     public function registerWebhook()
     {
-        $endpoint = Stripe::webhookEndpoint()
+        $endpoint = Stripe::webhook()
             ->withUrl(route('stripe.webhook'))
             ->withEnabledEvents([
                 'customer.created',
@@ -174,7 +174,7 @@ use EncoreDigitalGroup\Stripe\Stripe;
 $endpoints = Stripe::webhookEndpoints()->list();
 
 // Get specific endpoint
-$endpoint = Stripe::webhookEndpoint()->get('we_abc123');
+$endpoint = Stripe::webhook()->get('we_abc123');
 
 // Update endpoint events
 $endpoint->withEnabledEvents(['customer.*', 'invoice.*'])

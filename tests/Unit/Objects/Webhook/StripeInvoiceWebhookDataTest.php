@@ -6,29 +6,28 @@
  */
 
 use Carbon\CarbonImmutable;
-use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeInvoiceLineItem;
-use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeInvoiceWebhookData;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceLineItemWebhookData;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
 
 test("can create StripeInvoiceWebhookData using make method", function (): void {
-    $invoice = StripeInvoiceWebhookData::make(
-        id: "in_123",
-        number: "INV-001",
-        subscription: "sub_123",
-        total: 2000,
-        status: "paid"
-    );
+    $invoice = StripeInvoiceWebhookData::make()
+        ->withId("in_123")
+        ->withNumber("INV-001")
+        ->withSubscription("sub_123")
+        ->withTotal(2000)
+        ->withStatus("paid");
 
     expect($invoice)
         ->toBeInstanceOf(StripeInvoiceWebhookData::class)
-        ->and($invoice->id)->toBe("in_123")
-        ->and($invoice->number)->toBe("INV-001")
-        ->and($invoice->subscription)->toBe("sub_123")
-        ->and($invoice->total)->toBe(2000)
-        ->and($invoice->status)->toBe("paid");
+        ->and($invoice->id())->toBe("in_123")
+        ->and($invoice->number())->toBe("INV-001")
+        ->and($invoice->subscription())->toBe("sub_123")
+        ->and($invoice->total())->toBe(2000)
+        ->and($invoice->status())->toBe("paid");
 });
 
-test("can create StripeInvoiceWebhookData from webhook data", function (): void {
-    $webhookData = [
+test("can create StripeInvoiceWebhookData from Stripe object", function (): void {
+    $stripeInvoice = \Stripe\StripeObject::constructFrom([
         "id" => "in_123",
         "number" => "INV-001",
         "subscription" => "sub_123",
@@ -65,68 +64,66 @@ test("can create StripeInvoiceWebhookData from webhook data", function (): void 
         "metadata" => [
             "order_id" => "12345",
         ],
-    ];
+    ]);
 
-    $invoice = StripeInvoiceWebhookData::fromWebhookData($webhookData);
+    $invoice = StripeInvoiceWebhookData::fromStripeObject($stripeInvoice);
 
     expect($invoice)
         ->toBeInstanceOf(StripeInvoiceWebhookData::class)
-        ->and($invoice->id)->toBe("in_123")
-        ->and($invoice->number)->toBe("INV-001")
-        ->and($invoice->subscription)->toBe("sub_123")
-        ->and($invoice->paymentIntent)->toBe("pi_123")
-        ->and($invoice->customer)->toBe("cus_123")
-        ->and($invoice->subtotal)->toBe(1800)
-        ->and($invoice->tax)->toBe(200)
-        ->and($invoice->total)->toBe(2000)
-        ->and($invoice->status)->toBe("paid")
-        ->and($invoice->currency)->toBe("usd")
-        ->and($invoice->created)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($invoice->dueDate)->toBeInstanceOf(CarbonImmutable::class)
-        ->and($invoice->lines)->toBeArray()
-        ->and($invoice->lines)->toHaveCount(2)
-        ->and($invoice->lines[0])->toBeInstanceOf(StripeInvoiceLineItem::class)
-        ->and($invoice->lines[0]->id)->toBe("il_123")
-        ->and($invoice->lines[1]->id)->toBe("il_456")
-        ->and($invoice->metadata)->toBeArray();
+        ->and($invoice->id())->toBe("in_123")
+        ->and($invoice->number())->toBe("INV-001")
+        ->and($invoice->subscription())->toBe("sub_123")
+        ->and($invoice->paymentIntent())->toBe("pi_123")
+        ->and($invoice->customer())->toBe("cus_123")
+        ->and($invoice->subtotal())->toBe(1800)
+        ->and($invoice->tax())->toBe(200)
+        ->and($invoice->total())->toBe(2000)
+        ->and($invoice->status())->toBe("paid")
+        ->and($invoice->currency())->toBe("usd")
+        ->and($invoice->created())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($invoice->dueDate())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($invoice->lines())->toBeArray()
+        ->and($invoice->lines())->toHaveCount(2)
+        ->and($invoice->lines()[0])->toBeInstanceOf(StripeInvoiceLineItemWebhookData::class)
+        ->and($invoice->lines()[0]->id())->toBe("il_123")
+        ->and($invoice->lines()[1]->id())->toBe("il_456")
+        ->and($invoice->metadata())->toBeArray();
 });
 
-test("fromWebhookData handles missing lines", function (): void {
-    $webhookData = [
+test("fromStripeObject handles missing lines", function (): void {
+    $stripeInvoice = \Stripe\StripeObject::constructFrom([
         "id" => "in_123",
         "total" => 2000,
-    ];
+    ]);
 
-    $invoice = StripeInvoiceWebhookData::fromWebhookData($webhookData);
+    $invoice = StripeInvoiceWebhookData::fromStripeObject($stripeInvoice);
 
-    expect($invoice->lines)->toBeArray()
-        ->and($invoice->lines)->toBeEmpty();
+    expect($invoice->lines())->toBeArray()
+        ->and($invoice->lines())->toBeEmpty();
 });
 
-test("fromWebhookData handles missing timestamps", function (): void {
-    $webhookData = [
+test("fromStripeObject handles missing timestamps", function (): void {
+    $stripeInvoice = \Stripe\StripeObject::constructFrom([
         "id" => "in_123",
-    ];
+    ]);
 
-    $invoice = StripeInvoiceWebhookData::fromWebhookData($webhookData);
+    $invoice = StripeInvoiceWebhookData::fromStripeObject($stripeInvoice);
 
-    expect($invoice->created)->toBeNull()
-        ->and($invoice->dueDate)->toBeNull();
+    expect($invoice->created())->toBeNull()
+        ->and($invoice->dueDate())->toBeNull();
 });
 
 test("toArray returns correct structure", function (): void {
-    $lineItem = StripeInvoiceLineItem::make(
-        id: "il_123",
-        description: "Test Item",
-        amount: 1000
-    );
+    $lineItem = StripeInvoiceLineItemWebhookData::make()
+        ->withId("il_123")
+        ->withDescription("Test Item")
+        ->withAmount(1000);
 
-    $invoice = StripeInvoiceWebhookData::make(
-        id: "in_123",
-        number: "INV-001",
-        total: 1000,
-        lines: [$lineItem]
-    );
+    $invoice = StripeInvoiceWebhookData::make()
+        ->withId("in_123")
+        ->withNumber("INV-001")
+        ->withTotal(1000)
+        ->withLines([$lineItem]);
 
     $array = $invoice->toArray();
 
@@ -140,10 +137,9 @@ test("toArray returns correct structure", function (): void {
 });
 
 test("toArray filters null values", function (): void {
-    $invoice = StripeInvoiceWebhookData::make(
-        id: "in_123",
-        total: 2000
-    );
+    $invoice = StripeInvoiceWebhookData::make()
+        ->withId("in_123")
+        ->withTotal(2000);
 
     $array = $invoice->toArray();
 
@@ -156,11 +152,10 @@ test("toArray filters null values", function (): void {
 
 test("toArray handles timestamps correctly", function (): void {
     $created = CarbonImmutable::createFromTimestamp(1234567890);
-    $invoice = StripeInvoiceWebhookData::make(
-        id: "in_123",
-        total: 2000,
-        created: $created
-    );
+    $invoice = StripeInvoiceWebhookData::make()
+        ->withId("in_123")
+        ->withTotal(2000)
+        ->withCreated($created);
 
     $array = $invoice->toArray();
 
