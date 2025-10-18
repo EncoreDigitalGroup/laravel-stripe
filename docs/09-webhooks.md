@@ -36,9 +36,9 @@ while (true) {
 // Stripe automatically notifies your application when subscription becomes active
 public function handleWebhook(Request $request)
 {
-    $event = StripeWebhook::fromRequest(
+    $event = StripeWebhookHelper::constructEvent(
         $request->getContent(),
-        StripeWebhook::getWebhookSignatureHeader(),
+        StripeWebhookHelper::getSignatureHeader(),
         config('services.stripe.webhook_secret')
     );
 
@@ -86,78 +86,57 @@ ngrok http 8000
 expose share http://localhost:8000
 ```
 
-## Creating and Registering Webhooks
+## Creating and Managing Webhook Endpoints
 
-The `StripeWebhook` object helps you configure webhook endpoints.
+The `StripeWebhookEndpoint` object uses a fluent API to configure and manage webhook endpoints.
 
-### StripeWebhook Properties
+### StripeWebhookEndpoint Properties
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',  // string - Your webhook endpoint URL
-    events: [                                   // array - Events to subscribe to
+$endpoint = Stripe::webhookEndpoint()
+    ->withUrl('https://myapp.com/webhooks/stripe')
+    ->withEnabledEvents([
         'customer.created',
         'customer.updated',
         'invoice.paid',
         'invoice.payment_failed'
-    ]
-);
+    ])
+    ->withDescription('Production webhook endpoint');
 ```
 
-### Creating Webhooks via Stripe
+### Creating Webhook Endpoints
 
-There are three ways to create webhook objects:
-
-#### Method 1: Direct DTO Creation
-
-```php
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
-
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: ['customer.created', 'customer.updated']
-);
-```
-
-#### Method 2: Using the Builder Pattern
+Create webhook endpoints using the fluent API:
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: ['invoice.paid', 'invoice.payment_failed']
-);
+// Create and register webhook endpoint
+$endpoint = Stripe::webhookEndpoint()
+    ->withUrl('https://myapp.com/webhooks/stripe')
+    ->withEnabledEvents(['customer.created', 'customer.updated'])
+    ->withDescription('Customer events webhook')
+    ->save();
+
+// The endpoint now has an ID and secret
+$webhookId = $endpoint->id();
+$webhookSecret = $endpoint->secret();
 ```
 
-#### Method 3: Using the Facade Shortcut (Recommended)
+### Full Webhook Endpoint Registration Example
 
 ```php
-use EncoreDigitalGroup\Stripe\Stripe;
-
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: ['customer.subscription.updated']
-);
-```
-
-### Registering Webhooks with Stripe API
-
-```php
-use Stripe\StripeClient;
 use EncoreDigitalGroup\Stripe\Stripe;
 
 class WebhookSetupController extends Controller
 {
     public function registerWebhook()
     {
-        $stripe = app(StripeClient::class);
-
-        $webhook = Stripe::builder()->webhook()->build(
-            url: route('stripe.webhook'),
-            events: [
+        $endpoint = Stripe::webhookEndpoint()
+            ->withUrl(route('stripe.webhook'))
+            ->withEnabledEvents([
                 'customer.created',
                 'customer.updated',
                 'customer.deleted',
@@ -168,38 +147,45 @@ class WebhookSetupController extends Controller
                 'customer.subscription.deleted',
                 'payment_intent.succeeded',
                 'payment_intent.payment_failed'
-            ]
-        );
-
-        $webhookEndpoint = $stripe->webhookEndpoints->create($webhook->toArray());
+            ])
+            ->withDescription('Production webhook endpoint')
+            ->withMetadata([
+                'environment' => 'production',
+                'server' => config('app.name')
+            ])
+            ->save();
 
         // Store the webhook secret
         // IMPORTANT: Save this secret - you'll need it to verify webhooks
-        $webhookSecret = $webhookEndpoint->secret;
-
         return response()->json([
-            'webhook_id' => $webhookEndpoint->id,
-            'webhook_secret' => $webhookSecret
+            'webhook_id' => $endpoint->id(),
+            'webhook_secret' => $endpoint->secret()
         ]);
     }
 }
 ```
 
-### Converting to Array
+### Managing Webhook Endpoints
 
 ```php
-$webhook = Stripe::builder()->webhook()->build(
-    url: 'https://myapp.com/webhooks/stripe',
-    events: ['customer.created', 'invoice.paid']
-);
+use EncoreDigitalGroup\Stripe\Stripe;
 
-$array = $webhook->toArray();
+// List all webhook endpoints
+$endpoints = Stripe::webhookEndpoints()->list();
 
-// Returns:
-// [
-//     'enabled_events' => ['customer.created', 'invoice.paid'],
-//     'url' => 'https://myapp.com/webhooks/stripe'
-// ]
+// Get specific endpoint
+$endpoint = Stripe::webhookEndpoint()->get('we_abc123');
+
+// Update endpoint events
+$endpoint->withEnabledEvents(['customer.*', 'invoice.*'])
+    ->withDescription('Updated to catch all customer and invoice events')
+    ->save();
+
+// Delete endpoint
+$endpoint->delete();
+
+// Or delete by ID
+Stripe::webhookEndpoints()->delete('we_abc123');
 ```
 
 ## Receiving and Verifying Webhooks
@@ -209,7 +195,7 @@ Webhook verification is **critical** for security. Always verify that webhook re
 ### Basic Webhook Controller
 
 ```php
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
+use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
 use Illuminate\Http\Request;
 use Stripe\Event;
 
@@ -219,10 +205,10 @@ class StripeWebhookController extends Controller
     {
         try {
             // Get the webhook signature from request headers
-            $signature = StripeWebhook::getWebhookSignatureHeader();
+            $signature = StripeWebhookHelper::getSignatureHeader();
 
             // Verify and construct the event
-            $event = StripeWebhook::fromRequest(
+            $event = StripeWebhookHelper::constructEvent(
                 $request->getContent(),
                 $signature,
                 config('services.stripe.webhook_secret')
@@ -540,10 +526,10 @@ protected function handlePaymentIntentFailed(Event $event): void
 
 ## Testing Webhooks
 
-### Testing with StripeWebhook::fromRequest()
+### Testing with StripeWebhookHelper::constructEvent()
 
 ```php
-use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
+use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
 
 test('can verify webhook signature and construct event', function () {
     $payload = json_encode([
@@ -566,7 +552,7 @@ test('can verify webhook signature and construct event', function () {
     $header = "t={$timestamp},v1={$signature}";
 
     // Verify and construct event
-    $event = StripeWebhook::fromRequest($payload, $header, $secret);
+    $event = StripeWebhookHelper::constructEvent($payload, $header, $secret);
 
     expect($event)
         ->toBeInstanceOf(\Stripe\Event::class)
@@ -742,9 +728,9 @@ class StripeWebhookController extends Controller
     public function handleWebhook(Request $request)
     {
         try {
-            $signature = StripeWebhook::getWebhookSignatureHeader();
+            $signature = StripeWebhookHelper::getSignatureHeader();
 
-            $event = StripeWebhook::fromRequest(
+            $event = StripeWebhookHelper::constructEvent(
                 $request->getContent(),
                 $signature,
                 config('services.stripe.webhook_secret')
