@@ -7,6 +7,7 @@ This chapter covers everything you need to handle Stripe webhooks in your Larave
 
 - [Understanding Stripe Webhooks](#understanding-stripe-webhooks)
 - [Webhook Configuration](#webhook-configuration)
+- [Webhook Object Architecture](#webhook-object-architecture)
 - [Creating and Registering Webhooks](#creating-and-registering-webhooks)
 - [Receiving and Verifying Webhooks](#receiving-and-verifying-webhooks)
 - [Processing Webhook Events](#processing-webhook-events)
@@ -84,6 +85,127 @@ ngrok http 8000
 
 # Using Expose (Laravel)
 expose share http://localhost:8000
+```
+
+## Webhook Object Architecture
+
+The webhook system uses a **fluent API pattern** with private properties and shared functionality through traits. This provides a consistent, chainable interface across all webhook-related objects.
+
+### Core Webhook Objects
+
+The library provides several webhook-related objects that all follow the fluent pattern:
+
+- **StripeWebhookEndpoint** - Represents a webhook endpoint configuration in Stripe
+- **StripeWebhookEvent** - Represents a webhook event sent by Stripe
+- **StripeInvoiceWebhookData** - Typed data for invoice webhook events
+- **StripePaymentIntentWebhookData** - Typed data for payment intent webhook events
+- **StripeInvoiceLineItemWebhookData** - Typed data for invoice line items
+
+### Shared Traits
+
+All webhook objects use shared traits to eliminate code duplication and provide consistent APIs:
+
+#### HasIdentifier
+
+Provides `id` property and fluent methods for all webhook objects:
+
+```php
+use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
+
+// Available on all webhook objects
+$webhookId = $event->id();
+$event->withId('evt_abc123');
+```
+
+#### HasMetadata
+
+Provides `metadata` property, fluent methods, and a helper for extracting metadata from Stripe objects:
+
+```php
+use EncoreDigitalGroup\Stripe\Support\HasMetadata;
+
+// Available on endpoint and webhook data objects
+$metadata = $endpoint->metadata();
+$endpoint->withMetadata(['environment' => 'production']);
+
+// Internally uses extractMetadata() helper to safely convert Stripe metadata objects
+```
+
+#### HasLivemode
+
+Provides `livemode` property and fluent methods for endpoint and event objects:
+
+```php
+use EncoreDigitalGroup\Stripe\Support\HasLivemode;
+
+// Indicates if webhook is for live or test mode
+$isLive = $event->livemode();
+$endpoint->withLivemode(true);
+```
+
+### Fluent API Pattern
+
+All webhook objects use a **fluent API** with private properties and `withXXX()` setters:
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+
+// Create using fluent chain
+$endpoint = Stripe::webhook()
+    ->withUrl('https://myapp.com/webhooks/stripe')
+    ->withEnabledEvents(['customer.created', 'invoice.paid'])
+    ->withDescription('Production webhook')
+    ->withMetadata(['server' => 'web-01'])
+    ->withLivemode(true);
+
+// All setters return $this for chaining
+$event = StripeWebhookEvent::make()
+    ->withId('evt_abc123')
+    ->withType('customer.created')
+    ->withLivemode(false);
+```
+
+### Object Conversion Pattern
+
+Webhook data objects convert between Stripe API objects and our typed DTOs:
+
+```php
+// FROM Stripe API object TO our DTO
+$invoiceData = StripeInvoiceWebhookData::fromStripeObject($stripeInvoice);
+
+// TO array for API requests
+$array = $invoiceData->toArray(); // Filters null values, converts to snake_case
+
+// Metadata extraction is handled by HasMetadata trait
+// Uses extractMetadata() helper internally for safe conversion
+```
+
+### Benefits of This Architecture
+
+1. **Code Reuse** - Common functionality (id, metadata, livemode) extracted to traits
+2. **Consistency** - All webhook objects have the same API patterns
+3. **Type Safety** - Strongly-typed properties with IDE autocomplete
+4. **Fluent Interface** - Chainable method calls for clean, readable code
+5. **Easy Testing** - Fluent API makes test setup clear and concise
+
+### Example: Creating Webhook Data
+
+```php
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
+
+// Using fluent API to create webhook data
+$invoiceData = StripeInvoiceWebhookData::make()
+    ->withId('in_abc123')
+    ->withCustomerId('cus_xyz789')
+    ->withAmountDue(5000)
+    ->withAmountPaid(5000)
+    ->withStatus('paid')
+    ->withMetadata(['order_id' => '12345']);
+
+// Access data using getter methods
+$invoiceId = $invoiceData->id();
+$amount = $invoiceData->amountPaid();
+$metadata = $invoiceData->metadata();
 ```
 
 ## Creating and Managing Webhook Endpoints

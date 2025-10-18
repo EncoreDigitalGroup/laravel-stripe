@@ -23,7 +23,6 @@ trait HasStripe
             return;
         }
 
-
         if (function_exists("app") && app()->bound(StripeClient::class)) {
             $this->stripe = app(StripeClient::class);
 
