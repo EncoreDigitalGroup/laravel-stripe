@@ -63,7 +63,7 @@ class StripeSubscription
         if ($stripeSubscription->id) {
             $instance = $instance->withId($stripeSubscription->id);
         }
-        if ($customer !== '' && $customer !== '0') {
+        if ($customer !== "" && $customer !== "0") {
             $instance = $instance->withCustomer($customer);
         }
         if ($status instanceof SubscriptionStatus) {
@@ -90,7 +90,7 @@ class StripeSubscription
         if ($items !== null && $items !== []) {
             $instance = $instance->withItems($items);
         }
-        if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== '' && $defaultPaymentMethod !== '0') {
+        if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
             $instance = $instance->withDefaultPaymentMethod($defaultPaymentMethod);
         }
         if ($stripeSubscription->metadata) {
@@ -268,14 +268,10 @@ class StripeSubscription
     {
         $service = app(StripeSubscriptionService::class);
 
-        if (is_null($this->id)) {
-            $result = $service->create($this);
-        } else {
-            $result = $service->update($this->id, $this);
-        }
+        $result = is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
 
         // Save schedule changes if the schedule was accessed
-        if ($this->subscriptionSchedule !== null) {
+        if ($this->subscriptionSchedule instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule) {
             $savedSchedule = $this->subscriptionSchedule->save();
             // Update the result's schedule cache with the saved schedule
             $result->subscriptionSchedule = $savedSchedule;
@@ -286,7 +282,7 @@ class StripeSubscription
 
     public function schedule(): StripeSubscriptionSchedule
     {
-        if ($this->subscriptionSchedule === null) {
+        if (!$this->subscriptionSchedule instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule) {
             $this->subscriptionSchedule = StripeSubscriptionSchedule::make();
         }
 

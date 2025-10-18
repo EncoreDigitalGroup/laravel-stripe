@@ -329,7 +329,7 @@ class StripeSubscriptionSchedule
             $newSchedule = self::make()
                 ->withPhases(collect([]));
 
-            if ($this->parentSubscription) {
+            if ($this->parentSubscription instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription) {
                 $customer = $this->parentSubscription->customer();
                 $subId = $this->parentSubscription->id();
                 if ($customer !== null) {
@@ -338,7 +338,7 @@ class StripeSubscriptionSchedule
                 if ($subId !== null) {
                     $newSchedule = $newSchedule->withSubscription($subId);
                 }
-            } elseif ($subscriptionId) {
+            } elseif ($subscriptionId !== null && $subscriptionId !== '' && $subscriptionId !== '0') {
                 $newSchedule = $newSchedule->withSubscription($subscriptionId);
             }
 
@@ -356,7 +356,7 @@ class StripeSubscriptionSchedule
 
     public function addPhase(StripePhaseItem $phaseItem): self
     {
-        if ($this->phases === null) {
+        if (!$this->phases instanceof \Illuminate\Support\Collection) {
             $this->phases = collect([]);
         }
 
@@ -381,7 +381,7 @@ class StripeSubscriptionSchedule
     {
         $scheduleService = app(StripeSubscriptionScheduleService::class);
 
-        if ($this->id) {
+        if ($this->id !== null && $this->id !== '' && $this->id !== '0') {
             // Update existing schedule
             $result = $scheduleService->update($this->id, $this);
         } else {
