@@ -88,11 +88,7 @@ class StripeSubscriptionSchedule
             $instance->created = self::timestampToCarbon($obj->created);
         }
         if (isset($obj->customer)) {
-            if (is_string($obj->customer)) {
-                $instance->customer = $obj->customer;
-            } else {
-                $instance->customer = $obj->customer->id;
-            }
+            $instance->customer = is_string($obj->customer) ? $obj->customer : $obj->customer->id;
         }
         if ($defaultSettings instanceof StripeSubscriptionSchedulePhase) {
             $instance->defaultSettings = $defaultSettings;
@@ -119,11 +115,7 @@ class StripeSubscriptionSchedule
             $instance->status = $status;
         }
         if (isset($obj->subscription)) {
-            if (is_string($obj->subscription)) {
-                $instance->subscription = $obj->subscription;
-            } else {
-                $instance->subscription = $obj->subscription->id;
-            }
+            $instance->subscription = is_string($obj->subscription) ? $obj->subscription : $obj->subscription->id;
         }
         if ($obj->test_clock ?? null) {
             $instance->testClock = $obj->test_clock;
@@ -353,7 +345,7 @@ class StripeSubscriptionSchedule
 
         if ($this->parentSubscription instanceof StripeSubscription) {
             $newSchedule = $this->populateFromParentSubscription($newSchedule);
-        } elseif ($subscriptionId !== null && $subscriptionId !== '' && $subscriptionId !== '0') {
+        } elseif ($subscriptionId !== null && $subscriptionId !== "" && $subscriptionId !== "0") {
             $newSchedule = $newSchedule->withSubscription($subscriptionId);
         }
 
@@ -371,7 +363,7 @@ class StripeSubscriptionSchedule
             $schedule = $schedule->withCustomer($customer);
         }
         if ($subId !== null) {
-            $schedule = $schedule->withSubscription($subId);
+            return $schedule->withSubscription($subId);
         }
 
         return $schedule;
@@ -391,7 +383,7 @@ class StripeSubscriptionSchedule
     {
         $scheduleService = app(StripeSubscriptionScheduleService::class);
 
-        if ($this->id !== null && $this->id !== '' && $this->id !== '0') {
+        if ($this->id !== null && $this->id !== "" && $this->id !== "0") {
             // Update existing schedule
             $result = $scheduleService->update($this->id, $this);
         } else {

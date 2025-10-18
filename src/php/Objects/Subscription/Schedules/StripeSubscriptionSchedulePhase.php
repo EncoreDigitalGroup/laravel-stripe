@@ -106,7 +106,7 @@ class StripeSubscriptionSchedulePhase
     public function toArray(): array
     {
         $items = null;
-        if ($this->items !== null) {
+        if ($this->items instanceof \Illuminate\Support\Collection) {
             $items = $this->items->map(function ($item) {
                 if ($item instanceof StripePhaseItem) {
                     return $item->toArray();

@@ -72,27 +72,27 @@ class StripeSubscription
             $instance = $instance->withStatus($status);
         }
         $currentPeriodStart = self::timestampToCarbon($stripeSubscription->current_period_start ?? null);
-        if ($currentPeriodStart !== null) {
+        if ($currentPeriodStart instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withCurrentPeriodStart($currentPeriodStart);
         }
         $currentPeriodEnd = self::timestampToCarbon($stripeSubscription->current_period_end ?? null);
-        if ($currentPeriodEnd !== null) {
+        if ($currentPeriodEnd instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withCurrentPeriodEnd($currentPeriodEnd);
         }
         $cancelAt = self::timestampToCarbon($stripeSubscription->cancel_at ?? null);
-        if ($cancelAt !== null) {
+        if ($cancelAt instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withCancelAt($cancelAt);
         }
         $canceledAt = self::timestampToCarbon($stripeSubscription->canceled_at ?? null);
-        if ($canceledAt !== null) {
+        if ($canceledAt instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withCanceledAt($canceledAt);
         }
         $trialStart = self::timestampToCarbon($stripeSubscription->trial_start ?? null);
-        if ($trialStart !== null) {
+        if ($trialStart instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withTrialStart($trialStart);
         }
         $trialEnd = self::timestampToCarbon($stripeSubscription->trial_end ?? null);
-        if ($trialEnd !== null) {
+        if ($trialEnd instanceof \Carbon\CarbonImmutable) {
             $instance = $instance->withTrialEnd($trialEnd);
         }
         if ($items !== null && $items !== []) {
