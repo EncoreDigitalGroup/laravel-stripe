@@ -15,6 +15,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\StripeObject;
 
@@ -319,7 +320,7 @@ class StripeSubscriptionSchedule
         $targetSubscriptionId = $subscriptionId ?? $this->parentSubscription?->id() ?? $this->subscription;
 
         if ($targetSubscriptionId === null) {
-            throw new \InvalidArgumentException("Subscription ID is required to fetch schedule");
+            throw new InvalidArgumentException("Subscription ID is required to fetch schedule");
         }
 
         $schedule = $scheduleService->forSubscription($targetSubscriptionId);
