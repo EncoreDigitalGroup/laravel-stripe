@@ -136,7 +136,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,
@@ -356,7 +356,7 @@ class StripeSubscriptionSchedule
     }
 
     public function addPhase(StripePhaseItem $phaseItem): self
-        // Create new phase from the item
+    {
         $newPhase = StripeSubscriptionSchedulePhase::make()
             ->withItems(collect([$phaseItem]));
 

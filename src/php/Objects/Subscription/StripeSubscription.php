@@ -69,23 +69,29 @@ class StripeSubscription
         if ($status instanceof SubscriptionStatus) {
             $instance = $instance->withStatus($status);
         }
-        if ($stripeSubscription->current_period_start ?? null) {
-            $instance = $instance->withCurrentPeriodStart(self::timestampToCarbon($stripeSubscription->current_period_start));
+        $currentPeriodStart = self::timestampToCarbon($stripeSubscription->current_period_start ?? null);
+        if ($currentPeriodStart !== null) {
+            $instance = $instance->withCurrentPeriodStart($currentPeriodStart);
         }
-        if ($stripeSubscription->current_period_end ?? null) {
-            $instance = $instance->withCurrentPeriodEnd(self::timestampToCarbon($stripeSubscription->current_period_end));
+        $currentPeriodEnd = self::timestampToCarbon($stripeSubscription->current_period_end ?? null);
+        if ($currentPeriodEnd !== null) {
+            $instance = $instance->withCurrentPeriodEnd($currentPeriodEnd);
         }
-        if ($stripeSubscription->cancel_at ?? null) {
-            $instance = $instance->withCancelAt(self::timestampToCarbon($stripeSubscription->cancel_at));
+        $cancelAt = self::timestampToCarbon($stripeSubscription->cancel_at ?? null);
+        if ($cancelAt !== null) {
+            $instance = $instance->withCancelAt($cancelAt);
         }
-        if ($stripeSubscription->canceled_at ?? null) {
-            $instance = $instance->withCanceledAt(self::timestampToCarbon($stripeSubscription->canceled_at));
+        $canceledAt = self::timestampToCarbon($stripeSubscription->canceled_at ?? null);
+        if ($canceledAt !== null) {
+            $instance = $instance->withCanceledAt($canceledAt);
         }
-        if ($stripeSubscription->trial_start ?? null) {
-            $instance = $instance->withTrialStart(self::timestampToCarbon($stripeSubscription->trial_start));
+        $trialStart = self::timestampToCarbon($stripeSubscription->trial_start ?? null);
+        if ($trialStart !== null) {
+            $instance = $instance->withTrialStart($trialStart);
         }
-        if ($stripeSubscription->trial_end ?? null) {
-            $instance = $instance->withTrialEnd(self::timestampToCarbon($stripeSubscription->trial_end));
+        $trialEnd = self::timestampToCarbon($stripeSubscription->trial_end ?? null);
+        if ($trialEnd !== null) {
+            $instance = $instance->withTrialEnd($trialEnd);
         }
         if ($items !== null && $items !== []) {
             $instance = $instance->withItems($items);
@@ -271,7 +277,7 @@ class StripeSubscription
         $result = is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
 
         // Save schedule changes if the schedule was accessed
-        if ($this->subscriptionSchedule instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule) {
+        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
             $savedSchedule = $this->subscriptionSchedule->save();
             // Update the result's schedule cache with the saved schedule
             $result->subscriptionSchedule = $savedSchedule;
@@ -282,7 +288,7 @@ class StripeSubscription
 
     public function schedule(): StripeSubscriptionSchedule
     {
-        if (!$this->subscriptionSchedule instanceof \EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule) {
+        if (!$this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
             $this->subscriptionSchedule = StripeSubscriptionSchedule::make();
         }
 
