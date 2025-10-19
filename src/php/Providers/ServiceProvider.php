@@ -12,6 +12,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
+/** @codeCoverageIgnore */
 class ServiceProvider extends BaseServiceProvider
 {
     public function register(): void {}
