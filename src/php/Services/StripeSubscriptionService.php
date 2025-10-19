@@ -119,7 +119,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -133,6 +133,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

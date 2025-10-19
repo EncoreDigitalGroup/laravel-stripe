@@ -15,11 +15,12 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasService;
 
 describe("HasService trait", function (): void {
     test("throws NotImplementedException when service method is not overridden", function (): void {
-        $instance = new class {
+        $instance = new class()
+        {
             use HasService;
         };
 
-        expect(fn(): mixed => $instance->service())
+        expect(fn (): mixed => $instance->service())
             ->toThrow(NotImplementedException::class);
     });
 

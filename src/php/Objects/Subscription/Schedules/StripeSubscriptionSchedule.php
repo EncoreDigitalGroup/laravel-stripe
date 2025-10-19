@@ -23,10 +23,10 @@ use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
-    use HasMake;
-    use HasTimestamps;
     use HasGet;
+    use HasMake;
     use HasSave;
+    use HasTimestamps;
 
     private ?string $id = null;
     private ?string $object = null;
@@ -146,7 +146,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,

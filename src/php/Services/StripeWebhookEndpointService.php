@@ -82,6 +82,6 @@ class StripeWebhookEndpointService
         $stripeEndpoints = $this->stripe->webhookEndpoints->all($params);
 
         return collect($stripeEndpoints->data)
-            ->map(fn($stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
+            ->map(fn ($stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
     }
 }

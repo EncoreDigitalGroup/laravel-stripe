@@ -22,9 +22,9 @@ use Stripe\StripeObject;
 
 class StripeCustomer
 {
+    use HasGet;
     use HasMake;
     use HasSave;
-    use HasGet;
 
     private ?string $id = null;
     private ?StripeAddress $address = null;

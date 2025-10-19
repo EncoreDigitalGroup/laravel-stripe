@@ -21,13 +21,13 @@ use Stripe\WebhookEndpoint;
 
 class StripeWebhookEndpoint
 {
+    use HasGet;
     use HasIdentifier;
     use HasLivemode;
     use HasMake;
     use HasMetadata;
-    use HasTimestamps;
-    use HasGet;
     use HasSave;
+    use HasTimestamps;
 
     private ?string $url = null;
     private ?array $enabledEvents = null;

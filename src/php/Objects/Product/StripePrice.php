@@ -27,10 +27,10 @@ use Stripe\StripeObject;
 
 class StripePrice
 {
-    use HasMake;
-    use HasTimestamps;
     use HasGet;
+    use HasMake;
     use HasSave;
+    use HasTimestamps;
 
     private ?string $id = null;
     private ?string $product = null;
@@ -288,7 +288,7 @@ class StripePrice
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
@@ -385,7 +385,7 @@ class StripePrice
     }
 
     /**
-     * @param Collection<StripeProductTier> $tiers
+     * @param  Collection<StripeProductTier>  $tiers
      */
     public function withTiers(Collection $tiers): self
     {

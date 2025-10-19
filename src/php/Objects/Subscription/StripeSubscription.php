@@ -23,9 +23,9 @@ use Stripe\Subscription;
 
 class StripeSubscription
 {
+    use HasGet;
     use HasMake;
     use HasTimestamps;
-    use HasGet;
 
     private ?string $id = null;
     private ?string $customer = null;
@@ -39,6 +39,7 @@ class StripeSubscription
 
     /** @var ?Collection<StripeSubscriptionItem> */
     private ?Collection $items = null;
+
     private ?string $defaultPaymentMethod = null;
     private ?array $metadata = null;
     private ?string $currency = null;

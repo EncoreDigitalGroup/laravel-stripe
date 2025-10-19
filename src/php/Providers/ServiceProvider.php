@@ -7,7 +7,6 @@
 
 namespace EncoreDigitalGroup\Stripe\Providers;
 
-use EncoreDigitalGroup\Stripe\Stripe;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Blade;

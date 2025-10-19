@@ -19,10 +19,10 @@ use Stripe\StripeObject;
 
 class StripeProduct
 {
-    use HasMake;
-    use HasTimestamps;
     use HasGet;
+    use HasMake;
     use HasSave;
+    use HasTimestamps;
 
     private ?string $id = null;
     private ?string $name = null;
