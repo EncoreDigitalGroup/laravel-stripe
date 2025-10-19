@@ -12,21 +12,27 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscriptionItem;
+use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
 test("can create StripeSubscription using make method", function (): void {
+    $items = collect([
+        StripeSubscriptionItem::make()
+            ->withPrice("price_123")
+            ->withQuantity(1),
+    ]);
+
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_123")
         ->withStatus(SubscriptionStatus::Active)
-        ->withItems([
-            ["price" => "price_123", "quantity" => 1],
-        ]);
+        ->withItems($items);
 
     expect($subscription)
         ->toBeInstanceOf(StripeSubscription::class)
         ->and($subscription->customer())->toBe("cus_123")
         ->and($subscription->status())->toBe(SubscriptionStatus::Active)
-        ->and($subscription->items())->toBeArray();
+        ->and($subscription->items())->toBeInstanceOf(Collection::class);
 });
 
 test("can create StripeSubscription from Stripe object", function (): void {
@@ -72,7 +78,7 @@ test("can create StripeSubscription from Stripe object", function (): void {
         ->and($subscription->currentPeriodStart()->timestamp)->toBe(1234567890)
         ->and($subscription->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
         ->and($subscription->currentPeriodEnd()->timestamp)->toBe(1237159890)
-        ->and($subscription->items())->toBeArray()
+        ->and($subscription->items())->toBeInstanceOf(Collection::class)
         ->and($subscription->items())->toHaveCount(1)
         ->and($subscription->defaultPaymentMethod())->toBe("pm_123")
         ->and($subscription->collectionMethod())->toBe(CollectionMethod::ChargeAutomatically)
@@ -170,11 +176,12 @@ test("fromStripeObject handles items correctly", function (): void {
 
     $subscription = StripeSubscription::fromStripeObject($stripeObject);
 
-    expect($subscription->items())->toBeArray()
+    expect($subscription->items())->toBeInstanceOf(Collection::class)
         ->and($subscription->items())->toHaveCount(2)
-        ->and($subscription->items()[0]["price"])->toBe("price_1")
-        ->and($subscription->items()[0]["quantity"])->toBe(2)
-        ->and($subscription->items()[1]["price"])->toBe("price_2");
+        ->and($subscription->items()->get(0))->toBeInstanceOf(StripeSubscriptionItem::class)
+        ->and($subscription->items()->get(0)->price())->toBe("price_1")
+        ->and($subscription->items()->get(0)->quantity())->toBe(2)
+        ->and($subscription->items()->get(1)->price())->toBe("price_2");
 });
 
 test("fromStripeObject handles billing_cycle_anchor_config", function (): void {

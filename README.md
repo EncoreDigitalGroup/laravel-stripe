@@ -106,7 +106,11 @@ $customer = Stripe::customer()
 // Subscription with trial
 $subscription = Stripe::subscription()
     ->withCustomer('cus_123')
-    ->withItems([['price' => 'price_monthly', 'quantity' => 1]])
+    ->withItems(collect([
+        StripeSubscriptionItem::make()
+            ->withPrice('price_monthly')
+            ->withQuantity(1)
+    ]))
     ->withTrialEnd(now()->addDays(14));
 
 // Webhook endpoint
@@ -220,20 +224,25 @@ $price = Stripe::price()
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscriptionItem;
 
 // Create subscription
 $subscription = Stripe::subscription()
     ->withCustomer('cus_123')
-    ->withItems([
-        ['price' => 'price_monthly', 'quantity' => 1]
-    ])
+    ->withItems(collect([
+        StripeSubscriptionItem::make()
+            ->withPrice('price_monthly')
+            ->withQuantity(1)
+    ]))
     ->withMetadata(['plan' => 'professional'])
     ->save();
 
 // Update subscription (upgrade/downgrade)
 $updated = Stripe::subscription()
     ->get('sub_123')
-    ->withItems([['price' => 'price_premium']])
+    ->withItems(collect([
+        StripeSubscriptionItem::make()->withPrice('price_premium')
+    ]))
     ->withProrationBehavior(ProrationBehavior::CreateProrations)
     ->save();
 

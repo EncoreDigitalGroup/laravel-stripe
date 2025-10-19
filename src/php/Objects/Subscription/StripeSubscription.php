@@ -17,7 +17,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionS
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
-use Override;
+use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Subscription;
 
@@ -36,7 +36,9 @@ class StripeSubscription
     private ?CarbonImmutable $canceledAt = null;
     private ?CarbonImmutable $trialStart = null;
     private ?CarbonImmutable $trialEnd = null;
-    private ?array $items = null;
+
+    /** @var ?Collection<StripeSubscriptionItem> */
+    private ?Collection $items = null;
     private ?string $defaultPaymentMethod = null;
     private ?array $metadata = null;
     private ?string $currency = null;
@@ -98,7 +100,7 @@ class StripeSubscription
         if ($trialEnd instanceof CarbonImmutable) {
             $instance = $instance->withTrialEnd($trialEnd);
         }
-        if ($items !== null && $items !== []) {
+        if ($items !== null && $items->isNotEmpty()) {
             $instance = $instance->withItems($items);
         }
         if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
@@ -132,7 +134,7 @@ class StripeSubscription
         return $instance;
     }
 
-    private static function extractItems(Subscription $stripeSubscription): ?array
+    private static function extractItems(Subscription $stripeSubscription): ?Collection
     {
         if (!$stripeSubscription->items->data) {
             return null;
@@ -140,15 +142,24 @@ class StripeSubscription
 
         $items = [];
         foreach ($stripeSubscription->items->data as $item) {
-            $items[] = [
-                "id" => $item->id,
-                "price" => $item->price->id ?? null,
-                "quantity" => $item->quantity,
-                "metadata" => $item->metadata->toArray(),
-            ];
+            $subscriptionItem = StripeSubscriptionItem::make()->withId($item->id);
+
+            if ($item->quantity !== null) {
+                $subscriptionItem = $subscriptionItem->withQuantity($item->quantity);
+            }
+
+            if ($item->price->id ?? null) {
+                $subscriptionItem = $subscriptionItem->withPrice($item->price->id);
+            }
+
+            if (isset($item->metadata)) {
+                $subscriptionItem = $subscriptionItem->withMetadata($item->metadata->toArray());
+            }
+
+            $items[] = $subscriptionItem;
         }
 
-        return $items;
+        return collect($items);
     }
 
     private static function extractCustomerId(mixed $customer): string
@@ -248,6 +259,11 @@ class StripeSubscription
 
     public function toArray(): array
     {
+        $items = null;
+        if ($this->items !== null) {
+            $items = $this->items->map(fn (StripeSubscriptionItem $item) => $item->toArray())->all();
+        }
+
         $array = [
             "id" => $this->id,
             "customer" => $this->customer,
@@ -258,7 +274,7 @@ class StripeSubscription
             "canceled_at" => self::carbonToTimestamp($this->canceledAt),
             "trial_start" => self::carbonToTimestamp($this->trialStart),
             "trial_end" => self::carbonToTimestamp($this->trialEnd),
-            "items" => $this->items,
+            "items" => $items,
             "default_payment_method" => $this->defaultPaymentMethod,
             "metadata" => $this->metadata,
             "currency" => $this->currency,
@@ -363,7 +379,7 @@ class StripeSubscription
         return $this;
     }
 
-    public function withItems(array $items): self
+    public function withItems(Collection $items): self
     {
         $this->items = $items;
 
@@ -478,7 +494,7 @@ class StripeSubscription
         return $this->trialEnd;
     }
 
-    public function items(): ?array
+    public function items(): ?Collection
     {
         return $this->items;
     }

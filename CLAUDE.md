@@ -28,8 +28,7 @@ src/php/                              # Main source (PSR-4: EncoreDigitalGroup\S
 │   ├── Webhook/                      # StripeWebhook, StripeWebhookEvent
 │   └── Support/                      # Shared objects (StripeAddress, etc.)
 ├── Services/                         # Service layer classes
-├── Support/                          # Traits, config, builders, testing
-│   ├── Building/                     # Builder pattern implementation
+├── Support/                          # Traits, config, testing
 │   ├── Config/                       # Configuration classes
 │   ├── Testing/                      # Test infrastructure (IMPORTANT: fixtures live here)
 │   ├── HasStripe.php                 # Core DI trait
@@ -41,7 +40,6 @@ src/php/                              # Main source (PSR-4: EncoreDigitalGroup\S
 tests/
 ├── Feature/                          # Service integration tests
 ├── Unit/Objects/                     # DTO unit tests
-├── Integration/                      # Builder and internal tests
 ├── Pest.php                          # Custom expectations
 └── TestCase.php                      # Base test case (Orchestra Testbench)
 ```
@@ -150,25 +148,6 @@ All Stripe interactions follow a consistent service pattern:
 3. **Enums** (`src/php/Enums/`) - String-backed enums for Stripe constants:
     - All values match Stripe's exact API values (e.g., `RecurringInterval::Month->value === 'month'`)
     - Enum names use PascalCase (e.g., `SubscriptionStatus::Active`)
-
-### Builder Pattern
-
-The library includes a fluent builder system for creating Stripe objects with improved ergonomics:
-
-```php
-$customer = Stripe::customer(
-    email: "customer@example.com",
-    name: "John Doe"
-);
-
-$price = Stripe::price(
-    currency: "usd",
-    unitAmount: 1000,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
-);
-```
-
-All services automatically use the configured Stripe client or injected test client.
 
 ### HasStripe Trait Pattern
 
@@ -298,7 +277,6 @@ test('example', function () {
 
 - `tests/Feature/` - Service integration tests (extends `Tests\TestCase`)
 - `tests/Unit/` - DTO unit tests (extends `Tests\TestCase`)
-- `tests/Integration/` - Integration tests for builder patterns and internal usage
 - `src/php/Support/Testing/` - Test infrastructure (FakeStripeClient, StripeFixtures, StripeMethod)
 
 ### Fixture Usage
@@ -384,27 +362,6 @@ Stripe::fake([
 
 ## Important Patterns
 
-### Converting Nested Stripe Objects
-
-Use builders when creating nested objects in `fromStripeObject()` methods:
-
-```php
-// Extract nested address from Stripe customer using builder
-$address = null;
-if (isset($stripeCustomer->address)) {
-    /** @var \Stripe\StripeObject $stripeAddress */
-    $stripeAddress = $stripeCustomer->address;
-    $address = (new StripeBuilder())->address()->build(
-        line1: $stripeAddress->line1 ?? null,
-        line2: $stripeAddress->line2 ?? null,
-        city: $stripeAddress->city ?? null,
-        state: $stripeAddress->state ?? null,
-        postalCode: $stripeAddress->postal_code ?? null,
-        country: $stripeAddress->country ?? null
-    );
-}
-```
-
 **Important:** Use `isset()` instead of truthiness checks for nested objects to avoid false positives.
 
 ### Service Archive/Reactivate Pattern
@@ -446,8 +403,6 @@ Note: Prices can only be archived (not deleted) per Stripe API limitations.
 5. **StripeFixtures location** - Test fixtures are in `src/php/Support/Testing/StripeFixtures`, not `tests/Support/`.
 
 6. **Stripe SDK differences** - Package supports v16.5+, v17.0+, and v18.0+ which may have minor API differences.
-
-7. **Use builders in fromStripeObject** - When creating nested objects in `fromStripeObject()` methods, use the builder pattern via `new StripeBuilder()` for consistency.
 
 ## Additional Resources
 

@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscriptionItem;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
@@ -25,9 +26,11 @@ test("can create a subscription", function (): void {
 
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_test")
-        ->withItems([
-            ["price" => "price_test", "quantity" => 1],
-        ]);
+        ->withItems(collect([
+            StripeSubscriptionItem::make()
+                ->withPrice("price_test")
+                ->withQuantity(1),
+        ]));
 
     $service = StripeSubscriptionService::make();
     $result = $service->create($subscription);
@@ -176,7 +179,9 @@ test("create removes id from payload", function (): void {
 
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_test")
-        ->withItems([["price" => "price_test"]]);
+        ->withItems(collect([
+            StripeSubscriptionItem::make()->withPrice("price_test"),
+        ]));
 
     $service = StripeSubscriptionService::make();
     $service->create($subscription);
@@ -225,7 +230,9 @@ test("create sends billing_cycle_anchor_config when set", function (): void {
 
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_test")
-        ->withItems([["price" => "price_test"]])
+        ->withItems(collect([
+            StripeSubscriptionItem::make()->withPrice("price_test"),
+        ]))
         ->withBillingCycleAnchorConfig($config);
 
     $service = StripeSubscriptionService::make();
@@ -249,7 +256,9 @@ test("create sends proration_behavior when set", function (): void {
 
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_test")
-        ->withItems([["price" => "price_test"]])
+        ->withItems(collect([
+            StripeSubscriptionItem::make()->withPrice("price_test"),
+        ]))
         ->withProrationBehavior(ProrationBehavior::None);
 
     $service = StripeSubscriptionService::make();
@@ -270,7 +279,9 @@ test("issueFirstInvoiceOn works with service create", function (): void {
 
     $subscription = StripeSubscription::make()
         ->withCustomer("cus_test")
-        ->withItems([["price" => "price_test"]])
+        ->withItems(collect([
+            StripeSubscriptionItem::make()->withPrice("price_test"),
+        ]))
         ->withTrialEnd(CarbonImmutable::now()->addDays(14));
 
     $subscription->issueFirstInvoiceOn(
