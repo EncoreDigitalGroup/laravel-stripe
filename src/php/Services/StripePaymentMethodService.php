@@ -37,6 +37,16 @@ class StripePaymentMethodService
         return StripePaymentMethod::fromStripeObject($stripePaymentMethod);
     }
 
+    /**
+     * @return Collection<int, StripePaymentMethod>
+     *
+     * @throws ApiErrorException
+     */
+    public function getAllForCustomer(string $customerId): Collection
+    {
+        return $this->list(["customer" => $customerId]);
+    }
+
     /** @throws ApiErrorException */
     public function update(string $paymentMethodId, StripePaymentMethod $paymentMethod): StripePaymentMethod
     {
@@ -77,6 +87,6 @@ class StripePaymentMethodService
         $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
 
         return collect($stripePaymentMethods->data)
-            ->map(fn ($stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
+            ->map(fn($stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
     }
 }

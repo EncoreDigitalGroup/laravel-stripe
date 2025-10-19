@@ -9,9 +9,11 @@ namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
+use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
@@ -36,6 +38,9 @@ class StripeCustomer
 
     /** @var ?Collection<StripeSubscription> */
     private ?Collection $subscriptions = null;
+
+    /** @var ?Collection<StripePaymentMethod> */
+    private ?Collection $paymentMethods = null;
 
     /**
      * Create a StripeCustomer instance from a Stripe API Customer object
@@ -106,6 +111,37 @@ class StripeCustomer
         }
 
         return $shipping;
+    }
+
+    /** @returns Collection<StripeSubscription> */
+    public function subscriptions(bool $refresh = false): Collection
+    {
+        if ($this->subscriptions instanceof Collection && !$refresh) {
+            return $this->subscriptions;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
+
+        return $this->subscriptions;
+    }
+
+    public function paymentMethods(bool $refresh = false): Collection
+    {
+        if ($this->paymentMethods instanceof Collection && !$refresh) {
+            return $this->paymentMethods;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->paymentMethods = app(StripePaymentMethodService::class)->getAllForCustomer($this->id);
+
+        return $this->paymentMethods;
     }
 
     public function service(): StripeCustomerService
@@ -212,21 +248,5 @@ class StripeCustomer
     public function shipping(): ?StripeShipping
     {
         return $this->shipping;
-    }
-
-    /** @returns Collection<StripeSubscription> */
-    public function subscriptions(bool $refresh = false): Collection
-    {
-        if ($this->subscriptions instanceof Collection && !$refresh) {
-            return $this->subscriptions;
-        }
-
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
-
-        return $this->subscriptions;
     }
 }

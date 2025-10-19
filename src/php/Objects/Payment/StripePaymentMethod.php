@@ -40,11 +40,9 @@ class StripePaymentMethod
     public static function fromStripeObject(PaymentMethod $paymentMethod): self
     {
         $instance = self::make();
-
         $instance = self::setBasicProperties($instance, $paymentMethod);
-        $instance = self::setPaymentDetails($instance, $paymentMethod);
 
-        return $instance;
+        return self::setPaymentDetails($instance, $paymentMethod);
     }
 
     private static function setBasicProperties(self $instance, PaymentMethod $paymentMethod): self
@@ -69,9 +67,7 @@ class StripePaymentMethod
             }
         }
 
-        $instance = self::extractBillingDetails($instance, $paymentMethod);
-
-        return $instance;
+        return self::extractBillingDetails($instance, $paymentMethod);
     }
 
     private static function extractBillingDetails(self $instance, PaymentMethod $paymentMethod): self
@@ -131,7 +127,7 @@ class StripePaymentMethod
             "type" => $this->type?->value,
             "customer" => $this->customer,
             "created" => self::carbonToTimestamp($this->created),
-            "billing_details" => $this->billingDetails instanceof \EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress ? [
+            "billing_details" => $this->billingDetails instanceof StripeAddress ? [
                 "address" => $this->billingDetails->toArray(),
             ] : null,
             "card" => $this->card?->toArray(),
@@ -203,7 +199,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param  Collection<string, mixed>  $card
+     * @param Collection<string, mixed> $card
      */
     public function withCard(Collection $card): self
     {
@@ -221,7 +217,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param  Collection<string, mixed>  $usBankAccount
+     * @param Collection<string, mixed> $usBankAccount
      */
     public function withUsBankAccount(Collection $usBankAccount): self
     {

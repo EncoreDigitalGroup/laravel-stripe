@@ -39,25 +39,13 @@ class StripeSubscriptionService
     }
 
     /**
-     * @return Collection<StripeSubscription>
+     * @return Collection<int, StripeSubscription>
      *
      * @throws ApiErrorException
      */
     public function getAllForCustomer(string $customerId): Collection
     {
-        $subscriptions = $this->stripe->customers->retrieve($customerId)->subscriptions;
-        $subscriptionDTOs = new Collection;
-
-        if (is_null($subscriptions)) {
-            return $subscriptionDTOs;
-        }
-
-        /** @var Subscription $subscription */
-        foreach ($subscriptions as $subscription) {
-            $subscriptionDTOs->add(StripeSubscription::fromStripeObject($subscription));
-        }
-
-        return $subscriptionDTOs;
+        return $this->list(["customer" => $customerId]);
     }
 
     /** @throws ApiErrorException */
