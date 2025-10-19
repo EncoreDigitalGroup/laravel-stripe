@@ -23,7 +23,7 @@ describe("Webhook Endpoint Integration", function (): void {
                 StripeMethod::WebhookEndpointsAll->value => StripeFixtures::webhookEndpointList(),
             ]);
 
-            $service = Stripe::webhookEndpoints();
+            $service = Stripe::webhook()->service();
             $service->list();
 
             expect($fake)->toHaveCalledStripeMethod(StripeMethod::WebhookEndpointsAll);
