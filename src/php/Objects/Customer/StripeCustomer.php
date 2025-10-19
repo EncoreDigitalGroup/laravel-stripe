@@ -8,10 +8,13 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\VariableNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
+use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
@@ -37,6 +40,9 @@ class StripeCustomer
     /** @var ?Collection<StripeSubscription> */
     private ?Collection $subscriptions = null;
 
+    /** @var ?Collection<StripePaymentMethod> */
+    private ?Collection $paymentMethods = null;
+
     /**
      * Create a StripeCustomer instance from a Stripe API Customer object
      */
@@ -51,7 +57,7 @@ class StripeCustomer
         if (isset($stripeCustomer->address)) {
             /** @var StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
-            $instance = $instance->withAddress(self::extractAddress($stripeAddress));
+            $instance = $instance->withAddress(StripeAddress::fromStripeObject($stripeAddress));
         }
 
         if ($stripeCustomer->description ?? null) {
@@ -83,39 +89,13 @@ class StripeCustomer
         return $instance;
     }
 
-    private static function extractAddress(StripeObject $stripeAddress): StripeAddress
-    {
-        $address = StripeAddress::make();
-
-        if ($stripeAddress->line1 ?? null) {
-            $address = $address->withLine1($stripeAddress->line1);
-        }
-        if ($stripeAddress->line2 ?? null) {
-            $address = $address->withLine2($stripeAddress->line2);
-        }
-        if ($stripeAddress->city ?? null) {
-            $address = $address->withCity($stripeAddress->city);
-        }
-        if ($stripeAddress->state ?? null) {
-            $address = $address->withState($stripeAddress->state);
-        }
-        if ($stripeAddress->postal_code ?? null) {
-            $address = $address->withPostalCode($stripeAddress->postal_code);
-        }
-        if ($stripeAddress->country ?? null) {
-            return $address->withCountry($stripeAddress->country);
-        }
-
-        return $address;
-    }
-
     private static function extractShipping(StripeObject $stripeShipping): ?StripeShipping
     {
         $shippingAddress = null;
         if (isset($stripeShipping->address)) {
             /** @var StripeObject $shippingAddressObj */
             $shippingAddressObj = $stripeShipping->address;
-            $shippingAddress = self::extractAddress($shippingAddressObj);
+            $shippingAddress = StripeAddress::fromStripeObject($shippingAddressObj);
         }
 
         // Only create shipping if we have the required fields (address and name)
@@ -132,6 +112,60 @@ class StripeCustomer
         }
 
         return $shipping;
+    }
+
+    /** @returns Collection<StripeSubscription> */
+    public function subscriptions(bool $refresh = false): Collection
+    {
+        if ($this->subscriptions instanceof Collection && !$refresh) {
+            return $this->subscriptions;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
+
+        return $this->subscriptions;
+    }
+
+    /** @returns Collection<StripePaymentMethod> */
+    public function paymentMethods(bool $refresh = false): Collection
+    {
+        if ($this->paymentMethods instanceof Collection && !$refresh) {
+            return $this->paymentMethods;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->paymentMethods = app(StripePaymentMethodService::class)->getAllForCustomer($this->id);
+
+        return $this->paymentMethods;
+    }
+
+    public function addPaymentMethod(StripePaymentMethod $paymentMethod): self
+    {
+        $paymentMethod = app(StripePaymentMethodService::class)->create($paymentMethod);
+        $paymentMethodId = $paymentMethod->id();
+
+        if (is_null($paymentMethodId)) {
+            throw new VariableNullException("paymentMethodId");
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        app(StripePaymentMethodService::class)->attach($paymentMethodId, $this->id);
+
+        if (!is_null($this->paymentMethods)) {
+            $this->paymentMethods(true);
+        }
+
+        return $this;
     }
 
     public function service(): StripeCustomerService
@@ -238,21 +272,5 @@ class StripeCustomer
     public function shipping(): ?StripeShipping
     {
         return $this->shipping;
-    }
-
-    /** @returns Collection<StripeSubscription> */
-    public function subscriptions(bool $refresh = false): Collection
-    {
-        if ($this->subscriptions instanceof Collection && !$refresh) {
-            return $this->subscriptions;
-        }
-
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
-
-        return $this->subscriptions;
     }
 }

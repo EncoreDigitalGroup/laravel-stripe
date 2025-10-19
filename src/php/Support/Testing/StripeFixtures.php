@@ -422,6 +422,120 @@ class StripeFixtures
         ], $overrides);
     }
 
+    public static function paymentIntent(array $overrides = []): array
+    {
+        $now = time();
+
+        return array_merge([
+            "id" => "pi_" . self::randomId(),
+            "object" => "payment_intent",
+            "amount" => 1000,
+            "amount_capturable" => 0,
+            "amount_received" => 0,
+            "application" => null,
+            "application_fee_amount" => null,
+            "automatic_payment_methods" => null,
+            "canceled_at" => null,
+            "cancellation_reason" => null,
+            "capture_method" => "automatic",
+            "client_secret" => "pi_" . self::randomId() . "_secret_" . self::randomString(32),
+            "confirmation_method" => "automatic",
+            "created" => $now,
+            "currency" => "usd",
+            "customer" => "cus_" . self::randomId(),
+            "description" => "Test Payment Intent",
+            "invoice" => null,
+            "last_payment_error" => null,
+            "latest_charge" => null,
+            "livemode" => false,
+            "metadata" => [],
+            "next_action" => null,
+            "on_behalf_of" => null,
+            "payment_method" => null,
+            "payment_method_options" => [],
+            "payment_method_types" => ["card"],
+            "processing" => null,
+            "receipt_email" => null,
+            "review" => null,
+            "setup_future_usage" => null,
+            "shipping" => null,
+            "statement_descriptor" => null,
+            "statement_descriptor_suffix" => null,
+            "status" => "requires_payment_method",
+            "transfer_data" => null,
+            "transfer_group" => null,
+        ], $overrides);
+    }
+
+    public static function paymentIntentList(array $paymentIntents = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $paymentIntents,
+            "has_more" => false,
+            "url" => "/v1/payment_intents",
+        ], $overrides);
+    }
+
+    public static function paymentMethod(array $overrides = []): array
+    {
+        return array_merge([
+            "id" => "pm_" . self::randomId(),
+            "object" => "payment_method",
+            "billing_details" => [
+                "address" => [
+                    "city" => null,
+                    "country" => null,
+                    "line1" => null,
+                    "line2" => null,
+                    "postal_code" => null,
+                    "state" => null,
+                ],
+                "email" => null,
+                "name" => null,
+                "phone" => null,
+            ],
+            "card" => [
+                "brand" => "visa",
+                "checks" => [
+                    "address_line1_check" => null,
+                    "address_postal_code_check" => null,
+                    "cvc_check" => "pass",
+                ],
+                "country" => "US",
+                "exp_month" => 12,
+                "exp_year" => 2025,
+                "fingerprint" => self::randomString(16),
+                "funding" => "credit",
+                "generated_from" => null,
+                "last4" => "4242",
+                "networks" => [
+                    "available" => ["visa"],
+                    "preferred" => null,
+                ],
+                "three_d_secure_usage" => [
+                    "supported" => true,
+                ],
+                "wallet" => null,
+            ],
+            "created" => time(),
+            "customer" => null,
+            "livemode" => false,
+            "metadata" => [],
+            "type" => "card",
+        ], $overrides);
+    }
+
+    public static function paymentMethodList(array $paymentMethods = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $paymentMethods,
+            "has_more" => false,
+            "url" => "/v1/payment_methods",
+        ], $overrides);
+    }
+
     protected static function randomId(int $length = 24): string
     {
         return self::randomString($length);
