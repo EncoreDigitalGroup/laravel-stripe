@@ -39,6 +39,30 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
+Then add the following to your `services.php` config file:
+
+```php
+
+[
+    "stripe" => [
+        "public_key" => env("STRIPE_PUBLIC_KEY"),
+        "secret_key" => env("STRIPE_SECRET_KEY"),
+    ]
+]
+
+```
+
+You may also configure the public and secret keys directly if you wish:
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use Illuminate\Support\Facades\Config;
+
+Stripe::config()->authentication->publicKey = Config::get("your.custom.config.key.public")
+Stripe::config()->authentication->private = Config::get("your.custom.config.key.secret")
+
+```
+
 Start using the library:
 
 ```php
