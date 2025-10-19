@@ -13,6 +13,8 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -23,6 +25,8 @@ class StripeSubscriptionSchedule
 {
     use HasMake;
     use HasTimestamps;
+    use HasGet;
+    use HasSave;
 
     private ?string $id = null;
     private ?string $object = null;

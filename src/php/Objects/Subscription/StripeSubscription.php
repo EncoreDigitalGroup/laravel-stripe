@@ -15,7 +15,9 @@ use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
+use Override;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Subscription;
 
@@ -23,6 +25,7 @@ class StripeSubscription
 {
     use HasMake;
     use HasTimestamps;
+    use HasGet;
 
     private ?string $id = null;
     private ?string $customer = null;
@@ -270,13 +273,7 @@ class StripeSubscription
         return Arr::whereNotNull($array);
     }
 
-    public function get(string $subscriptionId): self
-    {
-        $service = app(StripeSubscriptionService::class);
-
-        return $service->get($subscriptionId);
-    }
-
+    /** This is custom as we are saving multiple objects which the HasSave trait does not cover. */
     public function save(): self
     {
         $service = app(StripeSubscriptionService::class);
@@ -286,7 +283,6 @@ class StripeSubscription
         // Save schedule changes if the schedule was accessed
         if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
             $savedSchedule = $this->subscriptionSchedule->save();
-            // Update the result's schedule cache with the saved schedule
             $result->subscriptionSchedule = $savedSchedule;
         }
 
@@ -304,7 +300,6 @@ class StripeSubscription
         return $this->subscriptionSchedule;
     }
 
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -438,7 +433,6 @@ class StripeSubscription
         return $this;
     }
 
-    // Getter methods
     public function id(): ?string
     {
         return $this->id;

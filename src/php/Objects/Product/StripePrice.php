@@ -17,6 +17,8 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
@@ -27,6 +29,8 @@ class StripePrice
 {
     use HasMake;
     use HasTimestamps;
+    use HasGet;
+    use HasSave;
 
     private ?string $id = null;
     private ?string $product = null;
