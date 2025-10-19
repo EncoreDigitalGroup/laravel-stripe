@@ -29,6 +29,8 @@ class StripeCustomer
     private ?string $name = null;
     private ?string $phone = null;
     private ?StripeShipping $shipping = null;
+
+    /** @var ?Collection<StripeSubscription> */
     private ?Collection $subscriptions = null;
 
     /**

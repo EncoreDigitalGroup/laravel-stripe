@@ -140,7 +140,7 @@ test("toArray returns correct structure", function (): void {
 test("toArray filters null values", function (): void {
     $product = StripeProduct::make(
         name: "Test Product"
-    // All other fields are null
+        // All other fields are null
     );
 
     $array = $product->toArray();

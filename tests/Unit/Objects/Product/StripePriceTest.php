@@ -13,7 +13,6 @@ use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeCustomUnitAmount;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
-use EncoreDigitalGroup\Stripe\Objects\Product\StripeProductTierCollection;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeRecurring;
 use Stripe\Util\Util;
 
@@ -152,7 +151,7 @@ test("fromStripeObject handles tiers", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->tiers())->toBeInstanceOf(StripeProductTierCollection::class)
+    expect($price->tiers())->toBeInstanceOf(\Illuminate\Support\Collection::class)
         ->and($price->tiers())->toHaveCount(2)
         ->and($price->tiersMode())->toBe(TiersMode::Graduated);
 });

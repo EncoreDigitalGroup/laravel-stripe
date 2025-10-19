@@ -18,6 +18,7 @@ use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Price;
 use Stripe\StripeObject;
@@ -39,7 +40,10 @@ class StripePrice
     private ?string $nickname = null;
     private ?array $metadata = null;
     private ?string $lookupKey = null;
-    private ?StripeProductTierCollection $tiers = null;
+
+    /** @var Collection<int, StripeProductTier>|null */
+    private ?Collection $tiers = null;
+
     private ?TiersMode $tiersMode = null;
     private ?int $transformQuantity = null;
     private ?StripeCustomUnitAmount $customUnitAmount = null;
@@ -118,7 +122,7 @@ class StripePrice
     {
         if (isset($stripePrice->tiers)) {
             $tiers = self::extractTiers($stripePrice);
-            if ($tiers instanceof StripeProductTierCollection) {
+            if ($tiers instanceof Collection) {
                 $instance = $instance->withTiers($tiers);
             }
         }
@@ -194,43 +198,44 @@ class StripePrice
         return $recurring;
     }
 
-    private static function extractTiers(Price $stripePrice): ?StripeProductTierCollection
+    /**
+     * @return ?Collection<StripeProductTier>
+     */
+    private static function extractTiers(Price $stripePrice): ?Collection
     {
         if (!isset($stripePrice->tiers)) {
             return null;
         }
 
         $tiers = [];
+        /** @var StripeObject $tier */
         foreach ($stripePrice->tiers as $tier) {
-            /** @var StripeObject $tierObj */
-            $tierObj = $tier;
-
             $tierInstance = StripeProductTier::make();
 
-            if (isset($tierObj->up_to)) {
-                $tierInstance = $tierInstance->withUpTo($tierObj->up_to);
+            if (isset($tier->up_to)) {
+                $tierInstance = $tierInstance->withUpTo($tier->up_to);
             }
 
-            if (isset($tierObj->unit_amount)) {
-                $tierInstance = $tierInstance->withUnitAmount($tierObj->unit_amount);
+            if (isset($tier->unit_amount)) {
+                $tierInstance = $tierInstance->withUnitAmount($tier->unit_amount);
             }
 
-            if (isset($tierObj->unit_amount_decimal)) {
-                $tierInstance = $tierInstance->withUnitAmountDecimal($tierObj->unit_amount_decimal);
+            if (isset($tier->unit_amount_decimal)) {
+                $tierInstance = $tierInstance->withUnitAmountDecimal($tier->unit_amount_decimal);
             }
 
-            if (isset($tierObj->flat_amount)) {
-                $tierInstance = $tierInstance->withFlatAmount($tierObj->flat_amount);
+            if (isset($tier->flat_amount)) {
+                $tierInstance = $tierInstance->withFlatAmount($tier->flat_amount);
             }
 
-            if (isset($tierObj->flat_amount_decimal)) {
-                $tierInstance = $tierInstance->withFlatAmountDecimal($tierObj->flat_amount_decimal);
+            if (isset($tier->flat_amount_decimal)) {
+                $tierInstance = $tierInstance->withFlatAmountDecimal($tier->flat_amount_decimal);
             }
 
             $tiers[] = $tierInstance;
         }
 
-        return new StripeProductTierCollection($tiers);
+        return new Collection($tiers);
     }
 
     private static function extractCustomUnitAmount(Price $stripePrice): ?StripeCustomUnitAmount
@@ -279,7 +284,7 @@ class StripePrice
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->toArray(),
+            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
@@ -375,7 +380,10 @@ class StripePrice
         return $this;
     }
 
-    public function withTiers(StripeProductTierCollection $tiers): self
+    /**
+     * @param  Collection<StripeProductTier>  $tiers
+     */
+    public function withTiers(Collection $tiers): self
     {
         $this->tiers = $tiers;
 
@@ -478,7 +486,10 @@ class StripePrice
         return $this->lookupKey;
     }
 
-    public function tiers(): ?StripeProductTierCollection
+    /**
+     * @return ?Collection<StripeProductTier>
+     */
+    public function tiers(): ?Collection
     {
         return $this->tiers;
     }
