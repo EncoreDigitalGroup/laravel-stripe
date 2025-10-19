@@ -179,7 +179,7 @@ class StripePaymentIntent
             "created" => self::carbonToTimestamp($this->created),
             "client_secret" => $this->clientSecret,
             "last_payment_error" => $this->lastPaymentError,
-            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)->toArray(),
+            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)?->toArray(),
             "metadata" => $this->metadata,
         ];
 
