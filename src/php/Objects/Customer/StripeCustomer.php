@@ -8,6 +8,8 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\NullException;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\VariableNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
@@ -142,6 +144,28 @@ class StripeCustomer
         $this->paymentMethods = app(StripePaymentMethodService::class)->getAllForCustomer($this->id);
 
         return $this->paymentMethods;
+    }
+
+    public function addPaymentMethod(StripePaymentMethod $paymentMethod): self
+    {
+        $paymentMethod = app(StripePaymentMethodService::class)->create($paymentMethod);
+        $paymentMethodId = $paymentMethod->id();
+
+        if (is_null($paymentMethodId)) {
+            throw new VariableNullException("paymentMethodId");
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        app(StripePaymentMethodService::class)->attach($paymentMethodId, $this->id);
+
+        if (!is_null($this->paymentMethods)) {
+            $this->paymentMethods(true);
+        }
+
+        return $this;
     }
 
     public function service(): StripeCustomerService

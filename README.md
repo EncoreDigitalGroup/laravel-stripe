@@ -193,6 +193,28 @@ $updated = Stripe::customer()
     ->save();
 ```
 
+### Payment Method Management
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
+use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
+
+// Create and attach payment method to customer
+$customer = Stripe::customer()->get('cus_123');
+$paymentMethod = StripePaymentMethod::make()
+    ->withType(PaymentMethodType::Card);
+
+$customer->addPaymentMethod($paymentMethod);
+
+// List customer's payment methods
+$paymentMethods = $customer->paymentMethods();
+
+// Access individual payment method
+$paymentMethod = $paymentMethods->first();
+echo $paymentMethod->type()?->value; // "card"
+```
+
 ### Product & Price Management
 
 ```php
