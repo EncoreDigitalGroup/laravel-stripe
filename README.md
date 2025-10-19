@@ -35,8 +35,8 @@ The package will automatically register its service provider with Laravel's auto
 Configure your Stripe secret key in `.env`:
 
 ```env
+STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 Then add the following to your `services.php` config file:
@@ -192,17 +192,17 @@ $updated = Stripe::customer()
 ### Product & Price Management
 
 ```php
-use EncoreDigitalGroup\Stripe\Objects\Product\{StripeProduct, StripePrice, StripeRecurring};
+use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\{PriceType, RecurringInterval};
 
 // Create product
-$product = StripeProduct::make()
+$product = Stripe::product()
     ->withName('Premium Subscription')
     ->withDescription('Access to all premium features')
     ->save();
 
 // Create recurring price with strongly-typed recurring object
-$price = StripePrice::make()
+$price = Stripe::price()
     ->withProduct($product->id())
     ->withCurrency('usd')
     ->withUnitAmount(2999) // $29.99
@@ -213,16 +213,6 @@ $price = StripePrice::make()
             ->withIntervalCount(1)
     )
     ->save();
-
-// Archive product (soft delete)
-$archived = StripeProduct::make()
-    ->get('prod_123')
-    ->archive();
-
-// Reactivate product
-$active = StripeProduct::make()
-    ->get('prod_123')
-    ->reactivate();
 ```
 
 ### Subscription Management
@@ -271,10 +261,11 @@ $resumed = Stripe::subscription()
 Plan complex subscription changes over time:
 
 ```php
-use EncoreDigitalGroup\Stripe\Objects\Subscription\{StripeSubscription, Schedules\StripeSubscriptionSchedule, Schedules\StripePhaseItem};
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\{StripeSubscriptionSchedule, StripePhaseItem};
 
 // Access schedule from subscription and add phases
-$subscription = StripeSubscription::make()->get('sub_123');
+$subscription = Stripe::subscription()->get('sub_123');
 
 $subscription->schedule()
     ->get()
@@ -323,6 +314,8 @@ $webhookSecret = $endpoint->secret();
 
 ### Webhook Processing
 
+#### Example Webhook Controller
+
 ```php
 use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
@@ -364,26 +357,6 @@ class StripeWebhookController extends Controller
         );
     }
 }
-```
-
-### Financial Connections
-
-Enable secure bank account connections:
-
-```php
-use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
-use Stripe\StripeClient;
-
-// Create financial connection session
-$stripe = app(StripeClient::class);
-
-$connection = StripeFinancialConnection::make()
-    ->withAccountHolder(['type' => 'customer', 'customer' => 'cus_123'])
-    ->withPermissions(['transactions', 'payment_method']);
-
-$session = $stripe->financialConnections->sessions->create(
-    $connection->toArray()
-);
 ```
 
 ## Testing
