@@ -9,9 +9,9 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
-use EncoreDigitalGroup\Stripe\Support\HasMetadata;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 
 class StripePaymentIntentWebhookData implements IWebhookData

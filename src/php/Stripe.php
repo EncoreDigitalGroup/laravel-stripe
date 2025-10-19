@@ -10,8 +10,8 @@ namespace EncoreDigitalGroup\Stripe;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
-use EncoreDigitalGroup\Stripe\Support\HasStripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Stripe\StripeClient;
 
 class Stripe

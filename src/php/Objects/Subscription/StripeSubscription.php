@@ -15,7 +15,7 @@ use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Subscription;
 

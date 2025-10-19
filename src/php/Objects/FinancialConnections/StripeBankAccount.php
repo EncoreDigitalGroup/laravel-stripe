@@ -9,7 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 
 class StripeBankAccount

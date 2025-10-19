@@ -17,7 +17,7 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Price;
@@ -284,7 +284,7 @@ class StripePrice
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers" => $this->tiers?->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->all(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
@@ -381,7 +381,7 @@ class StripePrice
     }
 
     /**
-     * @param  Collection<StripeProductTier>  $tiers
+     * @param Collection<StripeProductTier> $tiers
      */
     public function withTiers(Collection $tiers): self
     {

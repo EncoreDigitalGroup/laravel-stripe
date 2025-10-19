@@ -12,10 +12,10 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\IWebhookData;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripePaymentIntentWebhookData;
-use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
-use EncoreDigitalGroup\Stripe\Support\HasLivemode;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasLivemode;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Event as StripeEvent;
 
@@ -83,14 +83,14 @@ class StripeWebhookEvent
         return $this->type;
     }
 
-    public function withData(StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data): self
+    public function withData(IWebhookData|array|null $data): self
     {
         $this->data = $data;
 
         return $this;
     }
 
-    public function data(): StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null
+    public function data(): IWebhookData|array|null
     {
         return $this->data;
     }

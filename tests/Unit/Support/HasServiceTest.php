@@ -11,7 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Stripe;
-use EncoreDigitalGroup\Stripe\Support\HasService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasService;
 
 describe("HasService trait", function (): void {
     test("throws NotImplementedException when service method is not overridden", function (): void {
@@ -19,7 +19,7 @@ describe("HasService trait", function (): void {
             use HasService;
         };
 
-        expect(fn () => $instance->service())
+        expect(fn() => $instance->service())
             ->toThrow(NotImplementedException::class);
     });
 
