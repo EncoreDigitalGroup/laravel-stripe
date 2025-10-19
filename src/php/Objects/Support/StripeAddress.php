@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use PHPGenesis\Common\Traits\HasMake;
+use Stripe\StripeObject;
 
 class StripeAddress
 {
@@ -20,6 +21,32 @@ class StripeAddress
     private ?string $state = null;
     private ?string $postalCode = null;
     private ?string $country = null;
+
+    public static function fromStripeObject(StripeObject $stripeAddress): StripeAddress
+    {
+        $address = StripeAddress::make();
+
+        if ($stripeAddress->line1 ?? null) {
+            $address = $address->withLine1($stripeAddress->line1);
+        }
+        if ($stripeAddress->line2 ?? null) {
+            $address = $address->withLine2($stripeAddress->line2);
+        }
+        if ($stripeAddress->city ?? null) {
+            $address = $address->withCity($stripeAddress->city);
+        }
+        if ($stripeAddress->state ?? null) {
+            $address = $address->withState($stripeAddress->state);
+        }
+        if ($stripeAddress->postal_code ?? null) {
+            $address = $address->withPostalCode($stripeAddress->postal_code);
+        }
+        if ($stripeAddress->country ?? null) {
+            return $address->withCountry($stripeAddress->country);
+        }
+
+        return $address;
+    }
 
     public function toArray(): array
     {

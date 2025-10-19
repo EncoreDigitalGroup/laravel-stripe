@@ -51,7 +51,7 @@ class StripeCustomer
         if (isset($stripeCustomer->address)) {
             /** @var StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
-            $instance = $instance->withAddress(self::extractAddress($stripeAddress));
+            $instance = $instance->withAddress(StripeAddress::fromStripeObject($stripeAddress));
         }
 
         if ($stripeCustomer->description ?? null) {
@@ -83,39 +83,13 @@ class StripeCustomer
         return $instance;
     }
 
-    private static function extractAddress(StripeObject $stripeAddress): StripeAddress
-    {
-        $address = StripeAddress::make();
-
-        if ($stripeAddress->line1 ?? null) {
-            $address = $address->withLine1($stripeAddress->line1);
-        }
-        if ($stripeAddress->line2 ?? null) {
-            $address = $address->withLine2($stripeAddress->line2);
-        }
-        if ($stripeAddress->city ?? null) {
-            $address = $address->withCity($stripeAddress->city);
-        }
-        if ($stripeAddress->state ?? null) {
-            $address = $address->withState($stripeAddress->state);
-        }
-        if ($stripeAddress->postal_code ?? null) {
-            $address = $address->withPostalCode($stripeAddress->postal_code);
-        }
-        if ($stripeAddress->country ?? null) {
-            return $address->withCountry($stripeAddress->country);
-        }
-
-        return $address;
-    }
-
     private static function extractShipping(StripeObject $stripeShipping): ?StripeShipping
     {
         $shippingAddress = null;
         if (isset($stripeShipping->address)) {
             /** @var StripeObject $shippingAddressObj */
             $shippingAddressObj = $stripeShipping->address;
-            $shippingAddress = self::extractAddress($shippingAddressObj);
+            $shippingAddress = StripeAddress::fromStripeObject($shippingAddressObj);
         }
 
         // Only create shipping if we have the required fields (address and name)
