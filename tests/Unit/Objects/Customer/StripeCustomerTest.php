@@ -54,7 +54,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(ClassPropertyNullException::class);
     });
 
@@ -70,7 +70,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(VariableNullException::class);
     });
 
