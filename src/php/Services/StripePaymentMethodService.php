@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Services;
 
+use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
@@ -42,9 +43,12 @@ class StripePaymentMethodService
      *
      * @throws ApiErrorException
      */
-    public function getAllForCustomer(string $customerId): Collection
+    public function getAllForCustomer(string $customerId, PaymentMethodType $paymentMethodType = PaymentMethodType::Card): Collection
     {
-        return $this->list(["customer" => $customerId]);
+        return $this->list([
+            "customer" => $customerId,
+            "type" => $paymentMethodType->value,
+        ]);
     }
 
     /** @throws ApiErrorException */
@@ -87,6 +91,6 @@ class StripePaymentMethodService
         $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
 
         return collect($stripePaymentMethods->data)
-            ->map(fn ($stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
+            ->map(fn($stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
     }
 }
