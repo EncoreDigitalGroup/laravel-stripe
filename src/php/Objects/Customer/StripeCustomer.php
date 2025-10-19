@@ -13,6 +13,8 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Support\HasGet;
+use EncoreDigitalGroup\Stripe\Support\HasSave;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Customer;
@@ -21,6 +23,8 @@ use Stripe\StripeObject;
 class StripeCustomer
 {
     use HasMake;
+    use HasSave;
+    use HasGet;
 
     private ?string $id = null;
     private ?StripeAddress $address = null;
@@ -148,16 +152,6 @@ class StripeCustomer
         ];
 
         return Arr::whereNotNull($array);
-    }
-
-    public function get(string $customerId): self
-    {
-        return $this->service()->get($customerId);
-    }
-
-    public function save(): self
-    {
-        return is_null($this->id) ? $this->service()->create($this) : $this->service()->update($this->id, $this);
     }
 
     // Fluent setters
