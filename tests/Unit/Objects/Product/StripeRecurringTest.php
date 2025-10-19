@@ -22,11 +22,11 @@ describe("StripeRecurring", function (): void {
 
         expect($recurring)
             ->toBeInstanceOf(StripeRecurring::class)
-            ->and($recurring->interval)->toBe(RecurringInterval::Month)
-            ->and($recurring->intervalCount)->toBe(1)
-            ->and($recurring->trialPeriodDays)->toBe(14)
-            ->and($recurring->usageType)->toBe(RecurringUsageType::Licensed)
-            ->and($recurring->aggregateUsage)->toBe(RecurringAggregateUsage::Sum);
+            ->and($recurring->interval())->toBe(RecurringInterval::Month)
+            ->and($recurring->intervalCount())->toBe(1)
+            ->and($recurring->trialPeriodDays())->toBe(14)
+            ->and($recurring->usageType())->toBe(RecurringUsageType::Licensed)
+            ->and($recurring->aggregateUsage())->toBe(RecurringAggregateUsage::Sum);
     });
 
     test("can create StripeRecurring with minimal parameters", function (): void {
@@ -36,11 +36,11 @@ describe("StripeRecurring", function (): void {
 
         expect($recurring)
             ->toBeInstanceOf(StripeRecurring::class)
-            ->and($recurring->interval)->toBe(RecurringInterval::Year)
-            ->and($recurring->intervalCount)->toBeNull()
-            ->and($recurring->trialPeriodDays)->toBeNull()
-            ->and($recurring->usageType)->toBeNull()
-            ->and($recurring->aggregateUsage)->toBeNull();
+            ->and($recurring->interval())->toBe(RecurringInterval::Year)
+            ->and($recurring->intervalCount())->toBeNull()
+            ->and($recurring->trialPeriodDays())->toBeNull()
+            ->and($recurring->usageType())->toBeNull()
+            ->and($recurring->aggregateUsage())->toBeNull();
     });
 
     test("can create StripeRecurring for metered billing", function (): void {
@@ -53,11 +53,11 @@ describe("StripeRecurring", function (): void {
 
         expect($recurring)
             ->toBeInstanceOf(StripeRecurring::class)
-            ->and($recurring->interval)->toBe(RecurringInterval::Month)
-            ->and($recurring->intervalCount)->toBe(1)
-            ->and($recurring->usageType)->toBe(RecurringUsageType::Metered)
-            ->and($recurring->aggregateUsage)->toBe(RecurringAggregateUsage::Max)
-            ->and($recurring->trialPeriodDays)->toBeNull();
+            ->and($recurring->interval())->toBe(RecurringInterval::Month)
+            ->and($recurring->intervalCount())->toBe(1)
+            ->and($recurring->usageType())->toBe(RecurringUsageType::Metered)
+            ->and($recurring->aggregateUsage())->toBe(RecurringAggregateUsage::Max)
+            ->and($recurring->trialPeriodDays())->toBeNull();
     });
 
     test("toArray returns correct structure", function (): void {

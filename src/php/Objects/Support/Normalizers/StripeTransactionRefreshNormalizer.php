@@ -22,10 +22,10 @@ class StripeTransactionRefreshNormalizer extends AbstractNormalizer implements D
         }
 
         return [
-            "id" => $data->id,
-            "lastAttemptedAt" => $data->lastAttemptedAt,
-            "nextRefreshAvailableAt" => $data->nextRefreshAvailableAt,
-            "status" => $data->status,
+            "id" => $data->id(),
+            "lastAttemptedAt" => $data->lastAttemptedAt(),
+            "nextRefreshAvailableAt" => $data->nextRefreshAvailableAt(),
+            "status" => $data->status(),
         ];
     }
 
@@ -39,18 +39,27 @@ class StripeTransactionRefreshNormalizer extends AbstractNormalizer implements D
             throw new InvalidArgumentException("Data must be an array for denormalization");
         }
 
-        $transactionRefresh = new StripeTransactionRefresh;
-        $transactionRefresh->id = $data["id"] ?? null;
+        $transactionRefresh = StripeTransactionRefresh::make();
+
+        if (isset($data["id"])) {
+            $transactionRefresh = $transactionRefresh->withId($data["id"]);
+        }
 
         if (isset($data["next_refresh_available_at"])) {
-            $transactionRefresh->nextRefreshAvailableAt = CarbonImmutable::createFromTimestamp($data["next_refresh_available_at"]);
+            $transactionRefresh = $transactionRefresh->withNextRefreshAvailableAt(
+                CarbonImmutable::createFromTimestamp($data["next_refresh_available_at"])
+            );
         }
 
         if (isset($data["last_attempted_at"])) {
-            $transactionRefresh->lastAttemptedAt = CarbonImmutable::createFromTimestamp($data["last_attempted_at"]);
+            $transactionRefresh = $transactionRefresh->withLastAttemptedAt(
+                CarbonImmutable::createFromTimestamp($data["last_attempted_at"])
+            );
         }
 
-        $transactionRefresh->status = $data["status"] ?? null;
+        if (isset($data["status"])) {
+            return $transactionRefresh->withStatus($data["status"]);
+        }
 
         return $transactionRefresh;
     }

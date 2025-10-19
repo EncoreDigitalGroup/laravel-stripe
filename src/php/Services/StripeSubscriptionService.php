@@ -8,9 +8,10 @@
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
-use EncoreDigitalGroup\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Subscription;
 
 /** @internal */
 class StripeSubscriptionService
@@ -35,6 +36,28 @@ class StripeSubscriptionService
         $stripeSubscription = $this->stripe->subscriptions->create($data);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
+    }
+
+    /**
+     * @return Collection<StripeSubscription>
+     *
+     * @throws ApiErrorException
+     */
+    public function getAllForCustomer(string $customerId): Collection
+    {
+        $subscriptions = $this->stripe->customers->retrieve($customerId)->subscriptions;
+        $subscriptionDTOs = new Collection;
+
+        if (is_null($subscriptions)) {
+            return $subscriptionDTOs;
+        }
+
+        /** @var Subscription $subscription */
+        foreach ($subscriptions as $subscription) {
+            $subscriptionDTOs->add(StripeSubscription::fromStripeObject($subscription));
+        }
+
+        return $subscriptionDTOs;
     }
 
     /** @throws ApiErrorException */
@@ -96,7 +119,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -110,6 +133,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn ($stripeSubscription): \EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn ($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

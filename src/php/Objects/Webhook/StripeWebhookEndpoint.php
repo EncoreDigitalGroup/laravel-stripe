@@ -10,19 +10,23 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
-use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
-use EncoreDigitalGroup\Stripe\Support\HasLivemode;
-use EncoreDigitalGroup\Stripe\Support\HasMetadata;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasLivemode;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\WebhookEndpoint;
 
 class StripeWebhookEndpoint
 {
+    use HasGet;
     use HasIdentifier;
     use HasLivemode;
     use HasMake;
     use HasMetadata;
+    use HasSave;
     use HasTimestamps;
 
     private ?string $url = null;
@@ -87,6 +91,11 @@ class StripeWebhookEndpoint
         }
 
         return $instance;
+    }
+
+    public function service(): StripeWebhookEndpointService
+    {
+        return app(StripeWebhookEndpointService::class);
     }
 
     public function toArray(): array

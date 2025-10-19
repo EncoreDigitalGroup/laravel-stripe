@@ -11,21 +11,20 @@ use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefr
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeBankAccountNormalizer;
 
 test("can normalize StripeBankAccount to array", function (): void {
-    $transactionRefresh = new StripeTransactionRefresh;
-    $transactionRefresh->id = "txn_ref_123";
+    $transactionRefresh = StripeTransactionRefresh::make()->withId("txn_ref_123");
 
-    $bankAccount = new StripeBankAccount;
-    $bankAccount->id = "ba_123";
-    $bankAccount->category = "cash";
-    $bankAccount->created = CarbonImmutable::createFromTimestamp(1234567890);
-    $bankAccount->displayName = "Test Bank";
-    $bankAccount->institutionName = "Test Institution";
-    $bankAccount->last4 = "1234";
-    $bankAccount->liveMode = true;
-    $bankAccount->permissions = ["transactions"];
-    $bankAccount->subscriptions = ["sub_1"];
-    $bankAccount->supportedPaymentMethodTypes = ["us_bank_account"];
-    $bankAccount->transactionRefresh = $transactionRefresh;
+    $bankAccount = StripeBankAccount::make()
+        ->withId("ba_123")
+        ->withCategory("cash")
+        ->withCreated(CarbonImmutable::createFromTimestamp(1234567890))
+        ->withDisplayName("Test Bank")
+        ->withInstitutionName("Test Institution")
+        ->withLast4("1234")
+        ->withLiveMode(true)
+        ->withPermissions(["transactions"])
+        ->withSubscriptions(["sub_1"])
+        ->withSupportedPaymentMethodTypes(["us_bank_account"])
+        ->withTransactionRefresh($transactionRefresh);
 
     $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->normalize($bankAccount);
@@ -69,11 +68,11 @@ test("can denormalize array to StripeBankAccount", function (): void {
     $result = $normalizer->denormalize($data, StripeBankAccount::class);
 
     expect($result)->toBeInstanceOf(StripeBankAccount::class)
-        ->and($result->id)->toBe("ba_456")
-        ->and($result->category)->toBe("credit")
-        ->and($result->displayName)->toBe("My Bank")
-        ->and($result->last4)->toBe("5678")
-        ->and($result->permissions)->toBe(["balances", "transactions"]);
+        ->and($result->id())->toBe("ba_456")
+        ->and($result->category())->toBe("credit")
+        ->and($result->displayName())->toBe("My Bank")
+        ->and($result->last4())->toBe("5678")
+        ->and($result->permissions())->toBe(["balances", "transactions"]);
 });
 
 test("denormalize handles transaction_refresh", function (): void {
@@ -90,14 +89,13 @@ test("denormalize handles transaction_refresh", function (): void {
     $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->denormalize($data, StripeBankAccount::class);
 
-    expect($result->transactionRefresh)->toBeInstanceOf(StripeTransactionRefresh::class)
-        ->and($result->transactionRefresh->id)->toBe("txn_ref_789")
-        ->and($result->transactionRefresh->status)->toBe("pending");
+    expect($result->transactionRefresh())->toBeInstanceOf(StripeTransactionRefresh::class)
+        ->and($result->transactionRefresh()->id())->toBe("txn_ref_789")
+        ->and($result->transactionRefresh()->status())->toBe("pending");
 });
 
 test("denormalize returns object if already correct type", function (): void {
-    $bankAccount = new StripeBankAccount;
-    $bankAccount->id = "ba_existing";
+    $bankAccount = StripeBankAccount::make()->withId("ba_existing");
 
     $normalizer = new StripeBankAccountNormalizer;
     $result = $normalizer->denormalize($bankAccount, StripeBankAccount::class);
@@ -108,13 +106,13 @@ test("denormalize returns object if already correct type", function (): void {
 test("denormalize throws exception for non-array data", function (): void {
     $normalizer = new StripeBankAccountNormalizer;
 
-    expect(fn (): \EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
+    expect(fn (): StripeBankAccount => $normalizer->denormalize("invalid", StripeBankAccount::class))
         ->toThrow(InvalidArgumentException::class, "Data must be an array for denormalization");
 });
 
 test("supports normalization for StripeBankAccount", function (): void {
     $normalizer = new StripeBankAccountNormalizer;
-    $bankAccount = new StripeBankAccount;
+    $bankAccount = StripeBankAccount::make();
 
     expect($normalizer->supportsNormalization($bankAccount))->toBeTrue()
         ->and($normalizer->supportsNormalization(new stdClass))->toBeFalse();

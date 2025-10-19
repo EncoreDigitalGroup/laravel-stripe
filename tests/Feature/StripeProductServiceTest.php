@@ -31,9 +31,9 @@ test("can create a product", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($result->id)->toBe("prod_test123")
-        ->and($result->name)->toBe("Test Product")
-        ->and($result->description)->toBe("A test product")
+        ->and($result->id())->toBe("prod_test123")
+        ->and($result->name())->toBe("Test Product")
+        ->and($result->description())->toBe("A test product")
         ->and($fake)->toHaveCalledStripeMethod(StripeMethod::ProductsCreate);
 
 });
@@ -51,8 +51,8 @@ test("can retrieve a product", function (): void {
 
     expect($product)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($product->id)->toBe("prod_existing")
-        ->and($product->name)->toBe("Existing Product")
+        ->and($product->id())->toBe("prod_existing")
+        ->and($product->name())->toBe("Existing Product")
         ->and($fake)->toHaveCalledStripeMethod("products.retrieve");
 
 });
@@ -76,8 +76,8 @@ test("can update a product", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($result->name)->toBe("Updated Product")
-        ->and($result->description)->toBe("Updated description")
+        ->and($result->name())->toBe("Updated Product")
+        ->and($result->description())->toBe("Updated description")
         ->and($fake)->toHaveCalledStripeMethod("products.update");
 
 });
@@ -107,7 +107,7 @@ test("can archive a product", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($result->active)->toBeFalse()
+        ->and($result->active())->toBeFalse()
         ->and($fake)->toHaveCalledStripeMethod("products.update");
 });
 
@@ -124,7 +124,7 @@ test("can reactivate a product", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripeProduct::class)
-        ->and($result->active)->toBeTrue()
+        ->and($result->active())->toBeTrue()
         ->and($fake)->toHaveCalledStripeMethod("products.update");
 });
 
@@ -143,7 +143,7 @@ test("can list products", function (): void {
     expect($products)
         ->toHaveCount(3)
         ->and($products->first())->toBeInstanceOf(StripeProduct::class)
-        ->and($products->first()->id)->toBe("prod_1")
+        ->and($products->first()->id())->toBe("prod_1")
         ->and($fake)->toHaveCalledStripeMethod("products.all");
 });
 
@@ -160,7 +160,7 @@ test("can search products", function (): void {
     expect($products)
         ->toHaveCount(1)
         ->and($products->first())->toBeInstanceOf(StripeProduct::class)
-        ->and($products->first()->name)->toBe("Searchable Product")
+        ->and($products->first()->name())->toBe("Searchable Product")
         ->and($fake)->toHaveCalledStripeMethod("products.search");
 });
 

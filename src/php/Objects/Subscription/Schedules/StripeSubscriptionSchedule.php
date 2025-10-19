@@ -13,7 +13,9 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
@@ -21,7 +23,9 @@ use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
+    use HasGet;
     use HasMake;
+    use HasSave;
     use HasTimestamps;
 
     private ?string $id = null;
@@ -122,6 +126,11 @@ class StripeSubscriptionSchedule
         }
 
         return $instance;
+    }
+
+    public function service(): StripeSubscriptionScheduleService
+    {
+        return app(StripeSubscriptionScheduleService::class);
     }
 
     public function toArray(): array

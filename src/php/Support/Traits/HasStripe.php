@@ -5,12 +5,13 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Stripe\Support;
+namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use Stripe\StripeClient;
 
+/** @internal */
 trait HasStripe
 {
     protected StripeClient $stripe;

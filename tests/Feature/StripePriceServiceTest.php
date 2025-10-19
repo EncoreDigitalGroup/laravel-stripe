@@ -32,9 +32,9 @@ test("can create a price", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($result->id)->toBe("price_test123")
-        ->and($result->unitAmount)->toBe(2000)
-        ->and($result->currency)->toBe("usd")
+        ->and($result->id())->toBe("price_test123")
+        ->and($result->unitAmount())->toBe(2000)
+        ->and($result->currency())->toBe("usd")
         ->and($fake)->toHaveCalledStripeMethod(StripeMethod::PricesCreate);
 });
 
@@ -51,8 +51,8 @@ test("can retrieve a price", function (): void {
 
     expect($price)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($price->id)->toBe("price_existing")
-        ->and($price->unitAmount)->toBe(1500)
+        ->and($price->id())->toBe("price_existing")
+        ->and($price->unitAmount())->toBe(1500)
         ->and($fake)->toHaveCalledStripeMethod("prices.retrieve");
 });
 
@@ -75,7 +75,7 @@ test("can update a price with allowed fields", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($result->nickname)->toBe("Updated Nickname")
+        ->and($result->nickname())->toBe("Updated Nickname")
         ->and($fake)->toHaveCalledStripeMethod("prices.update");
 });
 
@@ -92,7 +92,7 @@ test("can archive a price", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($result->active)->toBeFalse()
+        ->and($result->active())->toBeFalse()
         ->and($fake)->toHaveCalledStripeMethod("prices.update");
 });
 
@@ -109,7 +109,7 @@ test("can reactivate a price", function (): void {
 
     expect($result)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($result->active)->toBeTrue()
+        ->and($result->active())->toBeTrue()
         ->and($fake)->toHaveCalledStripeMethod("prices.update");
 });
 
@@ -128,7 +128,7 @@ test("can list prices", function (): void {
     expect($prices)
         ->toHaveCount(3)
         ->and($prices->first())->toBeInstanceOf(StripePrice::class)
-        ->and($prices->first()->id)->toBe("price_1")
+        ->and($prices->first()->id())->toBe("price_1")
         ->and($fake)->toHaveCalledStripeMethod("prices.all");
 });
 
@@ -162,7 +162,7 @@ test("can search prices", function (): void {
     expect($prices)
         ->toHaveCount(1)
         ->and($prices->first())->toBeInstanceOf(StripePrice::class)
-        ->and($prices->first()->nickname)->toBe("Premium Plan")
+        ->and($prices->first()->nickname())->toBe("Premium Plan")
         ->and($fake)->toHaveCalledStripeMethod("prices.search");
 });
 
@@ -178,7 +178,7 @@ test("can get price by lookup key", function (): void {
 
     expect($price)
         ->toBeInstanceOf(StripePrice::class)
-        ->and($price->lookupKey)->toBe("premium_monthly");
+        ->and($price->lookupKey())->toBe("premium_monthly");
 
     $params = $fake->getCall("prices.all");
     expect($params)->toHaveKey("lookup_keys")

@@ -15,8 +15,7 @@ test("can normalize StripeBankAccountConnectedPayload to array", function (): vo
     $securityKeys->publicKey = "pub_key_123";
     $securityKeys->privateKey = "priv_key_123";
 
-    $bankAccount = new StripeBankAccount;
-    $bankAccount->id = "ba_123";
+    $bankAccount = StripeBankAccount::make()->withId("ba_123");
 
     $payload = new StripeBankAccountConnectedPayload;
     $payload->setStripeCustomerId("cus_123");

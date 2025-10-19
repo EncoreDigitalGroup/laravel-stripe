@@ -8,7 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
-use EncoreDigitalGroup\Stripe\Support\HasStripe;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 
 /** @internal */
 class StripeSubscriptionScheduleService

@@ -9,12 +9,12 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
-use EncoreDigitalGroup\Stripe\Support\HasMetadata;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 
-class StripeInvoiceWebhookData
+class StripeInvoiceWebhookData implements IWebhookData
 {
     use HasIdentifier;
     use HasMake;
@@ -44,33 +44,33 @@ class StripeInvoiceWebhookData
     /**
      * Create a StripeInvoiceWebhookData instance from a Stripe Invoice object
      */
-    public static function fromStripeObject(object $invoice): self
+    public static function fromStripeObject(object $stripeObject): self
     {
         $lines = [];
-        if (isset($invoice->lines->data) && is_array($invoice->lines->data)) {
-            foreach ($invoice->lines->data as $lineItem) {
+        if (isset($stripeObject->lines->data) && is_array($stripeObject->lines->data)) {
+            foreach ($stripeObject->lines->data as $lineItem) {
                 $lines[] = StripeInvoiceLineItemWebhookData::fromStripeObject($lineItem);
             }
         }
 
         return self::make()
-            ->withId($invoice->id ?? null)
-            ->withNumber($invoice->number ?? null)
-            ->withSubscription($invoice->subscription ?? null)
-            ->withPaymentIntent($invoice->payment_intent ?? null)
-            ->withCustomer($invoice->customer ?? null)
-            ->withSubtotal($invoice->subtotal ?? null)
-            ->withTax($invoice->tax ?? null)
-            ->withTotal($invoice->total ?? null)
-            ->withAmountDue($invoice->amount_due ?? null)
-            ->withAmountPaid($invoice->amount_paid ?? null)
-            ->withAmountRemaining($invoice->amount_remaining ?? null)
-            ->withStatus($invoice->status ?? null)
-            ->withCurrency($invoice->currency ?? null)
-            ->withCreated(self::timestampToCarbon($invoice->created ?? null))
-            ->withDueDate(self::timestampToCarbon($invoice->due_date ?? null))
+            ->withId($stripeObject->id ?? null)
+            ->withNumber($stripeObject->number ?? null)
+            ->withSubscription($stripeObject->subscription ?? null)
+            ->withPaymentIntent($stripeObject->payment_intent ?? null)
+            ->withCustomer($stripeObject->customer ?? null)
+            ->withSubtotal($stripeObject->subtotal ?? null)
+            ->withTax($stripeObject->tax ?? null)
+            ->withTotal($stripeObject->total ?? null)
+            ->withAmountDue($stripeObject->amount_due ?? null)
+            ->withAmountPaid($stripeObject->amount_paid ?? null)
+            ->withAmountRemaining($stripeObject->amount_remaining ?? null)
+            ->withStatus($stripeObject->status ?? null)
+            ->withCurrency($stripeObject->currency ?? null)
+            ->withCreated(self::timestampToCarbon($stripeObject->created ?? null))
+            ->withDueDate(self::timestampToCarbon($stripeObject->due_date ?? null))
             ->withLines($lines)
-            ->withMetadata(self::extractMetadata($invoice));
+            ->withMetadata(self::extractMetadata($stripeObject));
     }
 
     public function withNumber(?string $number): self

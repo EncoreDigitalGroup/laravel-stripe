@@ -8,11 +8,11 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
-use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
-use EncoreDigitalGroup\Stripe\Support\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
 use PHPGenesis\Common\Traits\HasMake;
 
-class StripeInvoiceLineItemWebhookData
+class StripeInvoiceLineItemWebhookData implements IWebhookData
 {
     use HasIdentifier;
     use HasMake;

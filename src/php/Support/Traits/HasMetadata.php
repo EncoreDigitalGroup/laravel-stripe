@@ -5,8 +5,9 @@
  * All Right Reserved.
  */
 
-namespace EncoreDigitalGroup\Stripe\Support;
+namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
+/** @internal */
 trait HasMetadata
 {
     private ?array $metadata = null;

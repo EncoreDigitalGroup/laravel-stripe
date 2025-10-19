@@ -14,19 +14,43 @@ class StripeFinancialConnection
 {
     use HasMake;
 
-    public function __construct(
-        public StripeCustomer $customer,
-        public array $permissions = ["transactions"]
-    ) {}
+    private ?StripeCustomer $customer = null;
+    private array $permissions = [];
 
     public function toArray(): array
     {
         return [
             "account_holder" => [
                 "type" => "customer",
-                "customer" => $this->customer->id,
+                "customer" => $this->customer?->id(),
             ],
             "permissions" => $this->permissions,
         ];
+    }
+
+    // Fluent setters
+    public function withCustomer(StripeCustomer $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withPermissions(array $permissions): self
+    {
+        $this->permissions = $permissions;
+
+        return $this;
+    }
+
+    // Getter methods
+    public function customer(): ?StripeCustomer
+    {
+        return $this->customer;
+    }
+
+    public function permissions(): array
+    {
+        return $this->permissions;
     }
 }

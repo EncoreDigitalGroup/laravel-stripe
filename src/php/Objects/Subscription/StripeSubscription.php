@@ -15,12 +15,15 @@ use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
+use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Subscription;
 
 class StripeSubscription
 {
+    use HasGet;
     use HasMake;
     use HasTimestamps;
 
@@ -33,7 +36,10 @@ class StripeSubscription
     private ?CarbonImmutable $canceledAt = null;
     private ?CarbonImmutable $trialStart = null;
     private ?CarbonImmutable $trialEnd = null;
-    private ?array $items = null;
+
+    /** @var ?Collection<StripeSubscriptionItem> */
+    private ?Collection $items = null;
+
     private ?string $defaultPaymentMethod = null;
     private ?array $metadata = null;
     private ?string $currency = null;
@@ -72,30 +78,30 @@ class StripeSubscription
             $instance = $instance->withStatus($status);
         }
         $currentPeriodStart = self::timestampToCarbon($stripeSubscription->current_period_start ?? null);
-        if ($currentPeriodStart instanceof \Carbon\CarbonImmutable) {
+        if ($currentPeriodStart instanceof CarbonImmutable) {
             $instance = $instance->withCurrentPeriodStart($currentPeriodStart);
         }
         $currentPeriodEnd = self::timestampToCarbon($stripeSubscription->current_period_end ?? null);
-        if ($currentPeriodEnd instanceof \Carbon\CarbonImmutable) {
+        if ($currentPeriodEnd instanceof CarbonImmutable) {
             $instance = $instance->withCurrentPeriodEnd($currentPeriodEnd);
         }
         $cancelAt = self::timestampToCarbon($stripeSubscription->cancel_at ?? null);
-        if ($cancelAt instanceof \Carbon\CarbonImmutable) {
+        if ($cancelAt instanceof CarbonImmutable) {
             $instance = $instance->withCancelAt($cancelAt);
         }
         $canceledAt = self::timestampToCarbon($stripeSubscription->canceled_at ?? null);
-        if ($canceledAt instanceof \Carbon\CarbonImmutable) {
+        if ($canceledAt instanceof CarbonImmutable) {
             $instance = $instance->withCanceledAt($canceledAt);
         }
         $trialStart = self::timestampToCarbon($stripeSubscription->trial_start ?? null);
-        if ($trialStart instanceof \Carbon\CarbonImmutable) {
+        if ($trialStart instanceof CarbonImmutable) {
             $instance = $instance->withTrialStart($trialStart);
         }
         $trialEnd = self::timestampToCarbon($stripeSubscription->trial_end ?? null);
-        if ($trialEnd instanceof \Carbon\CarbonImmutable) {
+        if ($trialEnd instanceof CarbonImmutable) {
             $instance = $instance->withTrialEnd($trialEnd);
         }
-        if ($items !== null && $items !== []) {
+        if ($items instanceof \Illuminate\Support\Collection && $items->isNotEmpty()) {
             $instance = $instance->withItems($items);
         }
         if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
@@ -129,7 +135,7 @@ class StripeSubscription
         return $instance;
     }
 
-    private static function extractItems(Subscription $stripeSubscription): ?array
+    private static function extractItems(Subscription $stripeSubscription): ?Collection
     {
         if (!$stripeSubscription->items->data) {
             return null;
@@ -137,15 +143,24 @@ class StripeSubscription
 
         $items = [];
         foreach ($stripeSubscription->items->data as $item) {
-            $items[] = [
-                "id" => $item->id,
-                "price" => $item->price->id ?? null,
-                "quantity" => $item->quantity,
-                "metadata" => $item->metadata->toArray(),
-            ];
+            $subscriptionItem = StripeSubscriptionItem::make()->withId($item->id);
+
+            if ($item->quantity !== null) {
+                $subscriptionItem = $subscriptionItem->withQuantity($item->quantity);
+            }
+
+            if ($item->price->id ?? null) {
+                $subscriptionItem = $subscriptionItem->withPrice($item->price->id);
+            }
+
+            if (isset($item->metadata)) {
+                $subscriptionItem = $subscriptionItem->withMetadata($item->metadata->toArray());
+            }
+
+            $items[] = $subscriptionItem;
         }
 
-        return $items;
+        return collect($items);
     }
 
     private static function extractCustomerId(mixed $customer): string
@@ -238,8 +253,18 @@ class StripeSubscription
         return $this;
     }
 
+    public function service(): StripeSubscriptionService
+    {
+        return app(StripeSubscriptionService::class);
+    }
+
     public function toArray(): array
     {
+        $items = null;
+        if ($this->items instanceof \Illuminate\Support\Collection) {
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+        }
+
         $array = [
             "id" => $this->id,
             "customer" => $this->customer,
@@ -250,7 +275,7 @@ class StripeSubscription
             "canceled_at" => self::carbonToTimestamp($this->canceledAt),
             "trial_start" => self::carbonToTimestamp($this->trialStart),
             "trial_end" => self::carbonToTimestamp($this->trialEnd),
-            "items" => $this->items,
+            "items" => $items,
             "default_payment_method" => $this->defaultPaymentMethod,
             "metadata" => $this->metadata,
             "currency" => $this->currency,
@@ -265,13 +290,7 @@ class StripeSubscription
         return Arr::whereNotNull($array);
     }
 
-    public function get(string $subscriptionId): self
-    {
-        $service = app(StripeSubscriptionService::class);
-
-        return $service->get($subscriptionId);
-    }
-
+    /** This is custom as we are saving multiple objects which the HasSave trait does not cover. */
     public function save(): self
     {
         $service = app(StripeSubscriptionService::class);
@@ -281,7 +300,6 @@ class StripeSubscription
         // Save schedule changes if the schedule was accessed
         if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
             $savedSchedule = $this->subscriptionSchedule->save();
-            // Update the result's schedule cache with the saved schedule
             $result->subscriptionSchedule = $savedSchedule;
         }
 
@@ -299,7 +317,6 @@ class StripeSubscription
         return $this->subscriptionSchedule;
     }
 
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -363,7 +380,7 @@ class StripeSubscription
         return $this;
     }
 
-    public function withItems(array $items): self
+    public function withItems(Collection $items): self
     {
         $this->items = $items;
 
@@ -433,7 +450,6 @@ class StripeSubscription
         return $this;
     }
 
-    // Getter methods
     public function id(): ?string
     {
         return $this->id;
@@ -479,7 +495,7 @@ class StripeSubscription
         return $this->trialEnd;
     }
 
-    public function items(): ?array
+    public function items(): ?Collection
     {
         return $this->items;
     }

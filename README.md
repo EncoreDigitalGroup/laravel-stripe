@@ -1,4 +1,4 @@
-# Laravel Stripe
+# Stripe for Laravel
 
 A clean, type-safe PHP interface for the Stripe API designed specifically for Laravel applications. This library wraps the Stripe PHP SDK with strongly-typed objects,
 service classes, and enums while maintaining full compatibility with Laravel 11-12.
@@ -12,8 +12,15 @@ The official Stripe PHP SDK, while powerful, returns dynamic objects and arrays 
 - **Developer Experience**: Rich IDE autocompletion, type hints, and inline documentation
 - **Consistent API**: Clean, predictable methods that follow Laravel conventions
 - **Comprehensive Testing**: Built-in testing utilities that fake Stripe API calls without network requests
+- **Stripe SDK Escape Hatch**: Direct access to the Stripe SDK for when you need to do something super custom, that this SDK does not directly support.
 
-## Quick Start
+## Requirements
+
+- PHP 8.3+
+- Laravel 11 or 12
+- Stripe PHP SDK ^18.0
+
+## Installation
 
 Install via Composer:
 
@@ -21,10 +28,39 @@ Install via Composer:
 composer require encoredigitalgroup/stripe
 ```
 
+The package will automatically register its service provider with Laravel's auto-discovery feature.
+
+## Quick Start
+
 Configure your Stripe secret key in `.env`:
 
 ```env
+STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
+```
+
+Then add the following to your `services.php` config file:
+
+```php
+
+[
+    "stripe" => [
+        "public_key" => env("STRIPE_PUBLIC_KEY"),
+        "secret_key" => env("STRIPE_SECRET_KEY"),
+    ]
+]
+
+```
+
+You may also configure the public and secret keys directly if you wish:
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use Illuminate\Support\Facades\Config;
+
+Stripe::config()->authentication->publicKey = Config::get("your.custom.config.key.public")
+Stripe::config()->authentication->private = Config::get("your.custom.config.key.secret")
+
 ```
 
 Start using the library:
@@ -33,110 +69,345 @@ Start using the library:
 use EncoreDigitalGroup\Stripe\Stripe;
 
 // Create a customer
-$customer = Stripe::customers()->create(Stripe::customer(
-    email: 'customer@example.com',
-    name: 'John Doe'
-));
+$customer = Stripe::customer()
+    ->withEmail('customer@example.com')
+    ->withName('John Doe')
+    ->save();
 
-echo $customer->id; // cus_...
+echo $customer->id(); // cus_...
 ```
 
 ## Core Features
 
-### Services
+### Type-Safe Objects with Fluent API
 
-Clean service methods accessible via the Stripe facade:
+All objects use a fluent API pattern with private properties and chainable `withXXX()` methods. Access DTOs through the `Stripe` facade:
 
-- `Stripe::customers()` - Create, update, retrieve, delete, list, and search customers
-- `Stripe::products()` - Manage products with archive/reactivate functionality
-- `Stripe::prices()` - Handle pricing with support for recurring billing, tiers, and complex configurations
-- `Stripe::subscriptions()` - Full subscription lifecycle management
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Objects\Product\{StripeProduct, StripePrice, StripeRecurring};
+use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
 
-### Type-Safe Objects
+// Customer with full details
+$customer = Stripe::customer()
+    ->withEmail('customer@example.com')
+    ->withName('John Doe')
+    ->withPhone('+1-555-123-4567')
+    ->withAddress(
+        StripeAddress::make()
+            ->withLine1('123 Main St')
+            ->withCity('San Francisco')
+            ->withState('CA')
+            ->withPostalCode('94105')
+            ->withCountry('US')
+    );
 
-Immutable objects created via factory methods:
+// Subscription with trial
+$subscription = Stripe::subscription()
+    ->withCustomer('cus_123')
+    ->withItems(collect([
+        StripeSubscriptionItem::make()
+            ->withPrice('price_monthly')
+            ->withQuantity(1)
+    ]))
+    ->withTrialEnd(now()->addDays(14));
 
-- `Stripe::customer()` - Customer objects with address and shipping support
-- `Stripe::product()` - Product objects with metadata, images, and package dimensions
-- `Stripe::price()` - Price objects with complex recurring billing, tiers, and custom unit amounts
-- `Stripe::address()` - Address objects for billing and shipping
+// Webhook endpoint
+$endpoint = Stripe::webhook()
+    ->withUrl('https://myapp.com/webhooks/stripe')
+    ->withEnabledEvents(['customer.created', 'invoice.paid'])
+    ->withDescription('Production webhook');
+```
 
-### Enums
+### Enums for Type Safety
 
-String-backed enums for Stripe constants:
+String-backed enums prevent typos and provide IDE autocompletion:
 
-- `RecurringInterval` (Month, Year, Day, Week)
-- `PriceType` (OneTime, Recurring)
-- `SubscriptionStatus` (Active, Canceled, Incomplete, etc.)
-- And many more for type-safe API interactions
+```php
+use EncoreDigitalGroup\Stripe\Enums\{
+    RecurringInterval,
+    PriceType,
+    SubscriptionStatus,
+    CollectionMethod,
+    ProrationBehavior
+};
 
-### Testing Infrastructure
+// All enum cases use PascalCase
+RecurringInterval::Month
+RecurringInterval::Year
+PriceType::Recurring
+SubscriptionStatus::Active
+```
 
-Comprehensive testing utilities:
+### Comprehensive Testing Infrastructure
 
-- `Stripe::fake()` for mocking API calls
-- `StripeFixtures` for realistic test data
-- Custom PHPUnit expectations for asserting API calls
-- No network requests in tests
+Test your Stripe integration without making real API calls:
 
-## Requirements
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\{StripeFixtures, StripeMethod};
 
-- PHP 8.3+
-- Laravel 11 or 12
-- Stripe PHP SDK ^18.0
+test('can create a customer', function () {
+    // Set up fake responses
+    $fake = Stripe::fake([
+        StripeMethod::CustomersCreate->value => StripeFixtures::customer([
+            'id' => 'cus_test123',
+            'email' => 'test@example.com'
+        ])
+    ]);
 
-## Documentation
+    // Execute code under test
+    $customer = Stripe::customer()
+        ->withEmail('test@example.com')
+        ->withName('Test Customer')
+        ->save();
 
-**[=� Read the Full Documentation �](docs/)**
+    // Assert results
+    expect($customer->id())->toBe('cus_test123')
+        ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersCreate);
+});
+```
 
-The documentation is organized as a coherent story that will take you from basic concepts to advanced usage:
+## Common Use Cases
 
-1. **[Getting Started](docs/01-getting-started.md)** - Installation, configuration, and basic concepts
-2. **[Customers](docs/02-customers.md)** - Everything about customer management
-3. **[Products](docs/03-products.md)** - Product creation, management, and lifecycle
-4. **[Prices](docs/04-prices.md)** - Complex pricing, recurring billing, and tiers
-5. **[Testing](docs/05-testing.md)** - Comprehensive testing strategies and utilities
-6. **[Architecture](docs/06-architecture.md)** - Deep dive into library design and patterns
+### Customer Management
 
-## Example: Complete E-commerce Flow
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+
+// Create customer
+$customer = Stripe::customer()
+    ->withEmail('customer@example.com')
+    ->withName('Jane Smith')
+    ->withMetadata(['user_id' => '12345'])
+    ->save();
+
+// Retrieve customer
+$customer = Stripe::customer()->get('cus_123');
+
+// Update customer
+$updated = Stripe::customer()
+    ->get('cus_123')
+    ->withName('Jane Doe')
+    ->save();
+```
+
+### Product & Price Management
 
 ```php
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Enums\{PriceType, RecurringInterval};
 
-// 1. Create a customer
-$customer = Stripe::customers()->create(Stripe::customer(
-    email: 'customer@example.com',
-    name: 'John Doe'
-));
+// Create product
+$product = Stripe::product()
+    ->withName('Premium Subscription')
+    ->withDescription('Access to all premium features')
+    ->save();
 
-// 2. Create a product
-$product = Stripe::products()->create(Stripe::product(
-    name: 'Premium Subscription',
-    description: 'Monthly premium features'
-));
+// Create recurring price with strongly-typed recurring object
+$price = Stripe::price()
+    ->withProduct($product->id())
+    ->withCurrency('usd')
+    ->withUnitAmount(2999) // $29.99
+    ->withType(PriceType::Recurring)
+    ->withRecurring(
+        StripeRecurring::make()
+            ->withInterval(RecurringInterval::Month)
+            ->withIntervalCount(1)
+    )
+    ->save();
+```
 
-// 3. Create a recurring price
-$price = Stripe::prices()->create(Stripe::price(
-    product: $product->id,
-    currency: 'usd',
-    unitAmount: 2999, // $29.99
-    type: PriceType::Recurring,
-    recurring: [
-        'interval' => RecurringInterval::Month,
-        'interval_count' => 1
-    ]
-));
+### Subscription Management
 
-echo "Created customer {$customer->id} with product {$product->id} priced at {$price->id}";
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscriptionItem;
+
+// Create subscription
+$subscription = Stripe::subscription()
+    ->withCustomer('cus_123')
+    ->withItems(collect([
+        StripeSubscriptionItem::make()
+            ->withPrice('price_monthly')
+            ->withQuantity(1)
+    ]))
+    ->withMetadata(['plan' => 'professional'])
+    ->save();
+
+// Update subscription (upgrade/downgrade)
+$updated = Stripe::subscription()
+    ->get('sub_123')
+    ->withItems(collect([
+        StripeSubscriptionItem::make()->withPrice('price_premium')
+    ]))
+    ->withProrationBehavior(ProrationBehavior::CreateProrations)
+    ->save();
+
+// Cancel subscription at period end
+$canceled = Stripe::subscription()
+    ->get('sub_123')
+    ->cancelAtPeriodEnd()
+    ->save();
+
+// Cancel immediately
+$canceled = Stripe::subscription()
+    ->get('sub_123')
+    ->cancelImmediately()
+    ->save();
+
+// Resume canceled subscription
+$resumed = Stripe::subscription()
+    ->get('sub_123')
+    ->resume()
+    ->save();
+```
+
+### Subscription Schedules
+
+Plan complex subscription changes over time:
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\{StripeSubscriptionSchedule, StripePhaseItem};
+
+// Access schedule from subscription and add phases
+$subscription = Stripe::subscription()->get('sub_123');
+
+$subscription->schedule()
+    ->get()
+    ->addPhase(
+        StripePhaseItem::make()
+            ->withPrice('price_intro')
+            ->withQuantity(1)
+    )
+    ->addPhase(
+        StripePhaseItem::make()
+            ->withPrice('price_regular')
+            ->withQuantity(1)
+    )
+    ->save();
+
+// Or create a standalone schedule
+$schedule = StripeSubscriptionSchedule::make()
+    ->withCustomer('cus_123')
+    ->withStartDate(now()->addDay())
+    ->save();
+```
+
+### Webhook Management
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+
+// Create webhook endpoint
+$endpoint = Stripe::webhook()
+    ->withUrl(route('stripe.webhook'))
+    ->withEnabledEvents([
+        'customer.created',
+        'customer.updated',
+        'invoice.paid',
+        'invoice.payment_failed',
+        'customer.subscription.created',
+        'customer.subscription.updated',
+        'customer.subscription.deleted'
+    ])
+    ->withDescription('Production webhook')
+    ->save();
+
+// Store the webhook secret (IMPORTANT!)
+$webhookSecret = $endpoint->secret();
+```
+
+### Webhook Processing
+
+#### Example Webhook Controller
+
+```php
+use EncoreDigitalGroup\Stripe\Support\StripeWebhookHelper;
+use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use Illuminate\Http\Request;
+
+class StripeWebhookController extends Controller
+{
+    public function handleWebhook(Request $request)
+    {
+        try {
+            // Verify and construct event
+            $event = StripeWebhookHelper::constructEvent(
+                $request->getContent(),
+                StripeWebhookHelper::getSignatureHeader(),
+                config('services.stripe.webhook_secret')
+            );
+
+            // Process event
+            match ($event->type) {
+                'customer.created' => $this->handleCustomerCreated($event),
+                'invoice.paid' => $this->handleInvoicePaid($event),
+                default => logger()->info('Unhandled event', ['type' => $event->type])
+            };
+
+            return response()->json(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid signature'], 400);
+        }
+    }
+
+    protected function handleCustomerCreated($event): void
+    {
+        $customer = StripeCustomer::fromStripeObject($event->data->object);
+
+        User::updateOrCreate(
+            ['stripe_customer_id' => $customer->id()],
+            ['email' => $customer->email(), 'name' => $customer->name()]
+        );
+    }
+}
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+# All tests
+./vendor/bin/pest
+
+# Specific suite
+./vendor/bin/pest tests/Feature/
+./vendor/bin/pest tests/Unit/
+
+# With coverage
+./vendor/bin/pest --coverage --min=80
+
+# Stop on first failure
+./vendor/bin/pest --stop-on-failure
+```
+
+## Code Quality
+
+```bash
+# Static analysis (Level 8)
+./vendor/bin/phpstan analyse
+
+# Code style fixing
+./vendor/bin/duster fix
+
+# Refactoring
+./vendor/bin/rector process
 ```
 
 ## Contributing
 
 Contributions to this repository are governed by the Encore Digital Group [Contribution Terms](https://docs.encoredigitalgroup.com/Contributing/Terms/).
+
 Additional details on how to contribute are available [here](https://docs.encoredigitalgroup.com/Contributing/).
 
 ## License
 
 This repository is licensed using a modified version of the BSD 3-Clause License.
+
 The license is available for review [here](https://docs.encoredigitalgroup.com/LicenseTerms/).

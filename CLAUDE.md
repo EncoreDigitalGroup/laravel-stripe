@@ -15,6 +15,52 @@ enums while maintaining compatibility with Laravel 11-12 applications.
 - Pest v4 for testing with custom Stripe faking infrastructure
 - Uses `encoredigitalgroup/stdlib` for utilities like `Arr::whereNotNull()`
 
+## Directory Structure
+
+```
+src/php/                              # Main source (PSR-4: EncoreDigitalGroup\Stripe\)
+├── Enums/                            # String-backed enums for Stripe constants
+├── Objects/                          # DTOs organized by domain
+│   ├── Customer/                     # StripeCustomer, StripeShipping
+│   ├── Product/                      # StripeProduct, StripePrice, StripeRecurring, StripeTiers
+│   ├── Subscription/                 # StripeSubscription, StripeSubscriptionSchedule
+│   ├── FinancialConnections/         # StripeFinancialConnection, StripeFinancialConnectionsSession
+│   ├── Webhook/                      # StripeWebhook, StripeWebhookEvent
+│   └── Support/                      # Shared objects (StripeAddress, etc.)
+├── Services/                         # Service layer classes
+├── Support/                          # Traits, config, testing
+│   ├── Config/                       # Configuration classes
+│   ├── Testing/                      # Test infrastructure (IMPORTANT: fixtures live here)
+│   ├── HasStripe.php                 # Core DI trait
+│   ├── HasMetadata.php               # Metadata handling
+│   └── HasTimestamps.php             # Carbon timestamp conversion
+├── Providers/                        # Laravel service provider
+└── Stripe.php                        # Main facade class
+
+tests/
+├── Feature/                          # Service integration tests
+├── Unit/Objects/                     # DTO unit tests
+├── Pest.php                          # Custom expectations
+└── TestCase.php                      # Base test case (Orchestra Testbench)
+```
+
+## Key Dependencies
+
+**Runtime:**
+
+- `stripe/stripe-php: ^16.5 || ^17.0 || ^18.0` - Official Stripe SDK (supports multiple versions)
+- `encoredigitalgroup/stdlib: ^2.0` - Provides `Arr::whereNotNull()` and other utilities
+- `illuminate/support: ^11|^12` - Laravel collections and helpers
+- `phpgenesis/logger: ^1` - Logging utilities
+
+**Development:**
+
+- `pestphp/pest: ^4` - Testing framework
+- `larastan/larastan: ^3.0` - PHPStan for Laravel (Level 8)
+- `tightenco/duster: ^3.0` - Code style (wraps PHP-CS-Fixer)
+- `rector/rector: ^2.0` - Automated refactoring
+- `tomasvotruba/cognitive-complexity: ^1.0` - Complexity analysis
+
 ## Coding Rules
 
 Always follow these rules when writing code:
@@ -102,88 +148,6 @@ All Stripe interactions follow a consistent service pattern:
 3. **Enums** (`src/php/Enums/`) - String-backed enums for Stripe constants:
     - All values match Stripe's exact API values (e.g., `RecurringInterval::Month->value === 'month'`)
     - Enum names use PascalCase (e.g., `SubscriptionStatus::Active`)
-
-### Builder Pattern
-
-The library includes a fluent builder system for creating Stripe objects with improved ergonomics:
-
-1. **StripeBuilder** (`src/php/Support/Building/StripeBuilder.php`) - Main entry point providing access to all builders
-2. **Individual Builders** (`src/php/Support/Building/Builders/`) - Specific builders for each object type
-3. **Stripe Facade** - Provides convenient static factory methods that use builders internally
-
-**Using builders:**
-
-```php
-// Via Stripe facade (recommended for quick object creation)
-$customer = Stripe::customer(
-    email: "customer@example.com",
-    name: "John Doe"
-);
-
-$price = Stripe::price(
-    currency: "usd",
-    unitAmount: 1000,
-    recurring: Stripe::recurring(interval: RecurringInterval::Month)
-);
-
-// Via StripeBuilder (for complex nested objects)
-$builder = new StripeBuilder();
-$customer = $builder->customer()->build(
-    email: "customer@example.com",
-    address: $builder->address()->build(
-        line1: "123 Main St",
-        city: "New York",
-        state: "NY",
-        postalCode: "10001",
-        country: "US"
-    )
-);
-```
-
-**Builder methods available on Stripe facade:**
-
-- `Stripe::customer()` - Create StripeCustomer
-- `Stripe::product()` - Create StripeProduct
-- `Stripe::price()` - Create StripePrice
-- `Stripe::recurring()` - Create StripeRecurring
-- `Stripe::subscription()` - Create StripeSubscription
-- `Stripe::address()` - Create StripeAddress
-- `Stripe::financialConnection()` - Create StripeFinancialConnection
-- `Stripe::webhook()` - Create StripeWebhook
-- `Stripe::builder()` - Access the main StripeBuilder instance
-
-**Key patterns:**
-
-- Builders internally call the `make()` method on DTOs
-- Use builders in `fromStripeObject()` methods when creating nested objects
-- Builders provide fluent API for complex object construction
-- All builder `build()` methods accept named parameters matching DTO constructor
-
-### Service Accessor Pattern
-
-The Stripe facade provides convenient static methods to access service instances:
-
-```php
-// Access services via Stripe facade
-$customerService = Stripe::customers();
-$productService = Stripe::products();
-$priceService = Stripe::prices();
-$subscriptionService = Stripe::subscriptions();
-
-// Use services
-$customer = Stripe::customers()->create(
-    Stripe::customer(email: "user@example.com")
-);
-```
-
-**Available service accessors:**
-
-- `Stripe::customers()` - Returns StripeCustomerService
-- `Stripe::products()` - Returns StripeProductService
-- `Stripe::prices()` - Returns StripePriceService
-- `Stripe::subscriptions()` - Returns StripeSubscriptionService
-
-All services automatically use the configured Stripe client or injected test client.
 
 ### HasStripe Trait Pattern
 
@@ -313,7 +277,6 @@ test('example', function () {
 
 - `tests/Feature/` - Service integration tests (extends `Tests\TestCase`)
 - `tests/Unit/` - DTO unit tests (extends `Tests\TestCase`)
-- `tests/Integration/` - Integration tests for builder patterns and internal usage
 - `src/php/Support/Testing/` - Test infrastructure (FakeStripeClient, StripeFixtures, StripeMethod)
 
 ### Fixture Usage
@@ -399,59 +362,7 @@ Stripe::fake([
 
 ## Important Patterns
 
-### Converting Nested Stripe Objects
-
-Use builders when creating nested objects in `fromStripeObject()` methods:
-
-```php
-// Extract nested address from Stripe customer using builder
-$address = null;
-if (isset($stripeCustomer->address)) {
-    /** @var \Stripe\StripeObject $stripeAddress */
-    $stripeAddress = $stripeCustomer->address;
-    $address = (new StripeBuilder())->address()->build(
-        line1: $stripeAddress->line1 ?? null,
-        line2: $stripeAddress->line2 ?? null,
-        city: $stripeAddress->city ?? null,
-        state: $stripeAddress->state ?? null,
-        postalCode: $stripeAddress->postal_code ?? null,
-        country: $stripeAddress->country ?? null
-    );
-}
-```
-
 **Important:** Use `isset()` instead of truthiness checks for nested objects to avoid false positives.
-
-### Handling Recurring Objects
-
-StripeRecurring is a proper DTO object (not an array). Use the builder pattern to create it:
-
-```php
-// In fromStripeObject() - extract from Stripe API object
-$recurring = null;
-if (isset($stripePrice->recurring)) {
-    /** @var \Stripe\StripeObject $recurringObj */
-    $recurringObj = $stripePrice->recurring;
-    $recurring = (new StripeBuilder())->recurring()->build(
-        interval: property_exists($recurringObj, 'interval') && $recurringObj->interval
-            ? RecurringInterval::from($recurringObj->interval)
-            : null,
-        intervalCount: $recurringObj->interval_count ?? null,
-        trialPeriodDays: $recurringObj->trial_period_days ?? null,
-        usageType: property_exists($recurringObj, 'usage_type') && $recurringObj->usage_type
-            ? RecurringUsageType::from($recurringObj->usage_type)
-            : null,
-        aggregateUsage: property_exists($recurringObj, 'aggregate_usage') && $recurringObj->aggregate_usage
-            ? RecurringAggregateUsage::from($recurringObj->aggregate_usage)
-            : null
-    );
-}
-
-// In toArray() - StripeRecurring has its own toArray() method
-if ($this->recurring !== null) {
-    $data['recurring'] = $this->recurring->toArray();
-}
-```
 
 ### Service Archive/Reactivate Pattern
 
@@ -493,4 +404,16 @@ Note: Prices can only be archived (not deleted) per Stripe API limitations.
 
 6. **Stripe SDK differences** - Package supports v16.5+, v17.0+, and v18.0+ which may have minor API differences.
 
-7. **Use builders in fromStripeObject** - When creating nested objects in `fromStripeObject()` methods, use the builder pattern via `new StripeBuilder()` for consistency.
+## Additional Resources
+
+The `docs/` directory contains comprehensive guides organized as a coherent story from basic concepts to advanced usage:
+
+1. **Getting Started** (`docs/01-getting-started.md`) - Installation, configuration, and basic concepts
+2. **Customers** (`docs/02-customers.md`) - Customer management patterns and examples
+3. **Products** (`docs/03-products.md`) - Product lifecycle and management
+4. **Prices** (`docs/04-prices.md`) - Complex pricing, recurring billing, and tiers
+5. **Subscriptions** (`docs/05-subscriptions.md`) - Subscription lifecycle management
+6. **Testing** (`docs/06-testing.md`) - Comprehensive testing strategies and utilities
+7. **Architecture** (`docs/07-architecture.md`) - Deep dive into library design and patterns
+
+Refer to these when you need detailed examples, edge case handling, or comprehensive understanding of specific features.

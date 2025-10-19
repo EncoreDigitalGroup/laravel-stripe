@@ -13,32 +13,30 @@ describe("StripeTransactionRefresh", function (): void {
         $lastAttemptedAt = CarbonImmutable::now();
         $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
 
-        $transactionRefresh = StripeTransactionRefresh::make(
-            id: "tr_123",
-            lastAttemptedAt: $lastAttemptedAt,
-            nextRefreshAvailableAt: $nextRefreshAvailableAt,
-            status: "succeeded"
-        );
+        $transactionRefresh = StripeTransactionRefresh::make()
+            ->withId("tr_123")
+            ->withLastAttemptedAt($lastAttemptedAt)
+            ->withNextRefreshAvailableAt($nextRefreshAvailableAt)
+            ->withStatus("succeeded");
 
         expect($transactionRefresh)
             ->toBeInstanceOf(StripeTransactionRefresh::class)
-            ->and($transactionRefresh->id)->toBe("tr_123")
-            ->and($transactionRefresh->lastAttemptedAt->timestamp)->toBe($lastAttemptedAt->timestamp)
-            ->and($transactionRefresh->nextRefreshAvailableAt->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
-            ->and($transactionRefresh->status)->toBe("succeeded");
+            ->and($transactionRefresh->id())->toBe("tr_123")
+            ->and($transactionRefresh->lastAttemptedAt()->timestamp)->toBe($lastAttemptedAt->timestamp)
+            ->and($transactionRefresh->nextRefreshAvailableAt()->timestamp)->toBe($nextRefreshAvailableAt->timestamp)
+            ->and($transactionRefresh->status())->toBe("succeeded");
     });
 
     test("can create StripeTransactionRefresh with partial parameters", function (): void {
-        $transactionRefresh = StripeTransactionRefresh::make(
-            status: "pending"
-        );
+        $transactionRefresh = StripeTransactionRefresh::make()
+            ->withStatus("pending");
 
         expect($transactionRefresh)
             ->toBeInstanceOf(StripeTransactionRefresh::class)
-            ->and($transactionRefresh->id)->toBeNull()
-            ->and($transactionRefresh->lastAttemptedAt)->toBeNull()
-            ->and($transactionRefresh->nextRefreshAvailableAt)->toBeNull()
-            ->and($transactionRefresh->status)->toBe("pending");
+            ->and($transactionRefresh->id())->toBeNull()
+            ->and($transactionRefresh->lastAttemptedAt())->toBeNull()
+            ->and($transactionRefresh->nextRefreshAvailableAt())->toBeNull()
+            ->and($transactionRefresh->status())->toBe("pending");
     });
 
     test("can create StripeTransactionRefresh with no parameters", function (): void {
@@ -46,22 +44,21 @@ describe("StripeTransactionRefresh", function (): void {
 
         expect($transactionRefresh)
             ->toBeInstanceOf(StripeTransactionRefresh::class)
-            ->and($transactionRefresh->id)->toBeNull()
-            ->and($transactionRefresh->lastAttemptedAt)->toBeNull()
-            ->and($transactionRefresh->nextRefreshAvailableAt)->toBeNull()
-            ->and($transactionRefresh->status)->toBeNull();
+            ->and($transactionRefresh->id())->toBeNull()
+            ->and($transactionRefresh->lastAttemptedAt())->toBeNull()
+            ->and($transactionRefresh->nextRefreshAvailableAt())->toBeNull()
+            ->and($transactionRefresh->status())->toBeNull();
     });
 
     test("toArray returns correct structure", function (): void {
         $lastAttemptedAt = CarbonImmutable::now();
         $nextRefreshAvailableAt = $lastAttemptedAt->addDay();
 
-        $transactionRefresh = StripeTransactionRefresh::make(
-            id: "tr_456",
-            lastAttemptedAt: $lastAttemptedAt,
-            nextRefreshAvailableAt: $nextRefreshAvailableAt,
-            status: "failed"
-        );
+        $transactionRefresh = StripeTransactionRefresh::make()
+            ->withId("tr_456")
+            ->withLastAttemptedAt($lastAttemptedAt)
+            ->withNextRefreshAvailableAt($nextRefreshAvailableAt)
+            ->withStatus("failed");
 
         $array = $transactionRefresh->toArray();
 
@@ -74,9 +71,8 @@ describe("StripeTransactionRefresh", function (): void {
     });
 
     test("toArray filters null values", function (): void {
-        $transactionRefresh = StripeTransactionRefresh::make(
-            status: "pending"
-        );
+        $transactionRefresh = StripeTransactionRefresh::make()
+            ->withStatus("pending");
 
         $array = $transactionRefresh->toArray();
 
