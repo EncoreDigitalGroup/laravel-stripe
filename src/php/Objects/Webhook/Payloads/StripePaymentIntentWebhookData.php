@@ -14,7 +14,7 @@ use EncoreDigitalGroup\Stripe\Support\HasMetadata;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 
-class StripePaymentIntentWebhookData
+class StripePaymentIntentWebhookData implements IWebhookData
 {
     use HasIdentifier;
     use HasMake;

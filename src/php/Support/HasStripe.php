@@ -11,6 +11,7 @@ use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullExcepti
 use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 use Stripe\StripeClient;
 
+/** @internal */
 trait HasStripe
 {
     protected StripeClient $stripe;

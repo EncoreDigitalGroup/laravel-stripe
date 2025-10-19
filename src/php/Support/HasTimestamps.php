@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Support;
 
 use Carbon\CarbonImmutable;
 
+/** @internal */
 trait HasTimestamps
 {
     protected static function timestampToCarbon(?int $timestamp): ?CarbonImmutable
@@ -22,6 +23,6 @@ trait HasTimestamps
 
     protected static function carbonToTimestamp(?CarbonImmutable $carbon): ?int
     {
-        return $carbon instanceof CarbonImmutable ? (int) $carbon->timestamp : null;
+        return $carbon instanceof CarbonImmutable ? (int)$carbon->timestamp : null;
     }
 }

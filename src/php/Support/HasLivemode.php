@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Support;
 
+/** @internal */
 trait HasLivemode
 {
     private ?bool $livemode = null;

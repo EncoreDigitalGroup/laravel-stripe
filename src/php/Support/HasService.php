@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Support;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NotImplementedException;
 
+/** @internal */
 trait HasService
 {
     public function service(): mixed

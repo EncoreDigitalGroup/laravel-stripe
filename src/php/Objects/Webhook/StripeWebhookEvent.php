@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\IWebhookData;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripeInvoiceWebhookData;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripePaymentIntentWebhookData;
 use EncoreDigitalGroup\Stripe\Support\HasIdentifier;
@@ -26,7 +27,7 @@ class StripeWebhookEvent
     use HasTimestamps;
 
     private ?string $type = null;
-    private StripeInvoiceWebhookData|StripePaymentIntentWebhookData|array|null $data = null;
+    private IWebhookData|array|null $data = null;
     private ?CarbonImmutable $created = null;
     private ?string $apiVersion = null;
 

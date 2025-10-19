@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Support;
 
+/** @internal */
 trait HasGet
 {
     use HasService;
