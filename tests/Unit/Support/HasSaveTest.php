@@ -54,7 +54,7 @@ describe("HasSave trait", function (): void {
 
     test("save passes correct data to create", function (): void {
         $fake = Stripe::fake([
-            "products.create" => function ($params) {
+            "products.create" => function (array $params): array {
                 return StripeFixtures::product([
                     "id" => "prod_new",
                     "name" => $params["name"] ?? "Test",
@@ -75,7 +75,7 @@ describe("HasSave trait", function (): void {
 
     test("save passes correct data to update", function (): void {
         $fake = Stripe::fake([
-            "products.update" => function ($params) {
+            "products.update" => function (array $params): array {
                 return StripeFixtures::product([
                     "id" => "prod_update123",
                     "name" => $params["name"] ?? "Updated",

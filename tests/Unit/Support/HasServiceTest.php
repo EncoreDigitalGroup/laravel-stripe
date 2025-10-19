@@ -19,7 +19,7 @@ describe("HasService trait", function (): void {
             use HasService;
         };
 
-        expect(fn() => $instance->service())
+        expect(fn(): mixed => $instance->service())
             ->toThrow(NotImplementedException::class);
     });
 

@@ -100,7 +100,7 @@ class StripeSubscription
         if ($trialEnd instanceof CarbonImmutable) {
             $instance = $instance->withTrialEnd($trialEnd);
         }
-        if ($items !== null && $items->isNotEmpty()) {
+        if ($items instanceof \Illuminate\Support\Collection && $items->isNotEmpty()) {
             $instance = $instance->withItems($items);
         }
         if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
@@ -260,8 +260,8 @@ class StripeSubscription
     public function toArray(): array
     {
         $items = null;
-        if ($this->items !== null) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item) => $item->toArray())->all();
+        if ($this->items instanceof \Illuminate\Support\Collection) {
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
