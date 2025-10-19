@@ -13,6 +13,7 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -124,6 +125,11 @@ class StripeSubscriptionSchedule
         return $instance;
     }
 
+    public function service(): StripeSubscriptionScheduleService
+    {
+        return app(StripeSubscriptionScheduleService::class);
+    }
+
     public function toArray(): array
     {
         $array = [
@@ -137,7 +143,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,

@@ -238,6 +238,11 @@ class StripeSubscription
         return $this;
     }
 
+    public function service(): StripeSubscriptionService
+    {
+        return app(StripeSubscriptionService::class);
+    }
+
     public function toArray(): array
     {
         $array = [

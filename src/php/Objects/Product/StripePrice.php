@@ -16,6 +16,7 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
 use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
+use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Price;
@@ -256,6 +257,11 @@ class StripePrice
         }
 
         return $customUnitAmount;
+    }
+
+    public function service(): StripePriceService
+    {
+        return app(StripePriceService::class);
     }
 
     public function toArray(): array

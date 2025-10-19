@@ -89,6 +89,11 @@ class StripeWebhookEndpoint
         return $instance;
     }
 
+    public function service(): StripeWebhookEndpointService
+    {
+        return app(StripeWebhookEndpointService::class);
+    }
+
     public function toArray(): array
     {
         $array = [

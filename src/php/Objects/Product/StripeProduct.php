@@ -9,6 +9,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Support\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Product;
@@ -134,6 +135,11 @@ class StripeProduct
         }
 
         return $instance;
+    }
+
+    public function service(): StripeProductService
+    {
+        return app(StripeProductService::class);
     }
 
     public function toArray(): array

@@ -128,6 +128,11 @@ class StripeCustomer
         return $shipping;
     }
 
+    public function service(): StripeCustomerService
+    {
+        return app(StripeCustomerService::class);
+    }
+
     public function toArray(): array
     {
         $array = [
@@ -145,16 +150,12 @@ class StripeCustomer
 
     public function get(string $customerId): self
     {
-        $service = app(StripeCustomerService::class);
-
-        return $service->get($customerId);
+        return $this->service()->get($customerId);
     }
 
     public function save(): self
     {
-        $service = app(StripeCustomerService::class);
-
-        return is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
+        return is_null($this->id) ? $this->service()->create($this) : $this->service()->update($this->id, $this);
     }
 
     // Fluent setters
@@ -254,9 +255,7 @@ class StripeCustomer
             throw new ClassPropertyNullException("id");
         }
 
-        $stripeSubscriptionService = app(StripeSubscriptionService::class);
-
-        $this->subscriptions = $stripeSubscriptionService->getAllForCustomer($this->id);
+        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
 
         return $this->subscriptions;
     }
