@@ -23,12 +23,12 @@ use Stripe\StripeObject;
 
 class StripePaymentMethod
 {
+    use HasGet;
     use HasIdentifier;
     use HasMake;
     use HasMetadata;
-    use HasTimestamps;
     use HasSave;
-    use HasGet;
+    use HasTimestamps;
 
     private ?PaymentMethodType $type = null;
     private ?string $customer = null;
@@ -203,7 +203,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param Collection<string, mixed> $card
+     * @param  Collection<string, mixed>  $card
      */
     public function withCard(Collection $card): self
     {
@@ -221,7 +221,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param Collection<string, mixed> $usBankAccount
+     * @param  Collection<string, mixed>  $usBankAccount
      */
     public function withUsBankAccount(Collection $usBankAccount): self
     {
