@@ -11,8 +11,10 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
@@ -25,6 +27,8 @@ class StripePaymentMethod
     use HasMake;
     use HasMetadata;
     use HasTimestamps;
+    use HasSave;
+    use HasGet;
 
     private ?PaymentMethodType $type = null;
     private ?string $customer = null;
@@ -199,7 +203,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param  Collection<string, mixed>  $card
+     * @param Collection<string, mixed> $card
      */
     public function withCard(Collection $card): self
     {
@@ -217,7 +221,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param  Collection<string, mixed>  $usBankAccount
+     * @param Collection<string, mixed> $usBankAccount
      */
     public function withUsBankAccount(Collection $usBankAccount): self
     {
