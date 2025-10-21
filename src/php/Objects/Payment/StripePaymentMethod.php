@@ -11,6 +11,7 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
@@ -122,6 +123,11 @@ class StripePaymentMethod
         }
 
         return $instance;
+    }
+
+    public function service(): StripePaymentMethodService
+    {
+        return app(StripePaymentMethodService::class);
     }
 
     public function toArray(): array
