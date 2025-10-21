@@ -209,7 +209,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param Collection<string, mixed> $card
+     * @param  Collection<string, mixed>  $card
      */
     public function withCard(Collection $card): self
     {
@@ -227,7 +227,7 @@ class StripePaymentMethod
     }
 
     /**
-     * @param Collection<string, mixed> $usBankAccount
+     * @param  Collection<string, mixed>  $usBankAccount
      */
     public function withUsBankAccount(Collection $usBankAccount): self
     {
