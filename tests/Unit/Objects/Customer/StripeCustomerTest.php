@@ -10,6 +10,7 @@ use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\VariableNullException;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
+use EncoreDigitalGroup\Stripe\Objects\Payment\StripeSetupIntent;
 use EncoreDigitalGroup\Stripe\Stripe;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
 use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
@@ -54,7 +55,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(ClassPropertyNullException::class);
     });
 
@@ -70,7 +71,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(VariableNullException::class);
     });
 
@@ -187,5 +188,94 @@ describe("addPaymentMethod", function (): void {
             StripeMethod::PaymentMethodsAttach,
             ["customer" => "cus_abc123"]
         );
+    });
+});
+
+describe("createSetupIntent", function (): void {
+    test("creates a setup intent with customer id", function (): void {
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $setupIntent = $customer->createSetupIntent();
+
+        expect($setupIntent)
+            ->toBeInstanceOf(StripeSetupIntent::class)
+            ->and($setupIntent->customer())->toBe("cus_test123");
+    });
+
+    test("throws exception when customer has no id", function (): void {
+        $customer = StripeCustomer::make();
+
+        expect(fn(): StripeSetupIntent => $customer->createSetupIntent())
+            ->toThrow(ClassPropertyNullException::class);
+    });
+
+    test("creates setup intent that can be customized with description", function (): void {
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $setupIntent = $customer->createSetupIntent()->withDescription("Save card for future payments");
+
+        expect($setupIntent)
+            ->toBeInstanceOf(StripeSetupIntent::class)
+            ->and($setupIntent->customer())->toBe("cus_test123")
+            ->and($setupIntent->description())->toBe("Save card for future payments");
+    });
+
+    test("creates setup intent that can be customized with metadata", function (): void {
+        $customer = StripeCustomer::make()->withId("cus_test123");
+        $metadata = ["user_id" => "123", "plan" => "premium"];
+
+        $setupIntent = $customer->createSetupIntent()->withMetadata($metadata);
+
+        expect($setupIntent)
+            ->toBeInstanceOf(StripeSetupIntent::class)
+            ->and($setupIntent->customer())->toBe("cus_test123")
+            ->and($setupIntent->metadata())->toBe($metadata);
+    });
+
+    test("creates setup intent that can be customized with both description and metadata", function (): void {
+        $customer = StripeCustomer::make()->withId("cus_test123");
+        $metadata = ["subscription_id" => "sub_456"];
+
+        $setupIntent = $customer->createSetupIntent()
+            ->withDescription("Setup for subscription")
+            ->withMetadata($metadata);
+
+        expect($setupIntent)
+            ->toBeInstanceOf(StripeSetupIntent::class)
+            ->and($setupIntent->customer())->toBe("cus_test123")
+            ->and($setupIntent->description())->toBe("Setup for subscription")
+            ->and($setupIntent->metadata())->toBe($metadata);
+    });
+
+    test("returns setup intent that can be saved", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SetupIntentsCreate->value => StripeFixtures::setupIntent([
+                "id" => "seti_test123",
+                "customer" => "cus_test123",
+                "client_secret" => "seti_test123_secret_abc",
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $setupIntent = $customer->createSetupIntent();
+        $savedSetupIntent = $setupIntent->save();
+
+        expect($savedSetupIntent)
+            ->toBeInstanceOf(StripeSetupIntent::class)
+            ->and($savedSetupIntent->id())->toBe("seti_test123")
+            ->and($savedSetupIntent->customer())->toBe("cus_test123")
+            ->and($savedSetupIntent->clientSecret())->toBe("seti_test123_secret_abc")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SetupIntentsCreate);
+    });
+
+    test("creates setup intent with minimal configuration", function (): void {
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $setupIntent = $customer->createSetupIntent();
+
+        expect($setupIntent->customer())->toBe("cus_test123")
+            ->and($setupIntent->description())->toBeNull()
+            ->and($setupIntent->metadata())->toBeNull();
     });
 });
