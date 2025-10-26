@@ -477,6 +477,48 @@ class StripeFixtures
         ], $overrides);
     }
 
+    public static function setupIntent(array $overrides = []): array
+    {
+        $now = time();
+
+        return array_merge([
+            "id" => "seti_" . self::randomId(),
+            "object" => "setup_intent",
+            "application" => null,
+            "automatic_payment_methods" => null,
+            "cancellation_reason" => null,
+            "client_secret" => "seti_" . self::randomId() . "_secret_" . self::randomString(32),
+            "created" => $now,
+            "customer" => "cus_" . self::randomId(),
+            "description" => null,
+            "flow_directions" => null,
+            "last_setup_error" => null,
+            "latest_attempt" => null,
+            "livemode" => false,
+            "mandate" => null,
+            "metadata" => [],
+            "next_action" => null,
+            "on_behalf_of" => null,
+            "payment_method" => null,
+            "payment_method_configuration_details" => null,
+            "payment_method_options" => [],
+            "payment_method_types" => ["card"],
+            "single_use_mandate" => null,
+            "status" => "requires_payment_method",
+            "usage" => "off_session",
+        ], $overrides);
+    }
+
+    public static function setupIntentList(array $setupIntents = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $setupIntents,
+            "has_more" => false,
+            "url" => "/v1/setup_intents",
+        ], $overrides);
+    }
+
     public static function paymentMethod(array $overrides = []): array
     {
         return array_merge([

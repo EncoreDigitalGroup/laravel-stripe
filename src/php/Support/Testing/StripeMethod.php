@@ -67,6 +67,14 @@ enum StripeMethod: string
     case PaymentMethodsDetach = "paymentMethods.detach";
     case PaymentMethodsAll = "paymentMethods.all";
 
+    // Setup Intent methods
+    case SetupIntentsCreate = "setupIntents.create";
+    case SetupIntentsRetrieve = "setupIntents.retrieve";
+    case SetupIntentsUpdate = "setupIntents.update";
+    case SetupIntentsConfirm = "setupIntents.confirm";
+    case SetupIntentsCancel = "setupIntents.cancel";
+    case SetupIntentsAll = "setupIntents.all";
+
     // Invoice methods
     case InvoicesCreate = "invoices.create";
     case InvoicesRetrieve = "invoices.retrieve";
@@ -105,6 +113,7 @@ enum StripeMethod: string
     case SubscriptionSchedulesAny = "subscriptionSchedules.*";
     case PaymentIntentsAny = "paymentIntents.*";
     case PaymentMethodsAny = "paymentMethods.*";
+    case SetupIntentsAny = "setupIntents.*";
     case InvoicesAny = "invoices.*";
     case ChargesAny = "charges.*";
     case RefundsAny = "refunds.*";

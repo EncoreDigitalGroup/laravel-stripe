@@ -11,6 +11,7 @@ use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullExcepti
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\VariableNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
+use EncoreDigitalGroup\Stripe\Objects\Payment\StripeSetupIntent;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
@@ -166,6 +167,15 @@ class StripeCustomer
         }
 
         return $this;
+    }
+
+    public function createSetupIntent(): StripeSetupIntent
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        return StripeSetupIntent::make()->withCustomer($this->id);
     }
 
     public function service(): StripeCustomerService
