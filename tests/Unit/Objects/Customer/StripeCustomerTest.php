@@ -55,7 +55,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(ClassPropertyNullException::class);
     });
 
@@ -71,7 +71,7 @@ describe("addPaymentMethod", function (): void {
         $paymentMethod = StripePaymentMethod::make()->withType(PaymentMethodType::Card);
 
         // Act & Assert
-        expect(fn(): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
+        expect(fn (): StripeCustomer => $customer->addPaymentMethod($paymentMethod))
             ->toThrow(VariableNullException::class);
     });
 
@@ -205,7 +205,7 @@ describe("createSetupIntent", function (): void {
     test("throws exception when customer has no id", function (): void {
         $customer = StripeCustomer::make();
 
-        expect(fn(): StripeSetupIntent => $customer->createSetupIntent())
+        expect(fn (): StripeSetupIntent => $customer->createSetupIntent())
             ->toThrow(ClassPropertyNullException::class);
     });
 
