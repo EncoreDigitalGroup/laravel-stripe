@@ -58,6 +58,14 @@ class StripeCustomer
             $instance = $instance->withId($stripeCustomer->id);
         }
 
+        $instance = self::applyBasicProperties($instance, $stripeCustomer);
+        $instance = self::applyShippingIfPresent($instance, $stripeCustomer);
+
+        return self::applyDefaultPaymentMethod($instance, $stripeCustomer);
+    }
+
+    private static function applyBasicProperties(self $instance, Customer $stripeCustomer): self
+    {
         if (isset($stripeCustomer->address)) {
             /** @var StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
@@ -80,19 +88,42 @@ class StripeCustomer
             $instance = $instance->withPhone($stripeCustomer->phone);
         }
 
-        if (isset($stripeCustomer->shipping)) {
-            /** @var StripeObject $stripeShipping */
-            $stripeShipping = $stripeCustomer->shipping;
-            $shipping = self::extractShipping($stripeShipping);
+        return $instance;
+    }
 
-            if ($shipping instanceof StripeShipping) {
-                $instance = $instance->withShipping($shipping);
-            }
+    private static function applyShippingIfPresent(self $instance, Customer $stripeCustomer): self
+    {
+        if (!isset($stripeCustomer->shipping)) {
+            return $instance;
         }
 
-        if (isset($stripeCustomer->invoice_settings->default_payment_method)) {
+        /** @var StripeObject $stripeShipping */
+        $stripeShipping = $stripeCustomer->shipping;
+        $shipping = self::extractShipping($stripeShipping);
+
+        if ($shipping instanceof StripeShipping) {
+            return $instance->withShipping($shipping);
+        }
+
+        return $instance;
+    }
+
+    private static function applyDefaultPaymentMethod(self $instance, Customer $stripeCustomer): self
+    {
+        if (!isset($stripeCustomer->invoice_settings)) {
+            return $instance;
+        }
+
+        $defaultPaymentMethod = $stripeCustomer->invoice_settings->default_payment_method ?? null;
+
+        if (is_string($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod;
             $instance->hasDefaultPaymentMethod = true;
-            $instance->defaultPaymentMethod = $stripeCustomer->invoice_settings->default_payment_method;
+        }
+
+        if (is_object($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod->id;
+            $instance->hasDefaultPaymentMethod = true;
         }
 
         return $instance;
