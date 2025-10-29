@@ -44,6 +44,7 @@ class StripeCustomer
 
     /** @var ?Collection<StripePaymentMethod> */
     private ?Collection $paymentMethods = null;
+
     private ?bool $hasDefaultPaymentMethod = null;
     private ?string $defaultPaymentMethod = null;
 
@@ -240,7 +241,7 @@ class StripeCustomer
             }
 
             $paymentMethods = $this->paymentMethods();
-            $paymentMethodExists = $paymentMethods->contains(fn($pm): bool => $pm->id() === $this->defaultPaymentMethod);
+            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
 
             if (!$paymentMethodExists) {
                 throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
