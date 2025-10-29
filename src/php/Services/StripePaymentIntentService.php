@@ -84,7 +84,7 @@ class StripePaymentIntentService
         $stripePaymentIntents = $this->stripe->paymentIntents->all($params);
 
         return collect($stripePaymentIntents->data)
-            ->map(fn ($stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
+            ->map(fn (\Stripe\PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
     }
 
     /**
@@ -98,6 +98,6 @@ class StripePaymentIntentService
         $stripePaymentIntents = $this->stripe->paymentIntents->search($params);
 
         return collect($stripePaymentIntents->data)
-            ->map(fn ($stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
+            ->map(fn (\Stripe\PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
     }
 }
