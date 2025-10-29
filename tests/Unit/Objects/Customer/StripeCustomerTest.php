@@ -279,3 +279,214 @@ describe("createSetupIntent", function (): void {
             ->and($setupIntent->metadata())->toBeNull();
     });
 });
+
+describe("hasDefaultPaymentMethod", function (): void {
+    test("returns true when customer has default payment method", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "invoice_settings" => [
+                    "default_payment_method" => "pm_test123",
+                ],
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $result = $customer->hasDefaultPaymentMethod();
+
+        expect($result)->toBeTrue()
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersRetrieve);
+    });
+
+    test("returns false when customer has no default payment method", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "invoice_settings" => [],
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $result = $customer->hasDefaultPaymentMethod();
+
+        expect($result)->toBeFalse()
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersRetrieve);
+    });
+
+    test("throws exception when customer has no id", function (): void {
+        $customer = StripeCustomer::make();
+
+        expect(fn (): bool => $customer->hasDefaultPaymentMethod())
+            ->toThrow(ClassPropertyNullException::class);
+    });
+
+    test("caches result and does not call API twice", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "invoice_settings" => [
+                    "default_payment_method" => "pm_test123",
+                ],
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()->withId("cus_test123");
+
+        $result1 = $customer->hasDefaultPaymentMethod();
+        $result2 = $customer->hasDefaultPaymentMethod();
+
+        expect($result1)->toBeTrue()
+            ->and($result2)->toBeTrue()
+            ->and($fake)->toHaveCalledStripeMethodTimes(StripeMethod::CustomersRetrieve, 1);
+    });
+});
+
+describe("withDefaultPaymentMethod", function (): void {
+    test("sets default payment method", function (): void {
+        $customer = StripeCustomer::make()->withDefaultPaymentMethod("pm_test123");
+
+        $array = $customer->toArray();
+
+        expect($array["invoice_settings"]["default_payment_method"])->toBe("pm_test123");
+    });
+
+    test("returns instance for method chaining", function (): void {
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withEmail("test@example.com")
+            ->withDefaultPaymentMethod("pm_test123");
+
+        expect($customer)->toBeInstanceOf(StripeCustomer::class)
+            ->and($customer->id())->toBe("cus_test123")
+            ->and($customer->email())->toBe("test@example.com");
+    });
+
+    test("includes invoice_settings in toArray when default payment method is set", function (): void {
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withEmail("test@example.com")
+            ->withDefaultPaymentMethod("pm_test123");
+
+        $array = $customer->toArray();
+
+        expect($array)->toHaveKey("invoice_settings")
+            ->and($array["invoice_settings"])->toBe([
+                "default_payment_method" => "pm_test123",
+            ]);
+    });
+
+    test("does not include invoice_settings in toArray when default payment method is not set", function (): void {
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withEmail("test@example.com");
+
+        $array = $customer->toArray();
+
+        expect($array)->not->toHaveKey("invoice_settings");
+    });
+});
+
+describe("save with default payment method", function (): void {
+    test("validates payment method exists before saving", function (): void {
+        Stripe::fake([
+            StripeMethod::PaymentMethodsAll->value => StripeFixtures::paymentMethodList([
+                StripeFixtures::paymentMethod(["id" => "pm_existing"]),
+                StripeFixtures::paymentMethod(["id" => "pm_test123"]),
+            ]),
+            StripeMethod::CustomersUpdate->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "invoice_settings" => [
+                    "default_payment_method" => "pm_test123",
+                ],
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withDefaultPaymentMethod("pm_test123");
+
+        $result = $customer->save();
+
+        expect($result)->toBeInstanceOf(StripeCustomer::class);
+    });
+
+    test("throws exception when payment method does not exist in customer payment methods", function (): void {
+        Stripe::fake([
+            StripeMethod::PaymentMethodsAll->value => StripeFixtures::paymentMethodList([
+                StripeFixtures::paymentMethod(["id" => "pm_existing"]),
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withDefaultPaymentMethod("pm_nonexistent");
+
+        expect(fn (): StripeCustomer => $customer->save())
+            ->toThrow(\InvalidArgumentException::class, "Payment method pm_nonexistent is not attached to customer cus_test123");
+    });
+
+    test("throws exception when customer has no id and default payment method is set", function (): void {
+        $customer = StripeCustomer::make()->withDefaultPaymentMethod("pm_test123");
+
+        expect(fn (): StripeCustomer => $customer->save())
+            ->toThrow(ClassPropertyNullException::class);
+    });
+
+    test("saves successfully without validation when default payment method is not set", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::CustomersUpdate->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "email" => "test@example.com",
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withEmail("test@example.com");
+
+        $result = $customer->save();
+
+        expect($result)->toBeInstanceOf(StripeCustomer::class)
+            ->and($fake)->toNotHaveCalledStripeMethod(StripeMethod::PaymentMethodsAll);
+    });
+
+    test("sends invoice_settings to stripe api on update", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::PaymentMethodsAll->value => StripeFixtures::paymentMethodList([
+                StripeFixtures::paymentMethod(["id" => "pm_test123"]),
+            ]),
+            StripeMethod::CustomersUpdate->value => StripeFixtures::customer([
+                "id" => "cus_test123",
+                "invoice_settings" => [
+                    "default_payment_method" => "pm_test123",
+                ],
+            ]),
+        ]);
+
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withDefaultPaymentMethod("pm_test123");
+
+        $customer->save();
+
+        expect($fake)->toHaveCalledStripeMethod(
+            StripeMethod::CustomersUpdate,
+            ["invoice_settings" => ["default_payment_method" => "pm_test123"]]
+        );
+    });
+
+    test("validates against empty payment methods collection", function (): void {
+        Stripe::fake([
+            StripeMethod::PaymentMethodsAll->value => StripeFixtures::paymentMethodList([]),
+        ]);
+
+        $customer = StripeCustomer::make()
+            ->withId("cus_test123")
+            ->withDefaultPaymentMethod("pm_test123");
+
+        expect(fn (): StripeCustomer => $customer->save())
+            ->toThrow(\InvalidArgumentException::class, "Payment method pm_test123 is not attached to customer cus_test123");
+    });
+});

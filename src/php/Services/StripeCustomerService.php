@@ -85,4 +85,12 @@ class StripeCustomerService
         return collect($stripeCustomers->data)
             ->map(fn ($stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
+
+    /** @throws ApiErrorException */
+    public function hasDefaultPaymentMethod(string $customerId): bool
+    {
+        $stripeCustomer = $this->stripe->customers->retrieve($customerId);
+
+        return isset($stripeCustomer->invoice_settings->default_payment_method);
+    }
 }

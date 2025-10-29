@@ -20,6 +20,7 @@ use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Customer;
 use Stripe\StripeObject;
@@ -44,6 +45,9 @@ class StripeCustomer
     /** @var ?Collection<StripePaymentMethod> */
     private ?Collection $paymentMethods = null;
 
+    private ?bool $hasDefaultPaymentMethod = null;
+    private ?string $defaultPaymentMethod = null;
+
     /**
      * Create a StripeCustomer instance from a Stripe API Customer object
      */
@@ -55,6 +59,14 @@ class StripeCustomer
             $instance = $instance->withId($stripeCustomer->id);
         }
 
+        $instance = self::applyBasicProperties($instance, $stripeCustomer);
+        $instance = self::applyShippingIfPresent($instance, $stripeCustomer);
+
+        return self::applyDefaultPaymentMethod($instance, $stripeCustomer);
+    }
+
+    private static function applyBasicProperties(self $instance, Customer $stripeCustomer): self
+    {
         if (isset($stripeCustomer->address)) {
             /** @var StripeObject $stripeAddress */
             $stripeAddress = $stripeCustomer->address;
@@ -74,17 +86,45 @@ class StripeCustomer
         }
 
         if ($stripeCustomer->phone ?? null) {
-            $instance = $instance->withPhone($stripeCustomer->phone);
+            return $instance->withPhone($stripeCustomer->phone);
         }
 
-        if (isset($stripeCustomer->shipping)) {
-            /** @var StripeObject $stripeShipping */
-            $stripeShipping = $stripeCustomer->shipping;
-            $shipping = self::extractShipping($stripeShipping);
+        return $instance;
+    }
 
-            if ($shipping instanceof StripeShipping) {
-                $instance = $instance->withShipping($shipping);
-            }
+    private static function applyShippingIfPresent(self $instance, Customer $stripeCustomer): self
+    {
+        if (!isset($stripeCustomer->shipping)) {
+            return $instance;
+        }
+
+        /** @var StripeObject $stripeShipping */
+        $stripeShipping = $stripeCustomer->shipping;
+        $shipping = self::extractShipping($stripeShipping);
+
+        if ($shipping instanceof StripeShipping) {
+            return $instance->withShipping($shipping);
+        }
+
+        return $instance;
+    }
+
+    private static function applyDefaultPaymentMethod(self $instance, Customer $stripeCustomer): self
+    {
+        if (!isset($stripeCustomer->invoice_settings)) {
+            return $instance;
+        }
+
+        $defaultPaymentMethod = $stripeCustomer->invoice_settings->default_payment_method ?? null;
+
+        if (is_string($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod;
+            $instance->hasDefaultPaymentMethod = true;
+        }
+
+        if (is_object($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod->id;
+            $instance->hasDefaultPaymentMethod = true;
         }
 
         return $instance;
@@ -178,6 +218,39 @@ class StripeCustomer
         return StripeSetupIntent::make()->withCustomer($this->id);
     }
 
+    public function hasDefaultPaymentMethod(): bool
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        if (!is_null($this->hasDefaultPaymentMethod)) {
+            return $this->hasDefaultPaymentMethod;
+        }
+
+        $this->hasDefaultPaymentMethod = $this->service()->hasDefaultPaymentMethod($this->id);
+
+        return $this->hasDefaultPaymentMethod;
+    }
+
+    public function save(): self
+    {
+        if (!is_null($this->defaultPaymentMethod)) {
+            if (is_null($this->id)) {
+                throw new ClassPropertyNullException("id");
+            }
+
+            $paymentMethods = $this->paymentMethods();
+            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
+
+            if (!$paymentMethodExists) {
+                throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
+            }
+        }
+
+        return is_null($this->id) ? $this->service()->create($this) : $this->service()->update($this->id, $this);
+    }
+
     public function service(): StripeCustomerService
     {
         return app(StripeCustomerService::class);
@@ -194,6 +267,12 @@ class StripeCustomer
             "phone" => $this->phone,
             "shipping" => $this->shipping?->toArray(),
         ];
+
+        if (!is_null($this->defaultPaymentMethod)) {
+            $array["invoice_settings"] = [
+                "default_payment_method" => $this->defaultPaymentMethod,
+            ];
+        }
 
         return Arr::whereNotNull($array);
     }
@@ -244,6 +323,13 @@ class StripeCustomer
     public function withShipping(StripeShipping $shipping): self
     {
         $this->shipping = $shipping;
+
+        return $this;
+    }
+
+    public function withDefaultPaymentMethod(string $defaultPaymentMethod): self
+    {
+        $this->defaultPaymentMethod = $defaultPaymentMethod;
 
         return $this;
     }
