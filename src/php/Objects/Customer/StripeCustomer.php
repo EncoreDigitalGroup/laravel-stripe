@@ -85,7 +85,7 @@ class StripeCustomer
         }
 
         if ($stripeCustomer->phone ?? null) {
-            $instance = $instance->withPhone($stripeCustomer->phone);
+            return $instance->withPhone($stripeCustomer->phone);
         }
 
         return $instance;
@@ -240,7 +240,7 @@ class StripeCustomer
             }
 
             $paymentMethods = $this->paymentMethods();
-            $paymentMethodExists = $paymentMethods->contains(fn($pm) => $pm->id() === $this->defaultPaymentMethod);
+            $paymentMethodExists = $paymentMethods->contains(fn($pm): bool => $pm->id() === $this->defaultPaymentMethod);
 
             if (!$paymentMethodExists) {
                 throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
