@@ -75,6 +75,6 @@ class StripeSetupIntentService
         $stripeSetupIntents = $this->stripe->setupIntents->all($params);
 
         return collect($stripeSetupIntents->data)
-            ->map(fn ($stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
+            ->map(fn (\Stripe\SetupIntent $stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
     }
 }
