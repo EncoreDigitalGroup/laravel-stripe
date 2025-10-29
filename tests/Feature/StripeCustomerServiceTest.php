@@ -231,3 +231,58 @@ test("can search customers using faked stripe client", function (): void {
         ->and($customers->first())->toBeInstanceOf(StripeCustomer::class)
         ->and($fake)->toHaveCalledStripeMethod("customers.search");
 });
+
+test("can check if customer has default payment method", function (): void {
+    // Arrange
+    $fake = Stripe::fake([
+        StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+            "id" => "cus_test123",
+            "invoice_settings" => [
+                "default_payment_method" => "pm_test123",
+            ],
+        ]),
+    ]);
+
+    // Act
+    $service = StripeCustomerService::make();
+    $result = $service->hasDefaultPaymentMethod("cus_test123");
+
+    // Assert
+    expect($result)->toBeTrue()
+        ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersRetrieve);
+});
+
+test("returns false when customer has no default payment method", function (): void {
+    // Arrange
+    $fake = Stripe::fake([
+        StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+            "id" => "cus_test123",
+            "invoice_settings" => [],
+        ]),
+    ]);
+
+    // Act
+    $service = StripeCustomerService::make();
+    $result = $service->hasDefaultPaymentMethod("cus_test123");
+
+    // Assert
+    expect($result)->toBeFalse()
+        ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersRetrieve);
+});
+
+test("returns false when customer invoice_settings is null", function (): void {
+    // Arrange
+    $fake = Stripe::fake([
+        StripeMethod::CustomersRetrieve->value => StripeFixtures::customer([
+            "id" => "cus_test123",
+        ]),
+    ]);
+
+    // Act
+    $service = StripeCustomerService::make();
+    $result = $service->hasDefaultPaymentMethod("cus_test123");
+
+    // Assert
+    expect($result)->toBeFalse()
+        ->and($fake)->toHaveCalledStripeMethod(StripeMethod::CustomersRetrieve);
+});
