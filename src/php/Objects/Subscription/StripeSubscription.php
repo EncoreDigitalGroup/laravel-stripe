@@ -145,12 +145,22 @@ class StripeSubscription
         foreach ($stripeSubscription->items->data as $item) {
             $subscriptionItem = StripeSubscriptionItem::make()->withId($item->id);
 
-            if ($item->quantity !== null) {
+            if (!is_null($item->quantity)) {
                 $subscriptionItem = $subscriptionItem->withQuantity($item->quantity);
             }
 
-            if ($item->price->id ?? null) {
+            if (isset($item->price->id)) {
                 $subscriptionItem = $subscriptionItem->withPrice($item->price->id);
+            }
+
+            $currentPeriodStart = self::timestampToCarbon($item->current_period_start ?? null);
+            if ($currentPeriodStart instanceof CarbonImmutable) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodStart($currentPeriodStart);
+            }
+
+            $currentPeriodEnd = self::timestampToCarbon($item->current_period_end ?? null);
+            if ($currentPeriodEnd instanceof CarbonImmutable) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodEnd($currentPeriodEnd);
             }
 
             if (isset($item->metadata)) {
@@ -338,6 +348,7 @@ class StripeSubscription
         return $this;
     }
 
+    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodStart() instead */
     public function withCurrentPeriodStart(CarbonImmutable $currentPeriodStart): self
     {
         $this->currentPeriodStart = $currentPeriodStart;
@@ -345,6 +356,7 @@ class StripeSubscription
         return $this;
     }
 
+    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodEnd() instead */
     public function withCurrentPeriodEnd(CarbonImmutable $currentPeriodEnd): self
     {
         $this->currentPeriodEnd = $currentPeriodEnd;
