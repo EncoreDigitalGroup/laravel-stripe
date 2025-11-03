@@ -60,8 +60,8 @@ class StripeSubscriptionService
     {
         $data = $subscription->toArray();
 
-        // Remove id from update data
-        unset($data["id"]);
+        // Remove read-only fields from update data
+        unset($data["id"], $data["currency"], $data["status"], $data["customer"]);
 
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
 
@@ -106,7 +106,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (\Stripe\Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -120,6 +120,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (\Stripe\Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn($stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }
