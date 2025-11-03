@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Subscription;
 
 /** @internal */
 class StripeSubscriptionService
@@ -106,7 +107,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (\Stripe\Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -120,6 +121,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (\Stripe\Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

@@ -3,15 +3,15 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
+use Tests\TestCase;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 
-pest()->extend(Tests\TestCase::class)
+pest()->extend(TestCase::class)
     ->in("Feature")
     ->in("Unit");
 
 
-expect()->extend("toHaveCalledStripeMethod", function (string|\BackedEnum $method, ?array $expectedParams = null) {
+expect()->extend("toHaveCalledStripeMethod", function (string|BackedEnum $method, ?array $expectedParams = null) {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
@@ -19,7 +19,7 @@ expect()->extend("toHaveCalledStripeMethod", function (string|\BackedEnum $metho
         throw new InvalidArgumentException("Expected value to be an instance of FakeStripeClient");
     }
 
-    $stringMethod = $method instanceof \BackedEnum ? $method->value : $method;
+    $stringMethod = $method instanceof BackedEnum ? $method->value : $method;
 
     expect($fake->wasCalled($stringMethod))
         ->toBeTrue("Expected Stripe method [{$stringMethod}] to be called, but it was not.");
@@ -38,7 +38,7 @@ expect()->extend("toHaveCalledStripeMethod", function (string|\BackedEnum $metho
     return $this;
 });
 
-expect()->extend("toNotHaveCalledStripeMethod", function (string|\BackedEnum $method) {
+expect()->extend("toNotHaveCalledStripeMethod", function (string|BackedEnum $method) {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
@@ -46,7 +46,7 @@ expect()->extend("toNotHaveCalledStripeMethod", function (string|\BackedEnum $me
         throw new InvalidArgumentException("Expected value to be an instance of FakeStripeClient");
     }
 
-    $stringMethod = $method instanceof \BackedEnum ? $method->value : $method;
+    $stringMethod = $method instanceof BackedEnum ? $method->value : $method;
 
     expect($fake->wasCalled($stringMethod))
         ->toBeFalse(
@@ -56,7 +56,7 @@ expect()->extend("toNotHaveCalledStripeMethod", function (string|\BackedEnum $me
     return $this;
 });
 
-expect()->extend("toHaveCalledStripeMethodTimes", function (string|\BackedEnum $method, int $expectedCount) {
+expect()->extend("toHaveCalledStripeMethodTimes", function (string|BackedEnum $method, int $expectedCount) {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
@@ -64,7 +64,7 @@ expect()->extend("toHaveCalledStripeMethodTimes", function (string|\BackedEnum $
         throw new InvalidArgumentException("Expected value to be an instance of FakeStripeClient");
     }
 
-    $stringMethod = $method instanceof \BackedEnum ? $method->value : $method;
+    $stringMethod = $method instanceof BackedEnum ? $method->value : $method;
     $actualCount = $fake->callCount($stringMethod);
 
     expect($actualCount)

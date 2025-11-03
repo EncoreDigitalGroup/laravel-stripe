@@ -19,6 +19,7 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
+use Stripe\StripeObject;
 use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
@@ -46,15 +47,13 @@ class StripeSubscriptionSchedule
     private ?string $testClock = null;
     private ?StripeSubscription $parentSubscription = null;
 
-    /**
-     * @phpstan-ignore complexity.functionLike
-     */
+    /** @phpstan-ignore complexity.functionLike */
     public static function fromStripeObject(StripeApiSubscriptionSchedule $obj): self
     {
         $phases = null;
         if (isset($obj->phases)) {
             /** @phpstan-ignore argument.templateType */
-            $phases = collect($obj->phases)->map(function ($phase): StripeSubscriptionSchedulePhase {
+            $phases = collect($obj->phases)->map(function (StripeObject $phase): StripeSubscriptionSchedulePhase {
                 return StripeSubscriptionSchedulePhase::fromStripeObject($phase);
             });
         }

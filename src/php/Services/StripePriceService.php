@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Price;
 
 /** @internal */
 class StripePriceService
@@ -128,7 +129,7 @@ class StripePriceService
         $stripePrices = $this->stripe->prices->all($params);
 
         return collect($stripePrices->data)
-            ->map(fn (\Stripe\Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn (Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**
@@ -142,7 +143,7 @@ class StripePriceService
         $stripePrices = $this->stripe->prices->search($params);
 
         return collect($stripePrices->data)
-            ->map(fn (\Stripe\Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn (Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**

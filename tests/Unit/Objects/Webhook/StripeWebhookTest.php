@@ -4,9 +4,9 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use Illuminate\Support\Facades\Request;
+use Stripe\Event;
 
 test("can create webhook with url and events", function (): void {
     $webhook = StripeWebhook::make()
@@ -61,6 +61,6 @@ test("fromRequest constructs event from webhook payload", function (): void {
 
     $event = StripeWebhook::fromRequest($payload, $header, $secret);
 
-    expect($event)->toBeInstanceOf(\Stripe\Event::class)
+    expect($event)->toBeInstanceOf(Event::class)
         ->and($event->type)->toBe("customer.created");
 });

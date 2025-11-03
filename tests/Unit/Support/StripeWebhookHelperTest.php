@@ -38,7 +38,7 @@ describe("StripeWebhookHelper", function (): void {
         $signature = "invalid_signature";
         $secret = "whsec_test";
 
-        expect(fn (): \Stripe\Event => StripeWebhookHelper::constructEvent($payload, $signature, $secret))
+        expect(fn (): StripeEvent => StripeWebhookHelper::constructEvent($payload, $signature, $secret))
             ->toThrow(SignatureVerificationException::class);
     });
 

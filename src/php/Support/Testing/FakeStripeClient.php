@@ -178,9 +178,7 @@ class FakeStripeClient extends StripeClient
         return $result;
     }
 
-    /**
-     * @param  mixed  $name
-     */
+    /** @param  mixed  $name */
     public function __get($name): FakeStripeService
     {
         return new FakeStripeService((string) $name, $this);

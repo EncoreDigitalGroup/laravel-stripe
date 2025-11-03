@@ -33,9 +33,7 @@ class StripeSubscriptionSchedulePhase
     private ?string $invoiceSettings = null;
     private ?array $metadata = null;
 
-    /**
-     * @phpstan-ignore complexity.functionLike
-     */
+    /** @phpstan-ignore complexity.functionLike */
     public static function fromStripeObject(StripeObject $obj): self
     {
         $items = null;
@@ -87,7 +85,7 @@ class StripeSubscriptionSchedulePhase
         if ($obj->default_payment_method ?? null) {
             $instance->defaultPaymentMethod = $obj->default_payment_method;
         }
-        if ($defaultTaxRates instanceof \Illuminate\Support\Collection) {
+        if ($defaultTaxRates instanceof Collection) {
             $instance->defaultTaxRates = $defaultTaxRates;
         }
         if ($obj->collection_method ?? null) {
@@ -106,7 +104,7 @@ class StripeSubscriptionSchedulePhase
     public function toArray(): array
     {
         $items = null;
-        if ($this->items instanceof \Illuminate\Support\Collection) {
+        if ($this->items instanceof Collection) {
             $items = $this->items->map(function ($item) {
                 if ($item instanceof StripePhaseItem) {
                     return $item->toArray();
