@@ -424,7 +424,7 @@ describe("save with default payment method", function (): void {
             ->withDefaultPaymentMethod("pm_nonexistent");
 
         expect(fn (): StripeCustomer => $customer->save())
-            ->toThrow(\InvalidArgumentException::class, "Payment method pm_nonexistent is not attached to customer cus_test123");
+            ->toThrow(InvalidArgumentException::class, "Payment method pm_nonexistent is not attached to customer cus_test123");
     });
 
     test("throws exception when customer has no id and default payment method is set", function (): void {
@@ -487,6 +487,6 @@ describe("save with default payment method", function (): void {
             ->withDefaultPaymentMethod("pm_test123");
 
         expect(fn (): StripeCustomer => $customer->save())
-            ->toThrow(\InvalidArgumentException::class, "Payment method pm_test123 is not attached to customer cus_test123");
+            ->toThrow(InvalidArgumentException::class, "Payment method pm_test123 is not attached to customer cus_test123");
     });
 });

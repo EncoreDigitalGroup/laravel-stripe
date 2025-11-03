@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Payment\StripeSetupIntent;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\SetupIntent;
 
 /** @internal */
 class StripeSetupIntentService
@@ -75,6 +76,6 @@ class StripeSetupIntentService
         $stripeSetupIntents = $this->stripe->setupIntents->all($params);
 
         return collect($stripeSetupIntents->data)
-            ->map(fn (\Stripe\SetupIntent $stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
+            ->map(fn (SetupIntent $stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
     }
 }

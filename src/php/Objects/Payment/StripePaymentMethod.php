@@ -208,9 +208,7 @@ class StripePaymentMethod
         return $this->billingDetails;
     }
 
-    /**
-     * @param  Collection<string, mixed>  $card
-     */
+    /** @param  Collection<string, mixed>  $card */
     public function withCard(Collection $card): self
     {
         $this->card = $card;
@@ -218,17 +216,13 @@ class StripePaymentMethod
         return $this;
     }
 
-    /**
-     * @return ?Collection<string, mixed>
-     */
+    /** @return ?Collection<string, mixed> */
     public function card(): ?Collection
     {
         return $this->card;
     }
 
-    /**
-     * @param  Collection<string, mixed>  $usBankAccount
-     */
+    /** @param  Collection<string, mixed>  $usBankAccount */
     public function withUsBankAccount(Collection $usBankAccount): self
     {
         $this->usBankAccount = $usBankAccount;
@@ -236,9 +230,7 @@ class StripePaymentMethod
         return $this;
     }
 
-    /**
-     * @return ?Collection<string, mixed>
-     */
+    /** @return ?Collection<string, mixed> */
     public function usBankAccount(): ?Collection
     {
         return $this->usBankAccount;

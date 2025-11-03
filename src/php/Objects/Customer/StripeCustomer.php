@@ -48,9 +48,7 @@ class StripeCustomer
     private ?bool $hasDefaultPaymentMethod = null;
     private ?string $defaultPaymentMethod = null;
 
-    /**
-     * Create a StripeCustomer instance from a Stripe API Customer object
-     */
+    /** Create a StripeCustomer instance from a Stripe API Customer object */
     public static function fromStripeObject(Customer $stripeCustomer): self
     {
         $instance = self::make();

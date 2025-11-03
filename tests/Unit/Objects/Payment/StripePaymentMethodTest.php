@@ -4,11 +4,11 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
+use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
 test("can create StripePaymentMethod using make method", function (): void {
@@ -59,7 +59,7 @@ test("can create StripePaymentMethod from Stripe object", function (): void {
         ->and($paymentMethod->billingDetails())->toBeInstanceOf(StripeAddress::class)
         ->and($paymentMethod->billingDetails()->line1())->toBe("123 Main St")
         ->and($paymentMethod->billingDetails()->city())->toBe("San Francisco")
-        ->and($paymentMethod->card())->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->and($paymentMethod->card())->toBeInstanceOf(Collection::class)
         ->and($paymentMethod->card()->get("brand"))->toBe("visa")
         ->and($paymentMethod->card()->get("last4"))->toBe("4242")
         ->and($paymentMethod->metadata())->toBe(["key" => "value"]);
@@ -127,7 +127,7 @@ test("can handle us bank account data", function (): void {
 
     $paymentMethod = StripePaymentMethod::fromStripeObject($stripeObject);
 
-    expect($paymentMethod->usBankAccount())->toBeInstanceOf(\Illuminate\Support\Collection::class)
+    expect($paymentMethod->usBankAccount())->toBeInstanceOf(Collection::class)
         ->and($paymentMethod->usBankAccount()->get("bank_name"))->toBe("STRIPE TEST BANK")
         ->and($paymentMethod->usBankAccount()->get("last4"))->toBe("6789");
 });

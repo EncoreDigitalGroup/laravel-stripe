@@ -202,9 +202,7 @@ class StripePrice
         return $recurring;
     }
 
-    /**
-     * @return ?Collection<StripeProductTier>
-     */
+    /** @return ?Collection<StripeProductTier> */
     private static function extractTiers(Price $stripePrice): ?Collection
     {
         if (!isset($stripePrice->tiers)) {
@@ -384,9 +382,7 @@ class StripePrice
         return $this;
     }
 
-    /**
-     * @param  Collection<StripeProductTier>  $tiers
-     */
+    /** @param  Collection<StripeProductTier>  $tiers */
     public function withTiers(Collection $tiers): self
     {
         $this->tiers = $tiers;
@@ -490,9 +486,7 @@ class StripePrice
         return $this->lookupKey;
     }
 
-    /**
-     * @return ?Collection<StripeProductTier>
-     */
+    /** @return ?Collection<StripeProductTier> */
     public function tiers(): ?Collection
     {
         return $this->tiers;

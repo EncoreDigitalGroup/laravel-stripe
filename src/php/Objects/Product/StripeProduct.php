@@ -39,9 +39,7 @@ class StripeProduct
     private ?CarbonImmutable $created = null;
     private ?CarbonImmutable $updated = null;
 
-    /**
-     * Create a StripeProduct instance from a Stripe API Product object
-     */
+    /** Create a StripeProduct instance from a Stripe API Product object */
     public static function fromStripeObject(Product $stripeProduct): self
     {
         $instance = self::make();

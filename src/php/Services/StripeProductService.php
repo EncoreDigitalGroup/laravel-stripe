@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Product;
 
 /** @internal */
 class StripeProductService
@@ -102,7 +103,7 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn (\Stripe\Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
@@ -116,6 +117,6 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn (\Stripe\Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }

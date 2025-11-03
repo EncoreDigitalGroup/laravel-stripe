@@ -33,9 +33,7 @@ class StripePaymentIntentWebhookData implements IWebhookData
     private ?array $lastPaymentError = null;
     private ?CarbonImmutable $created = null;
 
-    /**
-     * Create a StripePaymentIntentWebhookData instance from a Stripe PaymentIntent object
-     */
+    /** Create a StripePaymentIntentWebhookData instance from a Stripe PaymentIntent object */
     public static function fromStripeObject(object $paymentIntent): self
     {
         $lastPaymentError = null;

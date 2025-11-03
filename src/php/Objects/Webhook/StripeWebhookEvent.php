@@ -31,9 +31,7 @@ class StripeWebhookEvent
     private ?CarbonImmutable $created = null;
     private ?string $apiVersion = null;
 
-    /**
-     * Create a StripeWebhookEvent from a verified Stripe Event object
-     */
+    /** Create a StripeWebhookEvent from a verified Stripe Event object */
     public static function fromStripeEvent(StripeEvent $event): self
     {
         $data = null;
@@ -61,9 +59,7 @@ class StripeWebhookEvent
             ->withApiVersion($event->api_version ?? null);
     }
 
-    /**
-     * Create a StripeWebhookEvent from raw webhook request data
-     */
+    /** Create a StripeWebhookEvent from raw webhook request data */
     public static function fromRequest(string $payload, string $signature, string $secret): self
     {
         $event = StripeWebhookHelper::constructEvent($payload, $signature, $secret);
@@ -119,25 +115,19 @@ class StripeWebhookEvent
         return $this->apiVersion;
     }
 
-    /**
-     * Get the data as StripeInvoiceWebhookData if the event is invoice-related
-     */
+    /** Get the data as StripeInvoiceWebhookData if the event is invoice-related */
     public function asInvoiceData(): ?StripeInvoiceWebhookData
     {
         return $this->data instanceof StripeInvoiceWebhookData ? $this->data : null;
     }
 
-    /**
-     * Get the data as StripePaymentIntentWebhookData if the event is payment intent-related
-     */
+    /** Get the data as StripePaymentIntentWebhookData if the event is payment intent-related */
     public function asPaymentIntentData(): ?StripePaymentIntentWebhookData
     {
         return $this->data instanceof StripePaymentIntentWebhookData ? $this->data : null;
     }
 
-    /**
-     * Get the raw data array if the event type is not specifically handled
-     */
+    /** Get the raw data array if the event type is not specifically handled */
     public function asRawData(): ?array
     {
         return is_array($this->data) ? $this->data : null;
