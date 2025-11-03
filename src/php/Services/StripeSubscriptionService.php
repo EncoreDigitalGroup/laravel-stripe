@@ -60,8 +60,8 @@ class StripeSubscriptionService
     {
         $data = $subscription->toArray();
 
-        // Remove id from update data
-        unset($data["id"]);
+        // Remove read-only fields from update data
+        unset($data["id"], $data["currency"], $data["status"], $data["customer"]);
 
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
 
