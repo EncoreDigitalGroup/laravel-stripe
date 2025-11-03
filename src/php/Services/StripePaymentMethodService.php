@@ -12,6 +12,7 @@ use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\PaymentMethod;
 
 /** @internal */
 class StripePaymentMethodService
@@ -91,6 +92,6 @@ class StripePaymentMethodService
         $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
 
         return collect($stripePaymentMethods->data)
-            ->map(fn (\Stripe\PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
+            ->map(fn (PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
     }
 }

@@ -20,9 +20,7 @@ class StripeWebhookHelper
         return Request::header("stripe-signature", Str::empty());
     }
 
-    /**
-     * @throws SignatureVerificationException
-     */
+    /** @throws SignatureVerificationException */
     public static function constructEvent(string $payload, string $signature, string $secret): StripeEvent
     {
         return Webhook::constructEvent($payload, $signature, $secret);

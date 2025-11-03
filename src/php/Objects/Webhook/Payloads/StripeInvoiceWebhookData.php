@@ -36,14 +36,10 @@ class StripeInvoiceWebhookData implements IWebhookData
     private ?CarbonImmutable $created = null;
     private ?CarbonImmutable $dueDate = null;
 
-    /**
-     * @var array<StripeInvoiceLineItemWebhookData>|null
-     */
+    /** @var array<StripeInvoiceLineItemWebhookData>|null */
     private ?array $lines = null;
 
-    /**
-     * Create a StripeInvoiceWebhookData instance from a Stripe Invoice object
-     */
+    /** Create a StripeInvoiceWebhookData instance from a Stripe Invoice object */
     public static function fromStripeObject(object $stripeObject): self
     {
         $lines = [];

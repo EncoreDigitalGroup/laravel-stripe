@@ -4,13 +4,13 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentCaptureMethod;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentConfirmationMethod;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentStatus;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentIntent;
+use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
 test("can create StripePaymentIntent using make method", function (): void {
@@ -67,7 +67,7 @@ test("can create StripePaymentIntent from Stripe object", function (): void {
         ->and($paymentIntent->confirmationMethod())->toBe(PaymentIntentConfirmationMethod::Automatic)
         ->and($paymentIntent->created())->toBeInstanceOf(CarbonImmutable::class)
         ->and($paymentIntent->clientSecret())->toBe("pi_123_secret_xyz")
-        ->and($paymentIntent->paymentMethodTypes())->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->and($paymentIntent->paymentMethodTypes())->toBeInstanceOf(Collection::class)
         ->and($paymentIntent->paymentMethodTypes()->first())->toBe(PaymentMethodType::Card)
         ->and($paymentIntent->metadata())->toBe(["order_id" => "order_123"]);
 });

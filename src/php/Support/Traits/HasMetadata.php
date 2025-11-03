@@ -12,9 +12,7 @@ trait HasMetadata
 {
     private ?array $metadata = null;
 
-    /**
-     * Convert Stripe metadata object to array
-     */
+    /** Convert Stripe metadata object to array */
     protected static function extractMetadata(object $stripeObject): ?array
     {
         if (!isset($stripeObject->metadata)) {

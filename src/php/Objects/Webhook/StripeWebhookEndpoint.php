@@ -37,9 +37,7 @@ class StripeWebhookEndpoint
     private ?string $status = null;
     private ?CarbonImmutable $created = null;
 
-    /**
-     * Create a StripeWebhookEndpoint instance from a Stripe API WebhookEndpoint object
-     */
+    /** Create a StripeWebhookEndpoint instance from a Stripe API WebhookEndpoint object */
     public static function fromStripeObject(WebhookEndpoint $stripeEndpoint): self
     {
         $instance = self::make();

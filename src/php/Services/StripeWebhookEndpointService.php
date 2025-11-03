@@ -11,6 +11,7 @@ use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 use Illuminate\Support\Collection;
 use Stripe\Exception\ApiErrorException;
+use Stripe\WebhookEndpoint;
 
 /** @internal */
 class StripeWebhookEndpointService
@@ -82,6 +83,6 @@ class StripeWebhookEndpointService
         $stripeEndpoints = $this->stripe->webhookEndpoints->all($params);
 
         return collect($stripeEndpoints->data)
-            ->map(fn (\Stripe\WebhookEndpoint $stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
+            ->map(fn (WebhookEndpoint $stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
     }
 }

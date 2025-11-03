@@ -26,9 +26,7 @@ class StripeInvoiceLineItemWebhookData implements IWebhookData
     private ?string $productId = null;
     private ?array $price = null;
 
-    /**
-     * Create a StripeInvoiceLineItem instance from a Stripe InvoiceLineItem object
-     */
+    /** Create a StripeInvoiceLineItem instance from a Stripe InvoiceLineItem object */
     public static function fromStripeObject(object $lineItem): self
     {
         $priceId = null;

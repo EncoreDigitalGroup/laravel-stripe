@@ -4,7 +4,6 @@
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
  */
-
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
 use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;
@@ -14,6 +13,7 @@ use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeCustomUnitAmount;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeRecurring;
+use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
 test("can create StripePrice using make method", function (): void {
@@ -151,7 +151,7 @@ test("fromStripeObject handles tiers", function (): void {
 
     $price = StripePrice::fromStripeObject($stripeObject);
 
-    expect($price->tiers())->toBeInstanceOf(\Illuminate\Support\Collection::class)
+    expect($price->tiers())->toBeInstanceOf(Collection::class)
         ->and($price->tiers())->toHaveCount(2)
         ->and($price->tiersMode())->toBe(TiersMode::Graduated);
 });

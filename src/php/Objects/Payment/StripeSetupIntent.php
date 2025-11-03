@@ -258,9 +258,7 @@ class StripeSetupIntent
         return $this->lastSetupError;
     }
 
-    /**
-     * @param  Collection<int, PaymentMethodType>  $paymentMethodTypes
-     */
+    /** @param  Collection<int, PaymentMethodType>  $paymentMethodTypes */
     public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
     {
         $this->paymentMethodTypes = $paymentMethodTypes;
@@ -268,9 +266,7 @@ class StripeSetupIntent
         return $this;
     }
 
-    /**
-     * @return ?Collection<PaymentMethodType>
-     */
+    /** @return ?Collection<PaymentMethodType> */
     public function paymentMethodTypes(): ?Collection
     {
         return $this->paymentMethodTypes;
