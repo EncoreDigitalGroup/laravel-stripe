@@ -184,6 +184,90 @@ test("fromStripeObject handles items correctly", function (): void {
         ->and($subscription->items()->get(1)->price())->toBe("price_2");
 });
 
+test("fromStripeObject handles item current period dates", function (): void {
+    $stripeObject = Util::convertToStripeObject([
+        "id" => "sub_123",
+        "object" => "subscription",
+        "customer" => "cus_123",
+        "status" => "active",
+        "items" => [
+            "data" => [
+                [
+                    "id" => "si_1",
+                    "price" => ["id" => "price_1"],
+                    "quantity" => 1,
+                    "current_period_start" => 1704110400,
+                    "current_period_end" => 1706788800,
+                    "metadata" => [],
+                ],
+            ],
+        ],
+        "metadata" => [],
+    ], []);
+
+    $subscription = StripeSubscription::fromStripeObject($stripeObject);
+    $item = $subscription->items()->get(0);
+
+    expect($item->currentPeriodStart())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($item->currentPeriodStart()->timestamp)->toBe(1704110400)
+        ->and($item->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
+        ->and($item->currentPeriodEnd()->timestamp)->toBe(1706788800);
+});
+
+test("fromStripeObject handles items without current period dates", function (): void {
+    $stripeObject = Util::convertToStripeObject([
+        "id" => "sub_123",
+        "object" => "subscription",
+        "customer" => "cus_123",
+        "status" => "active",
+        "items" => [
+            "data" => [
+                [
+                    "id" => "si_1",
+                    "price" => ["id" => "price_1"],
+                    "quantity" => 1,
+                    "metadata" => [],
+                ],
+            ],
+        ],
+        "metadata" => [],
+    ], []);
+
+    $subscription = StripeSubscription::fromStripeObject($stripeObject);
+    $item = $subscription->items()->get(0);
+
+    expect($item->currentPeriodStart())->toBeNull()
+        ->and($item->currentPeriodEnd())->toBeNull();
+});
+
+test("StripeSubscriptionItem toArray includes current period dates as timestamps", function (): void {
+    $start = CarbonImmutable::create(2025, 1, 1, 12);
+    $end = CarbonImmutable::create(2025, 2, 1, 12);
+
+    $item = StripeSubscriptionItem::make()
+        ->withPrice("price_123")
+        ->withQuantity(2)
+        ->withCurrentPeriodStart($start)
+        ->withCurrentPeriodEnd($end);
+
+    $array = $item->toArray();
+
+    expect($array)->toBeArray()
+        ->and($array["current_period_start"])->toBe($start->getTimestamp())
+        ->and($array["current_period_end"])->toBe($end->getTimestamp());
+});
+
+test("StripeSubscriptionItem toArray excludes null current period dates", function (): void {
+    $item = StripeSubscriptionItem::make()
+        ->withPrice("price_123")
+        ->withQuantity(1);
+
+    $array = $item->toArray();
+
+    expect($array)->not->toHaveKey("current_period_start")
+        ->and($array)->not->toHaveKey("current_period_end");
+});
+
 test("fromStripeObject handles billing_cycle_anchor_config", function (): void {
     $stripeObject = Util::convertToStripeObject([
         "id" => "sub_123",
