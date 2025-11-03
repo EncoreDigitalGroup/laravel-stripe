@@ -262,7 +262,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof \Illuminate\Support\Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
@@ -338,6 +338,7 @@ class StripeSubscription
         return $this;
     }
 
+    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodStart() instead */
     public function withCurrentPeriodStart(CarbonImmutable $currentPeriodStart): self
     {
         $this->currentPeriodStart = $currentPeriodStart;
@@ -345,6 +346,7 @@ class StripeSubscription
         return $this;
     }
 
+    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodEnd() instead */
     public function withCurrentPeriodEnd(CarbonImmutable $currentPeriodEnd): self
     {
         $this->currentPeriodEnd = $currentPeriodEnd;
