@@ -272,7 +272,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
