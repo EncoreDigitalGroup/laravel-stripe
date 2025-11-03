@@ -153,6 +153,18 @@ class StripeSubscription
                 $subscriptionItem = $subscriptionItem->withPrice($item->price->id);
             }
 
+            if (isset($item->current_period_start)) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodStart(
+                    self::timestampToCarbon($item->current_period_start)
+                );
+            }
+
+            if (isset($item->current_period_end)) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodEnd(
+                    self::timestampToCarbon($item->current_period_end)
+                );
+            }
+
             if (isset($item->metadata)) {
                 $subscriptionItem = $subscriptionItem->withMetadata($item->metadata->toArray());
             }
