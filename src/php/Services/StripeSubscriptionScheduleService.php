@@ -7,6 +7,7 @@
 
 namespace EncoreDigitalGroup\Stripe\Services;
 
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
 
@@ -85,5 +86,14 @@ class StripeSubscriptionScheduleService
         }
 
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedules->data[0]);
+    }
+
+    public function fromSubscription(string $subscriptionId): StripeSubscriptionSchedule
+    {
+        $response = $this->stripe->subscriptionSchedules->create([
+            "from_subscription" => $subscriptionId,
+        ]);
+
+        return StripeSubscriptionSchedule::fromStripeObject($response);
     }
 }
