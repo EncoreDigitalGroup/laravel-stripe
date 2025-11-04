@@ -38,7 +38,13 @@ class StripeSubscriptionScheduleService
     {
         $data = $subscriptionSchedule->toArray();
 
-        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"]);
+        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"], $data["subscription"], $data["released_subscription"]);
+
+        if (isset($data["phases"])) {
+            foreach ($data["phases"] as &$phase) {
+                unset($phase["start_date"]);
+            }
+        }
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
 
