@@ -10,6 +10,7 @@ namespace EncoreDigitalGroup\Stripe\Services;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
+use Stripe\Exception\ApiErrorException;
 
 /** @internal */
 class StripeSubscriptionScheduleService
@@ -27,6 +28,7 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @throws ApiErrorException */
     public function get(string $subscriptionScheduleId): StripeSubscriptionSchedule
     {
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->retrieve($subscriptionScheduleId);
@@ -81,17 +83,10 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @deprecated use get method instead. */
     public function forSubscription(string $subscriptionId): ?StripeSubscriptionSchedule
     {
-        $params = ["subscription" => $subscriptionId];
-
-        $stripeSubscriptionSchedules = $this->stripe->subscriptionSchedules->all($params);
-
-        if (empty($stripeSubscriptionSchedules->data)) {
-            return null;
-        }
-
-        return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedules->data[0]);
+        return $this->get($subscriptionId);
     }
 
     public function fromSubscription(string $subscriptionId): StripeSubscriptionSchedule
