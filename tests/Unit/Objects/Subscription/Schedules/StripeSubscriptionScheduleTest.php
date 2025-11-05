@@ -285,11 +285,14 @@ describe("addPhase", function (): void {
         $schedule = StripeSubscriptionSchedule::make()
             ->withPhases(collect([]));
 
-        $phaseItem = StripePhaseItem::make()
-            ->withPrice("price_123")
-            ->withQuantity(1);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_123")
+                    ->withQuantity(1)
+            ));
 
-        $result = $schedule->addPhase($phaseItem);
+        $result = $schedule->addPhase($phase);
 
         expect($result)->toBe($schedule)
             ->and($schedule->phases())->toHaveCount(1)
@@ -308,11 +311,14 @@ describe("addPhase", function (): void {
         $schedule = StripeSubscriptionSchedule::make()
             ->withPhases(collect([$existingPhase]));
 
-        $newPhaseItem = StripePhaseItem::make()
-            ->withPrice("price_new")
-            ->withQuantity(2);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_new")
+                    ->withQuantity(2)
+            ));
 
-        $schedule->addPhase($newPhaseItem);
+        $schedule->addPhase($phase);
 
         expect($schedule->phases())->toHaveCount(2)
             ->and($schedule->phases()->last()->items()->first()->price())->toBe("price_new")
@@ -324,11 +330,14 @@ describe("addPhase", function (): void {
 
         expect($schedule->phases())->toBeNull();
 
-        $phaseItem = StripePhaseItem::make()
-            ->withPrice("price_123")
-            ->withQuantity(1);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_123")
+                    ->withQuantity(1)
+            ));
 
-        $schedule->addPhase($phaseItem);
+        $schedule->addPhase($phase);
 
         expect($schedule->phases())->toBeInstanceOf(Collection::class)
             ->and($schedule->phases())->toHaveCount(1);

@@ -341,12 +341,9 @@ class StripeSubscriptionSchedule
         return $result;
     }
 
-    public function addPhase(StripePhaseItem $phaseItem): self
+    public function addPhase(StripeSubscriptionSchedulePhase $phase): self
     {
-        $newPhase = StripeSubscriptionSchedulePhase::make()
-            ->withItems(collect([$phaseItem]));
-
-        $this->phases = ($this->phases ?? collect())->push($newPhase);
+        $this->phases = ($this->phases ?? collect())->push($phase);
 
         return $this;
     }
