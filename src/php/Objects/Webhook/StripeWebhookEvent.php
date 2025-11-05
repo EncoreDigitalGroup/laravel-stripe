@@ -18,6 +18,7 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasLivemode;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Event as StripeEvent;
+use Stripe\Exception\SignatureVerificationException;
 
 class StripeWebhookEvent
 {
@@ -59,7 +60,10 @@ class StripeWebhookEvent
             ->withApiVersion($event->api_version ?? null);
     }
 
-    /** Create a StripeWebhookEvent from raw webhook request data */
+    /**
+     * Create a StripeWebhookEvent from raw webhook request data
+     * @throws SignatureVerificationException
+     */
     public static function fromRequest(string $payload, string $signature, string $secret): self
     {
         $event = StripeWebhookHelper::constructEvent($payload, $signature, $secret);

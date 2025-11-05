@@ -17,6 +17,9 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Stripe\Exception\ApiErrorException;
 use Stripe\StripeObject;
 use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
@@ -317,6 +320,11 @@ class StripeSubscriptionSchedule
         return $this;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws ApiErrorException
+     * @throws NotFoundExceptionInterface
+     */
     public function get(?string $id = null): self
     {
         $scheduleId = $id ?? $this->id;
@@ -329,6 +337,9 @@ class StripeSubscriptionSchedule
         return $scheduleService->get($scheduleId);
     }
 
+    /**
+     * @throws ApiErrorException
+     */
     public function create(): self
     {
         if ($this->parentSubscription === null || $this->parentSubscription->id() === null) {
@@ -348,6 +359,9 @@ class StripeSubscriptionSchedule
         return $this;
     }
 
+    /**
+     * @throws ApiErrorException
+     */
     public function save(): self
     {
         $scheduleService = app(StripeSubscriptionScheduleService::class);

@@ -20,6 +20,9 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription;
 
 class StripeSubscription
@@ -328,7 +331,10 @@ class StripeSubscription
         return Arr::whereNotNull($array);
     }
 
-    /** This is custom as we are saving multiple objects which the HasSave trait does not cover. */
+    /**
+     * This is custom as we are saving multiple objects which the HasSave trait does not cover.
+     * @throws ApiErrorException
+     */
     public function save(): self
     {
         $service = app(StripeSubscriptionService::class);
@@ -344,6 +350,11 @@ class StripeSubscription
         return $result;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ApiErrorException
+     */
     public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
     {
         if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule && !$refresh) {
