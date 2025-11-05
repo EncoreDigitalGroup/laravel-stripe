@@ -14,6 +14,7 @@ use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
+use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
@@ -50,6 +51,7 @@ class StripeSubscription
     private ?int $daysUntilDue = null;
     private ?string $description = null;
     private ?StripeSubscriptionSchedule $subscriptionSchedule = null;
+    private ?string $subscriptionScheduleId = null;
 
     /**
      * Create a StripeSubscription instance from a Stripe API Subscription object
@@ -71,65 +73,87 @@ class StripeSubscription
         if ($stripeSubscription->id) {
             $instance = $instance->withId($stripeSubscription->id);
         }
+
         if ($customer !== "" && $customer !== "0") {
             $instance = $instance->withCustomer($customer);
         }
+
         if ($status instanceof SubscriptionStatus) {
             $instance = $instance->withStatus($status);
         }
+
         $currentPeriodStart = self::timestampToCarbon($stripeSubscription->current_period_start ?? null);
         if ($currentPeriodStart instanceof CarbonImmutable) {
             $instance = $instance->withCurrentPeriodStart($currentPeriodStart);
         }
+
         $currentPeriodEnd = self::timestampToCarbon($stripeSubscription->current_period_end ?? null);
         if ($currentPeriodEnd instanceof CarbonImmutable) {
             $instance = $instance->withCurrentPeriodEnd($currentPeriodEnd);
         }
+
         $cancelAt = self::timestampToCarbon($stripeSubscription->cancel_at ?? null);
         if ($cancelAt instanceof CarbonImmutable) {
             $instance = $instance->withCancelAt($cancelAt);
         }
+
         $canceledAt = self::timestampToCarbon($stripeSubscription->canceled_at ?? null);
         if ($canceledAt instanceof CarbonImmutable) {
             $instance = $instance->withCanceledAt($canceledAt);
         }
+
         $trialStart = self::timestampToCarbon($stripeSubscription->trial_start ?? null);
         if ($trialStart instanceof CarbonImmutable) {
             $instance = $instance->withTrialStart($trialStart);
         }
+
         $trialEnd = self::timestampToCarbon($stripeSubscription->trial_end ?? null);
         if ($trialEnd instanceof CarbonImmutable) {
             $instance = $instance->withTrialEnd($trialEnd);
         }
+
         if ($items instanceof Collection && $items->isNotEmpty()) {
             $instance = $instance->withItems($items);
         }
+
         if ($defaultPaymentMethod !== null && $defaultPaymentMethod !== "" && $defaultPaymentMethod !== "0") {
             $instance = $instance->withDefaultPaymentMethod($defaultPaymentMethod);
         }
+
         if (isset($stripeSubscription->metadata)) {
             $instance = $instance->withMetadata($stripeSubscription->metadata->toArray());
         }
+
         if ($stripeSubscription->currency ?? null) {
             $instance = $instance->withCurrency($stripeSubscription->currency);
         }
+
         if ($collectionMethod instanceof CollectionMethod) {
             $instance = $instance->withCollectionMethod($collectionMethod);
         }
+
         if ($billingCycleAnchorConfig instanceof StripeBillingCycleAnchorConfig) {
             $instance = $instance->withBillingCycleAnchorConfig($billingCycleAnchorConfig);
         }
+
         if ($prorationBehavior instanceof ProrationBehavior) {
             $instance = $instance->withProrationBehavior($prorationBehavior);
         }
+
         if (isset($stripeSubscription->cancel_at_period_end)) {
             $instance = $instance->withCancelAtPeriodEnd($stripeSubscription->cancel_at_period_end);
         }
+
         if ($stripeSubscription->days_until_due ?? null) {
             $instance = $instance->withDaysUntilDue($stripeSubscription->days_until_due);
         }
+
         if ($stripeSubscription->description ?? null) {
-            return $instance->withDescription($stripeSubscription->description);
+            $instance->withDescription($stripeSubscription->description);
+        }
+
+        if ($stripeSubscription->schedule ?? null) {
+            $instance->subscriptionScheduleId = $stripeSubscription->schedule;
         }
 
         return $instance;
@@ -226,15 +250,19 @@ class StripeSubscription
         if (isset($config->day_of_month)) {
             $instance = $instance->withDayOfMonth($config->day_of_month);
         }
+
         if (isset($config->month)) {
             $instance = $instance->withMonth($config->month);
         }
+
         if (isset($config->hour)) {
             $instance = $instance->withHour($config->hour);
         }
+
         if (isset($config->minute)) {
             $instance = $instance->withMinute($config->minute);
         }
+
         if (isset($config->second)) {
             return $instance->withSecond($config->second);
         }
@@ -272,7 +300,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
@@ -316,15 +344,24 @@ class StripeSubscription
         return $result;
     }
 
-    public function schedule(): StripeSubscriptionSchedule
+    public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
     {
-        if (!$this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
-            $this->subscriptionSchedule = StripeSubscriptionSchedule::make();
+        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule && !$refresh) {
+            return $this->subscriptionSchedule;
         }
 
-        $this->subscriptionSchedule->setParentSubscription($this);
+        if ($this->subscriptionScheduleId !== null && $this->subscriptionScheduleId !== "" && $this->subscriptionScheduleId !== "0") {
+            $this->subscriptionSchedule = app(StripeSubscriptionScheduleService::class)->get($this->subscriptionScheduleId);
+            $this->subscriptionSchedule->setParentSubscription($this);
+            return $this->subscriptionSchedule;
+        }
 
-        return $this->subscriptionSchedule;
+        return null;
+    }
+
+    public function scheduleId(): ?string
+    {
+        return $this->subscriptionScheduleId;
     }
 
     public function withId(string $id): self

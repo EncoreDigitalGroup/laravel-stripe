@@ -191,49 +191,13 @@ test("formats timestamps correctly in toArray", function (): void {
         ->and($array["canceled_at"])->toBe(1641081600);
 });
 
-describe("get", function (): void {
-    test("fetches schedule from API when schedule exists", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
-                StripeFixtures::subscriptionSchedule([
-                    "id" => "sub_sched_123",
-                    "subscription" => "sub_123",
-                    "customer" => "cus_123",
-                ]),
-            ]),
-        ]);
-
-        $schedule = StripeSubscriptionSchedule::make()->get("sub_123");
-
-        expect($schedule)
-            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->id())->toBe("sub_sched_123")
-            ->and($schedule->subscription())->toBe("sub_123")
-            ->and($schedule->customer())->toBe("cus_123");
-    });
-
-    test("returns new empty instance when no schedule exists", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([]),
-        ]);
-
-        $schedule = StripeSubscriptionSchedule::make()->get("sub_nonexistent");
-
-        expect($schedule)
-            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->id())->toBeNull()
-            ->and($schedule->subscription())->toBe("sub_nonexistent")
-            ->and($schedule->phases())->toBeInstanceOf(Collection::class)
-            ->and($schedule->phases())->toHaveCount(0);
-    });
-
-    test("uses parent subscription ID when no parameter provided", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
-                StripeFixtures::subscriptionSchedule([
-                    "id" => "sub_sched_123",
-                    "subscription" => "sub_123",
-                ]),
+describe("create", function (): void {
+    test("creates schedule from subscription using fromSubscription", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesCreate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_new",
+                "subscription" => "sub_123",
+                "customer" => "cus_123",
             ]),
         ]);
 
@@ -241,10 +205,30 @@ describe("get", function (): void {
             ->withId("sub_123")
             ->withCustomer("cus_123");
 
-        $schedule = $subscription->schedule()->get();
+        $newSchedule = $subscription->schedule();
 
-        expect($schedule->id())->toBe("sub_sched_123")
-            ->and($schedule->subscription())->toBe("sub_123");
+        expect($newSchedule)->toBeNull();
+
+        $createdSchedule = StripeSubscriptionSchedule::make()
+            ->setParentSubscription($subscription)
+            ->create();
+
+        expect($createdSchedule)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($createdSchedule->id())->toBe("sub_sched_new")
+            ->and($createdSchedule->subscription())->toBe("sub_123")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesCreate);
+
+        $actualParams = $fake->getCall(StripeMethod::SubscriptionSchedulesCreate->value);
+        expect($actualParams)->toHaveKey("from_subscription", "sub_123");
+    });
+
+    test("throws exception when parent subscription has no ID", function (): void {
+        $subscription = StripeSubscription::make()->withCustomer("cus_123");
+
+        $schedule = StripeSubscriptionSchedule::make()->setParentSubscription($subscription);
+
+        expect(fn() => $schedule->create())->toThrow(InvalidArgumentException::class);
     });
 });
 
@@ -356,7 +340,8 @@ describe("save", function (): void {
             ->withId("sub_123")
             ->withCustomer("cus_123");
 
-        $schedule = $subscription->schedule()
+        $schedule = StripeSubscriptionSchedule::make()
+            ->setParentSubscription($subscription)
             ->withCustomer("cus_123");
 
         $result = $schedule->save();

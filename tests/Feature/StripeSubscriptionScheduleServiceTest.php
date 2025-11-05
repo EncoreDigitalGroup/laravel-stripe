@@ -217,39 +217,26 @@ describe("release", function (): void {
     });
 });
 
-describe("forSubscription", function (): void {
-    test("retrieves schedule for specific subscription", function (): void {
+describe("fromSubscription", function (): void {
+    test("creates schedule from existing subscription", function (): void {
         $fake = Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
-                StripeFixtures::subscriptionSchedule([
-                    "id" => "sub_sched_1",
-                    "subscription" => "sub_123",
-                ]),
+            StripeMethod::SubscriptionSchedulesCreate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_from_sub",
+                "subscription" => "sub_123",
+                "customer" => "cus_123",
             ]),
         ]);
 
         $service = StripeSubscriptionScheduleService::make();
-        $result = $service->forSubscription("sub_123");
+        $result = $service->fromSubscription("sub_123");
 
         expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($result->id())->toBe("sub_sched_1")
+            ->and($result->id())->toBe("sub_sched_from_sub")
             ->and($result->subscription())->toBe("sub_123")
-            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesAll);
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesCreate);
 
-        $actualParams = $fake->getCall(StripeMethod::SubscriptionSchedulesAll->value);
-        expect($actualParams)->toHaveKey("subscription", "sub_123");
-    });
-
-    test("returns null when no schedule found for subscription", function (): void {
-        $fake = Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([]),
-        ]);
-
-        $service = StripeSubscriptionScheduleService::make();
-        $result = $service->forSubscription("sub_nonexistent");
-
-        expect($result)->toBeNull()
-            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesAll);
+        $actualParams = $fake->getCall(StripeMethod::SubscriptionSchedulesCreate->value);
+        expect($actualParams)->toHaveKey("from_subscription", "sub_123");
     });
 });
