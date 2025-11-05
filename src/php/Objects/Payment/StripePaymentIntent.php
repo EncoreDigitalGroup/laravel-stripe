@@ -148,7 +148,7 @@ class StripePaymentIntent
 
         if (isset($paymentIntent->payment_method_types)) {
             $paymentMethodTypes = collect($paymentIntent->payment_method_types)
-                ->map(fn(string $type): PaymentMethodType => PaymentMethodType::from($type));
+                ->map(fn (string $type): PaymentMethodType => PaymentMethodType::from($type));
             $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
         }
 
@@ -178,7 +178,7 @@ class StripePaymentIntent
             "created" => self::carbonToTimestamp($this->created),
             "client_secret" => $this->clientSecret,
             "last_payment_error" => $this->lastPaymentError,
-            "payment_method_types" => $this->paymentMethodTypes?->map(fn(PaymentMethodType $type): string => $type->value)?->toArray(),
+            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)?->toArray(),
             "metadata" => $this->metadata,
         ];
 

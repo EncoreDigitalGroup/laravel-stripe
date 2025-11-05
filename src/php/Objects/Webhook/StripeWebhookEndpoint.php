@@ -129,9 +129,7 @@ class StripeWebhookEndpoint
         return $service->get($id);
     }
 
-    /**
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function save(): self
     {
         $service = app(StripeWebhookEndpointService::class);
@@ -139,9 +137,7 @@ class StripeWebhookEndpoint
         return is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
     }
 
-    /**
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function delete(): self
     {
         if (is_null($this->id)) {

@@ -144,7 +144,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,
@@ -334,15 +334,14 @@ class StripeSubscriptionSchedule
         }
 
         $scheduleService = app(StripeSubscriptionScheduleService::class);
+
         return $scheduleService->get($scheduleId);
     }
 
-    /**
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function create(): self
     {
-        if ($this->parentSubscription === null || $this->parentSubscription->id() === null) {
+        if (!$this->parentSubscription instanceof StripeSubscription || $this->parentSubscription->id() === null) {
             throw new InvalidArgumentException("Cannot create schedule: parent subscription must have an ID");
         }
 
@@ -359,9 +358,7 @@ class StripeSubscriptionSchedule
         return $this;
     }
 
-    /**
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function save(): self
     {
         $scheduleService = app(StripeSubscriptionScheduleService::class);

@@ -389,7 +389,7 @@ describe("schedule", function (): void {
         ]);
 
         $subscription = StripeSubscription::fromStripeObject(
-            \Stripe\Util\Util::convertToStripeObject(StripeFixtures::subscription([
+            Util::convertToStripeObject(StripeFixtures::subscription([
                 "id" => "sub_123",
                 "customer" => "cus_123",
                 "schedule" => "sub_sched_123",
@@ -411,7 +411,7 @@ describe("schedule", function (): void {
         ]);
 
         $subscription = StripeSubscription::fromStripeObject(
-            \Stripe\Util\Util::convertToStripeObject(StripeFixtures::subscription([
+            Util::convertToStripeObject(StripeFixtures::subscription([
                 "id" => "sub_123",
                 "customer" => "cus_123",
                 "schedule" => "sub_sched_123",

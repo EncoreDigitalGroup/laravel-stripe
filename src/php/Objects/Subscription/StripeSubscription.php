@@ -303,7 +303,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
@@ -333,6 +333,7 @@ class StripeSubscription
 
     /**
      * This is custom as we are saving multiple objects which the HasSave trait does not cover.
+     *
      * @throws ApiErrorException
      */
     public function save(): self
@@ -364,6 +365,7 @@ class StripeSubscription
         if ($this->subscriptionScheduleId !== null && $this->subscriptionScheduleId !== "" && $this->subscriptionScheduleId !== "0") {
             $this->subscriptionSchedule = app(StripeSubscriptionScheduleService::class)->get($this->subscriptionScheduleId);
             $this->subscriptionSchedule->setParentSubscription($this);
+
             return $this->subscriptionSchedule;
         }
 

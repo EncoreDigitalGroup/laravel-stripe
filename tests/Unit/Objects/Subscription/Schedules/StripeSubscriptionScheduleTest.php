@@ -229,13 +229,13 @@ describe("get", function (): void {
     test("throws exception when no ID is provided and object has no ID", function (): void {
         $schedule = StripeSubscriptionSchedule::make();
 
-        expect(fn() => $schedule->get())->toThrow(InvalidArgumentException::class);
+        expect(fn (): StripeSubscriptionSchedule => $schedule->get())->toThrow(InvalidArgumentException::class);
     });
 
     test("throws exception when provided ID is empty string", function (): void {
         $schedule = StripeSubscriptionSchedule::make();
 
-        expect(fn() => $schedule->get(""))->toThrow(InvalidArgumentException::class);
+        expect(fn (): StripeSubscriptionSchedule => $schedule->get(""))->toThrow(InvalidArgumentException::class);
     });
 });
 
@@ -276,7 +276,7 @@ describe("create", function (): void {
 
         $schedule = StripeSubscriptionSchedule::make()->setParentSubscription($subscription);
 
-        expect(fn() => $schedule->create())->toThrow(InvalidArgumentException::class);
+        expect(fn (): StripeSubscriptionSchedule => $schedule->create())->toThrow(InvalidArgumentException::class);
     });
 });
 

@@ -62,6 +62,7 @@ class StripeWebhookEvent
 
     /**
      * Create a StripeWebhookEvent from raw webhook request data
+     *
      * @throws SignatureVerificationException
      */
     public static function fromRequest(string $payload, string $signature, string $secret): self

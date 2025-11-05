@@ -156,6 +156,7 @@ class StripeCustomer
 
     /**
      * @returns Collection<StripeSubscription>
+     *
      * @throws ClassPropertyNullException
      * @throws ApiErrorException
      */
@@ -177,6 +178,7 @@ class StripeCustomer
     /**
      * @throws ApiErrorException
      * @throws ClassPropertyNullException
+     *
      * @returns Collection<StripePaymentMethod>
      */
     public function paymentMethods(bool $refresh = false): Collection
@@ -221,9 +223,7 @@ class StripeCustomer
         return $this;
     }
 
-    /**
-     * @throws ClassPropertyNullException
-     */
+    /** @throws ClassPropertyNullException */
     public function createSetupIntent(): StripeSetupIntent
     {
         if (is_null($this->id)) {
@@ -264,7 +264,7 @@ class StripeCustomer
             }
 
             $paymentMethods = $this->paymentMethods();
-            $paymentMethodExists = $paymentMethods->contains(fn($pm): bool => $pm->id() === $this->defaultPaymentMethod);
+            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
 
             if (!$paymentMethodExists) {
                 throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
