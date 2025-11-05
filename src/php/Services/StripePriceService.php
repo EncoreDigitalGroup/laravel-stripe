@@ -21,15 +21,8 @@ class StripePriceService
     /** @throws ApiErrorException */
     public function create(StripePrice $price): StripePrice
     {
-        $data = $price->toArray();
-
-        // Remove id if present (can't send id on create)
-        unset($data["id"], $data["created"]);
-
-        // Remove created timestamp (read-only)
-
         /** @phpstan-ignore argument.type */
-        $stripePrice = $this->stripe->prices->create($data);
+        $stripePrice = $this->stripe->prices->create($price->toCreateArray());
 
         return StripePrice::fromStripeObject($stripePrice);
     }
@@ -50,28 +43,7 @@ class StripePriceService
      */
     public function update(string $priceId, StripePrice $price): StripePrice
     {
-        $data = $price->toArray();
-
-        // Remove id from update data
-        unset($data["id"], $data["created"],
-            $data["product"],
-            $data["currency"],
-            $data["unit_amount"],
-            $data["unit_amount_decimal"],
-            $data["type"],
-            $data["billing_scheme"],
-            $data["recurring"],
-            $data["tiers"],
-            $data["tiers_mode"],
-            $data["transform_quantity"],
-            $data["custom_unit_amount"]
-        );
-
-        // Remove created timestamp (read-only)
-
-        // Remove immutable fields that can't be updated
-
-        $stripePrice = $this->stripe->prices->update($priceId, $data);
+        $stripePrice = $this->stripe->prices->update($priceId, $price->toUpdateArray());
 
         return StripePrice::fromStripeObject($stripePrice);
     }

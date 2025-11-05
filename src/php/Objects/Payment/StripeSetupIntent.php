@@ -13,6 +13,7 @@ use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Enums\SetupIntentStatus;
 use EncoreDigitalGroup\Stripe\Enums\SetupIntentUsage;
 use EncoreDigitalGroup\Stripe\Services\StripeSetupIntentService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
@@ -23,6 +24,7 @@ use Stripe\SetupIntent;
 
 class StripeSetupIntent
 {
+    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
     use HasMetadata;
@@ -143,6 +145,11 @@ class StripeSetupIntent
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created", "client_secret"];
     }
 
     public function service(): StripeSetupIntentService

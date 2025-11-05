@@ -10,6 +10,7 @@ namespace EncoreDigitalGroup\Stripe\Objects\Product;
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
@@ -19,6 +20,7 @@ use Stripe\StripeObject;
 
 class StripeProduct
 {
+    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
     use HasSave;
@@ -164,6 +166,11 @@ class StripeProduct
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created", "updated"];
     }
 
     // Fluent setters

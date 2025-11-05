@@ -16,6 +16,7 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -27,6 +28,7 @@ use Stripe\Subscription;
 
 class StripeSubscription
 {
+    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
     use HasTimestamps;
@@ -329,6 +331,11 @@ class StripeSubscription
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "currency", "status", "customer"];
     }
 
     /**

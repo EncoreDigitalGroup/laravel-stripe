@@ -19,11 +19,7 @@ class StripeSubscriptionScheduleService
     /** @throws ApiErrorException */
     public function create(StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
-        $data = $subscriptionSchedule->toArray();
-
-        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"]);
-
-        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($data);
+        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($subscriptionSchedule->toCreateArray());
 
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
@@ -39,9 +35,7 @@ class StripeSubscriptionScheduleService
     /** @throws ApiErrorException */
     public function update(string $subscriptionScheduleId, StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
-        $data = $subscriptionSchedule->toArray();
-
-        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"], $data["subscription"], $data["released_subscription"]);
+        $data = $subscriptionSchedule->toUpdateArray();
 
         if (isset($data["phases"])) {
             foreach ($data["phases"] as &$phase) {

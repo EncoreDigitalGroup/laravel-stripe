@@ -17,6 +17,7 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
@@ -27,6 +28,7 @@ use Stripe\StripeObject;
 
 class StripePrice
 {
+    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
     use HasSave;
@@ -295,6 +297,25 @@ class StripePrice
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return [
+            "id",
+            "created",
+            "product",
+            "currency",
+            "unit_amount",
+            "unit_amount_decimal",
+            "type",
+            "billing_scheme",
+            "recurring",
+            "tiers",
+            "tiers_mode",
+            "transform_quantity",
+            "custom_unit_amount"
+        ];
     }
 
     // Fluent setters

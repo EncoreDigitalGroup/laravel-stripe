@@ -12,6 +12,7 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
@@ -24,6 +25,7 @@ use Stripe\StripeObject;
 
 class StripePaymentMethod
 {
+    use HasReadOnlyFields;
     use HasGet;
     use HasIdentifier;
     use HasMake;
@@ -146,6 +148,16 @@ class StripePaymentMethod
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created"];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["type"];
     }
 
     public function withId(string $id): self

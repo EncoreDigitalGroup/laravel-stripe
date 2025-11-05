@@ -22,11 +22,7 @@ class StripePaymentMethodService
     /** @throws ApiErrorException */
     public function create(StripePaymentMethod $paymentMethod): StripePaymentMethod
     {
-        $data = $paymentMethod->toArray();
-
-        unset($data["id"], $data["created"]);
-
-        $stripePaymentMethod = $this->stripe->paymentMethods->create($data);
+        $stripePaymentMethod = $this->stripe->paymentMethods->create($paymentMethod->toCreateArray());
 
         return StripePaymentMethod::fromStripeObject($stripePaymentMethod);
     }
@@ -55,11 +51,7 @@ class StripePaymentMethodService
     /** @throws ApiErrorException */
     public function update(string $paymentMethodId, StripePaymentMethod $paymentMethod): StripePaymentMethod
     {
-        $data = $paymentMethod->toArray();
-
-        unset($data["id"], $data["created"], $data["type"]);
-
-        $stripePaymentMethod = $this->stripe->paymentMethods->update($paymentMethodId, $data);
+        $stripePaymentMethod = $this->stripe->paymentMethods->update($paymentMethodId, $paymentMethod->toUpdateArray());
 
         return StripePaymentMethod::fromStripeObject($stripePaymentMethod);
     }

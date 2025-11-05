@@ -13,6 +13,7 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -25,6 +26,7 @@ use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
+    use HasReadOnlyFields;
     use HasMake;
     use HasTimestamps;
 
@@ -153,6 +155,16 @@ class StripeSubscriptionSchedule
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "object", "created", "canceled_at", "completed_at", "released_at", "status"];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["customer", "subscription", "released_subscription"];
     }
 
     // Fluent setters

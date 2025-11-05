@@ -21,12 +21,7 @@ class StripeCustomerService
     /** @throws ApiErrorException */
     public function create(StripeCustomer $customer): StripeCustomer
     {
-        $data = $customer->toArray();
-
-        // Remove id if present (can't send id on create)
-        unset($data["id"]);
-
-        $stripeCustomer = $this->stripe->customers->create($data);
+        $stripeCustomer = $this->stripe->customers->create($customer->toCreateArray());
 
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }
@@ -42,12 +37,7 @@ class StripeCustomerService
     /** @throws ApiErrorException */
     public function update(string $customerId, StripeCustomer $customer): StripeCustomer
     {
-        $data = $customer->toArray();
-
-        // Remove id from update data
-        unset($data["id"]);
-
-        $stripeCustomer = $this->stripe->customers->update($customerId, $data);
+        $stripeCustomer = $this->stripe->customers->update($customerId, $customer->toCreateArray());
 
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }

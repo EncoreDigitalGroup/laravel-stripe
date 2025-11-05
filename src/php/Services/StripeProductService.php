@@ -21,15 +21,8 @@ class StripeProductService
     /** @throws ApiErrorException */
     public function create(StripeProduct $product): StripeProduct
     {
-        $data = $product->toArray();
-
-        // Remove id if present (can't send id on create)
-        unset($data["id"], $data["created"], $data["updated"]);
-
-        // Remove created/updated timestamps (read-only)
-
         /** @phpstan-ignore argument.type */
-        $stripeProduct = $this->stripe->products->create($data);
+        $stripeProduct = $this->stripe->products->create($product->toCreateArray());
 
         return StripeProduct::fromStripeObject($stripeProduct);
     }
@@ -45,14 +38,7 @@ class StripeProductService
     /** @throws ApiErrorException */
     public function update(string $productId, StripeProduct $product): StripeProduct
     {
-        $data = $product->toArray();
-
-        // Remove id from update data
-        unset($data["id"], $data["created"], $data["updated"]);
-
-        // Remove created/updated timestamps (read-only)
-
-        $stripeProduct = $this->stripe->products->update($productId, $data);
+        $stripeProduct = $this->stripe->products->update($productId, $product->toUpdateArray());
 
         return StripeProduct::fromStripeObject($stripeProduct);
     }

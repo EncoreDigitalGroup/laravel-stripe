@@ -59,10 +59,7 @@ class StripeSubscriptionService
     /** @throws ApiErrorException */
     public function update(string $subscriptionId, StripeSubscription $subscription): StripeSubscription
     {
-        $data = $subscription->toArray();
-
-        // Remove read-only fields from update data
-        unset($data["id"], $data["currency"], $data["status"], $data["customer"]);
+        $data = $subscription->toUpdateArray();
 
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
 

@@ -21,11 +21,7 @@ class StripeSetupIntentService
     /** @throws ApiErrorException */
     public function create(StripeSetupIntent $setupIntent): StripeSetupIntent
     {
-        $data = $setupIntent->toArray();
-
-        unset($data["id"], $data["created"], $data["client_secret"]);
-
-        $stripeSetupIntent = $this->stripe->setupIntents->create($data);
+        $stripeSetupIntent = $this->stripe->setupIntents->create($setupIntent->toCreateArray());
 
         return StripeSetupIntent::fromStripeObject($stripeSetupIntent);
     }
@@ -41,11 +37,7 @@ class StripeSetupIntentService
     /** @throws ApiErrorException */
     public function update(string $setupIntentId, StripeSetupIntent $setupIntent): StripeSetupIntent
     {
-        $data = $setupIntent->toArray();
-
-        unset($data["id"], $data["created"], $data["client_secret"]);
-
-        $stripeSetupIntent = $this->stripe->setupIntents->update($setupIntentId, $data);
+        $stripeSetupIntent = $this->stripe->setupIntents->update($setupIntentId, $setupIntent->toUpdateArray());
 
         return StripeSetupIntent::fromStripeObject($stripeSetupIntent);
     }
