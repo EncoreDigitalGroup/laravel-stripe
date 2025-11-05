@@ -191,6 +191,54 @@ test("formats timestamps correctly in toArray", function (): void {
         ->and($array["canceled_at"])->toBe(1641081600);
 });
 
+describe("get", function (): void {
+    test("retrieves schedule by provided ID", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_123",
+                "subscription" => "sub_123",
+                "customer" => "cus_123",
+            ]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()->get("sub_sched_123");
+
+        expect($schedule)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($schedule->id())->toBe("sub_sched_123")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRetrieve);
+    });
+
+    test("retrieves schedule using object's ID when no parameter provided", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_456",
+                "subscription" => "sub_456",
+            ]),
+        ]);
+
+        $schedule = StripeSubscriptionSchedule::make()->withId("sub_sched_456");
+        $result = $schedule->get();
+
+        expect($result)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($result->id())->toBe("sub_sched_456")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRetrieve);
+    });
+
+    test("throws exception when no ID is provided and object has no ID", function (): void {
+        $schedule = StripeSubscriptionSchedule::make();
+
+        expect(fn() => $schedule->get())->toThrow(InvalidArgumentException::class);
+    });
+
+    test("throws exception when provided ID is empty string", function (): void {
+        $schedule = StripeSubscriptionSchedule::make();
+
+        expect(fn() => $schedule->get(""))->toThrow(InvalidArgumentException::class);
+    });
+});
+
 describe("create", function (): void {
     test("creates schedule from subscription using fromSubscription", function (): void {
         $fake = Stripe::fake([

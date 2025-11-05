@@ -317,14 +317,25 @@ class StripeSubscriptionSchedule
         return $this;
     }
 
+    public function get(?string $id = null): self
+    {
+        $scheduleId = $id ?? $this->id;
+
+        if ($scheduleId === null || $scheduleId === "" || $scheduleId === "0") {
+            throw new InvalidArgumentException("Schedule ID is required to retrieve schedule");
+        }
+
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
+        return $scheduleService->get($scheduleId);
+    }
+
     public function create(): self
     {
         if ($this->parentSubscription === null || $this->parentSubscription->id() === null) {
             throw new InvalidArgumentException("Cannot create schedule: parent subscription must have an ID");
         }
 
-        $scheduleService = app(StripeSubscriptionScheduleService::class);
-        $result = $scheduleService->fromSubscription($this->parentSubscription->id());
+        $result = $this->service()->fromSubscription($this->parentSubscription->id());
         $result->parentSubscription = $this->parentSubscription;
 
         return $result;
