@@ -154,7 +154,10 @@ class StripeCustomer
         return $shipping;
     }
 
-    /** @returns Collection<StripeSubscription> */
+    /** @returns Collection<StripeSubscription>
+     * @throws ClassPropertyNullException
+     * @throws ApiErrorException
+     */
     public function subscriptions(bool $refresh = false): Collection
     {
         if ($this->subscriptions instanceof Collection && !$refresh) {
