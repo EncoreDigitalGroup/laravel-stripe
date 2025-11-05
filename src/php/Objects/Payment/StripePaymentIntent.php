@@ -53,9 +53,8 @@ class StripePaymentIntent
         $instance = self::setBasicProperties($instance, $paymentIntent);
         $instance = self::setEnumProperties($instance, $paymentIntent);
         $instance = self::setRelationProperties($instance, $paymentIntent);
-        $instance = self::setAdditionalProperties($instance, $paymentIntent);
 
-        return $instance;
+        return self::setAdditionalProperties($instance, $paymentIntent);
     }
 
     private static function setBasicProperties(self $instance, PaymentIntent $paymentIntent): self
@@ -149,7 +148,7 @@ class StripePaymentIntent
 
         if (isset($paymentIntent->payment_method_types)) {
             $paymentMethodTypes = collect($paymentIntent->payment_method_types)
-                ->map(fn (string $type): PaymentMethodType => PaymentMethodType::from($type));
+                ->map(fn(string $type): PaymentMethodType => PaymentMethodType::from($type));
             $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
         }
 
@@ -179,7 +178,7 @@ class StripePaymentIntent
             "created" => self::carbonToTimestamp($this->created),
             "client_secret" => $this->clientSecret,
             "last_payment_error" => $this->lastPaymentError,
-            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)?->toArray(),
+            "payment_method_types" => $this->paymentMethodTypes?->map(fn(PaymentMethodType $type): string => $type->value)?->toArray(),
             "metadata" => $this->metadata,
         ];
 
@@ -378,7 +377,7 @@ class StripePaymentIntent
         return $this->lastPaymentError;
     }
 
-    /** @param  Collection<int, PaymentMethodType>  $paymentMethodTypes */
+    /** @param Collection<int, PaymentMethodType> $paymentMethodTypes */
     public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
     {
         $this->paymentMethodTypes = $paymentMethodTypes;
