@@ -30,7 +30,7 @@ class StripeSubscriptionSchedulePhase
     private ?string $defaultPaymentMethod = null;
     private ?Collection $defaultTaxRates = null;
     private ?string $collectionMethod = null;
-    private ?string $invoiceSettings = null;
+    private ?array $invoiceSettings = null;
     private ?array $metadata = null;
 
     /** @phpstan-ignore complexity.functionLike */
@@ -91,8 +91,8 @@ class StripeSubscriptionSchedulePhase
         if ($obj->collection_method ?? null) {
             $instance->collectionMethod = $obj->collection_method;
         }
-        if ($obj->invoice_settings ?? null) {
-            $instance->invoiceSettings = $obj->invoice_settings;
+        if (isset($obj->invoice_settings)) {
+            $instance->invoiceSettings = $obj->invoice_settings->toArray();
         }
         if (isset($obj->metadata)) {
             $instance->metadata = $obj->metadata->toArray();
@@ -203,7 +203,7 @@ class StripeSubscriptionSchedulePhase
         return $this;
     }
 
-    public function withInvoiceSettings(string $invoiceSettings): self
+    public function withInvoiceSettings(array $invoiceSettings): self
     {
         $this->invoiceSettings = $invoiceSettings;
 
@@ -267,7 +267,7 @@ class StripeSubscriptionSchedulePhase
         return $this->collectionMethod;
     }
 
-    public function invoiceSettings(): ?string
+    public function invoiceSettings(): ?array
     {
         return $this->invoiceSettings;
     }

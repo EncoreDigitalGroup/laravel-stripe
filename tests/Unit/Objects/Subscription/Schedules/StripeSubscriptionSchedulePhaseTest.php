@@ -72,7 +72,11 @@ test("can convert from Stripe object with all fields", function (): void {
         "trial_end" => 1641600000,  // 2022-01-08 00:00:00 UTC
         "default_payment_method" => "pm_test123",
         "collection_method" => "send_invoice",
-        "invoice_settings" => "some_settings",
+        "invoice_settings" => [
+            "account_tax_ids" => null,
+            "days_until_due" => null,
+            "issuer" => ["type" => "self"],
+        ],
         "metadata" => ["phase" => "test"],
         "items" => [
             "data" => [
@@ -99,7 +103,11 @@ test("can convert from Stripe object with all fields", function (): void {
         ->and($phase->trialEnd()->timestamp)->toBe(1641600000)
         ->and($phase->defaultPaymentMethod())->toBe("pm_test123")
         ->and($phase->collectionMethod())->toBe("send_invoice")
-        ->and($phase->invoiceSettings())->toBe("some_settings")
+        ->and($phase->invoiceSettings())->toBe([
+            "account_tax_ids" => null,
+            "days_until_due" => null,
+            "issuer" => ["type" => "self"],
+        ])
         ->and($phase->metadata())->toBe(["phase" => "test"]);
 
     expect($phase->items())->toHaveCount(1)
@@ -148,7 +156,7 @@ test("converts to array with all fields", function (): void {
         defaultPaymentMethod: "pm_test123",
         defaultTaxRates: $taxRates,
         collectionMethod: "charge_automatically",
-        invoiceSettings: "settings",
+        invoiceSettings: ["days_until_due" => 30],
         metadata: ["key" => "value"],
     );
 
@@ -165,7 +173,7 @@ test("converts to array with all fields", function (): void {
         ->toHaveKey("default_payment_method", "pm_test123")
         ->toHaveKey("default_tax_rates", $taxRates->toArray())
         ->toHaveKey("collection_method", "charge_automatically")
-        ->toHaveKey("invoice_settings", "settings")
+        ->toHaveKey("invoice_settings", ["days_until_due" => 30])
         ->toHaveKey("metadata", ["key" => "value"]);
 });
 
