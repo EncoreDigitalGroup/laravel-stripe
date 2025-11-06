@@ -105,18 +105,21 @@ class StripeSubscriptionSchedulePhase
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(function ($item) {
+            $mapped = $this->items->map(function ($item) {
                 if ($item instanceof StripePhaseItem) {
                     return $item->toArray();
                 }
 
                 return $item;
-            })->toArray();
+            })->filter(fn ($item) => !empty($item))->values()->toArray();
+
+            $items = empty($mapped) ? null : $mapped;
         }
 
         $invoiceSettings = null;
         if (is_array($this->invoiceSettings)) {
-            $invoiceSettings = Arr::whereNotNull($this->invoiceSettings);
+            $filtered = Arr::whereNotNull($this->invoiceSettings);
+            $invoiceSettings = empty($filtered) ? null : $filtered;
         }
 
         $array = [

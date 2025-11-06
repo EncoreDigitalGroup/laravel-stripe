@@ -206,3 +206,37 @@ test("formats timestamps correctly in toArray", function (): void {
     expect($array["start_date"])->toBe(1640995200)
         ->and($array["end_date"])->toBe(1643673600);
 });
+
+test("filters null values from invoiceSettings in toArray", function (): void {
+    $phase = StripeSubscriptionSchedulePhase::make(
+        invoiceSettings: [
+            "account_tax_ids" => null,
+            "days_until_due" => null,
+            "issuer" => null,
+        ],
+    );
+
+    $array = $phase->toArray();
+
+    expect($array)->not()->toHaveKey("invoice_settings");
+});
+
+test("preserves non-null values in invoiceSettings in toArray", function (): void {
+    $phase = StripeSubscriptionSchedulePhase::make(
+        invoiceSettings: [
+            "account_tax_ids" => null,
+            "days_until_due" => 30,
+            "issuer" => ["type" => "self"],
+        ],
+    );
+
+    $array = $phase->toArray();
+
+    expect($array)
+        ->toHaveKey("invoice_settings")
+        ->and($array["invoice_settings"])->toBe([
+            "days_until_due" => 30,
+            "issuer" => ["type" => "self"],
+        ])
+        ->and($array["invoice_settings"])->not()->toHaveKey("account_tax_ids");
+});
