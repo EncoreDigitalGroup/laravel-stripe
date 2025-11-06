@@ -37,22 +37,33 @@ class StripeSubscriptionSchedulePhase
     public static function fromStripeObject(StripeObject $obj): self
     {
         $items = null;
-        if (isset($obj->items->data)) {
-            /** @phpstan-ignore-next-line argument.templateType */
-            $items = collect($obj->items->data)->map(function ($item): StripePhaseItem {
-                $priceId = is_string($item->price) ? $item->price : ($item->price->id ?? null);
-                assert(!is_null($priceId), "price id must not be null");
 
-                $phaseItem = StripePhaseItem::make()
-                    ->withPrice($priceId)
-                    ->withQuantity($item->quantity ?? 1);
+        if (isset($obj->items)) {
+            $itemsData = isset($obj->items->data) ? $obj->items->data : (is_array($obj->items) ? $obj->items : null);
 
-                if (isset($item->metadata)) {
-                    $phaseItem->withMetadata($item->metadata->toArray());
-                }
+            if ($itemsData) {
+                /** @phpstan-ignore-next-line argument.templateType */
+                $items = collect($itemsData)->map(function ($item): StripePhaseItem {
+                    $priceId = is_string($item->price) ? $item->price : ($item->price->id ?? null);
 
-                return $phaseItem;
-            });
+                    if (is_null($priceId) && isset($item->plan)) {
+                        $priceId = is_string($item->plan) ? $item->plan : ($item->plan->id ?? null);
+                    }
+
+                    assert(!is_null($priceId), "price id must not be null");
+
+                    $phaseItem = StripePhaseItem::make()
+                        ->withPrice($priceId)
+                        ->withQuantity($item->quantity ?? 1);
+
+                    if (isset($item->metadata)) {
+                        $metadata = is_array($item->metadata) ? $item->metadata : $item->metadata->toArray();
+                        $phaseItem->withMetadata($metadata);
+                    }
+
+                    return $phaseItem;
+                });
+            }
         }
 
         $defaultTaxRates = null;
