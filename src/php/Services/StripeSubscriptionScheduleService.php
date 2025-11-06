@@ -9,6 +9,8 @@ namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
+use PHPGenesis\Logger\Logger;
+use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
 /** @internal */
@@ -38,10 +40,19 @@ class StripeSubscriptionScheduleService
         $data = $subscriptionSchedule->toUpdateArray();
 
         if (isset($data["phases"])) {
-            foreach ($data["phases"] as &$phase) {
+            foreach ($data["phases"] as $index => &$phase) {
                 unset($phase["start_date"]);
+
+                if (!isset($phase["items"])) {
+                    throw new RuntimeException(
+                        "Phase {$index} is missing required 'items' field. " .
+                        "When updating subscription schedules, all phases must include an 'items' array."
+                    );
+                }
             }
         }
+
+        Logger::info("Subscription schedule update data", $data);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
 
