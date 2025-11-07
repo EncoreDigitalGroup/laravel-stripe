@@ -92,15 +92,6 @@ class StripeSubscriptionScheduleService
 
     /**
      * @throws ApiErrorException
-     * @deprecated use get method instead.
-     */
-    public function forSubscription(string $subscriptionId): ?StripeSubscriptionSchedule
-    {
-        return $this->get($subscriptionId);
-    }
-
-    /**
-     * @throws ApiErrorException
      */
     public function fromSubscription(string $subscriptionId): StripeSubscriptionSchedule
     {
