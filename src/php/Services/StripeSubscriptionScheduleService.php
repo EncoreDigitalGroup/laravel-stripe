@@ -10,6 +10,7 @@ namespace EncoreDigitalGroup\Stripe\Services;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
+use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
 
 /** @internal */
@@ -48,6 +49,10 @@ class StripeSubscriptionScheduleService
 
         unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"], $data["subscription"], $data["released_subscription"]);
 
+        Log::info("Subscription schedule update data before processing", [
+            "phases" => $data["phases"] ?? [],
+        ]);
+
         if (isset($data["phases"])) {
             foreach ($data["phases"] as $index => &$phase) {
                 if ($index > 0 && isset($phase["start_date"])) {
@@ -56,6 +61,10 @@ class StripeSubscriptionScheduleService
                 unset($phase["start_date"]);
             }
         }
+
+        Log::info("Subscription schedule update data after processing", [
+            "phases" => $data["phases"] ?? [],
+        ]);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
 
