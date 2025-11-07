@@ -334,9 +334,7 @@ class StripeSubscription
         return $result;
     }
 
-    /**
-     * @throws ApiErrorException
-     */
+    /** @throws ApiErrorException */
     public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
     {
         if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule && !$refresh) {
