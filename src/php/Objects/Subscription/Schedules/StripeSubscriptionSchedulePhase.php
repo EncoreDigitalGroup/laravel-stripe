@@ -109,9 +109,6 @@ class StripeSubscriptionSchedulePhase
         if ($obj->collection_method ?? null) {
             $instance->collectionMethod = $obj->collection_method;
         }
-        if ($obj->invoice_settings ?? null) {
-            $instance->invoiceSettings = $obj->invoice_settings;
-        }
         if (isset($obj->metadata)) {
             $instance->metadata = $obj->metadata->toArray();
         }
@@ -132,6 +129,11 @@ class StripeSubscriptionSchedulePhase
             })->toArray();
         }
 
+        $invoiceSettings = null;
+        if ($this->invoiceSettings !== null) {
+            $invoiceSettings = is_string($this->invoiceSettings) ? $this->invoiceSettings : null;
+        }
+
         $array = [
             "start_date" => self::carbonToTimestamp($this->startDate),
             "end_date" => self::carbonToTimestamp($this->endDate),
@@ -143,7 +145,7 @@ class StripeSubscriptionSchedulePhase
             "default_payment_method" => $this->defaultPaymentMethod,
             "default_tax_rates" => $this->defaultTaxRates?->toArray(),
             "collection_method" => $this->collectionMethod,
-            "invoice_settings" => $this->invoiceSettings,
+            "invoice_settings" => $invoiceSettings,
             "metadata" => $this->metadata,
         ];
 
