@@ -7,10 +7,9 @@
 
 namespace EncoreDigitalGroup\Stripe\Services;
 
+use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
-use PHPGenesis\Logger\Logger;
-use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
 /** @internal */
@@ -18,10 +17,16 @@ class StripeSubscriptionScheduleService
 {
     use HasStripe;
 
-    /** @throws ApiErrorException */
+    /**
+     * @throws ApiErrorException
+     */
     public function create(StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
-        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($subscriptionSchedule->toCreateArray());
+        $data = $subscriptionSchedule->toArray();
+
+        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"]);
+
+        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($data);
 
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
@@ -34,32 +39,32 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
-    /** @throws ApiErrorException */
+    /**
+     * @throws ApiErrorException
+     */
     public function update(string $subscriptionScheduleId, StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
-        $data = $subscriptionSchedule->toUpdateArray();
+        $data = $subscriptionSchedule->toArray();
+
+        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"], $data["subscription"], $data["released_subscription"]);
 
         if (isset($data["phases"])) {
             foreach ($data["phases"] as $index => &$phase) {
-                unset($phase["start_date"]);
-
-                if (!isset($phase["items"])) {
-                    throw new RuntimeException(
-                        "Phase {$index} is missing required 'items' field. " .
-                        "When updating subscription schedules, all phases must include an 'items' array."
-                    );
+                if ($index > 0 && isset($phase["start_date"])) {
+                    continue;
                 }
+                unset($phase["start_date"]);
             }
         }
-
-        Logger::info("Subscription schedule update data", $data);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
 
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
-    /** @throws ApiErrorException */
+    /**
+     * @throws ApiErrorException
+     */
     public function cancel(string $subscriptionScheduleId, ?bool $invoiceNow = null, ?bool $prorate = null): StripeSubscriptionSchedule
     {
         $params = [];
@@ -77,7 +82,9 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
-    /** @throws ApiErrorException */
+    /**
+     * @throws ApiErrorException
+     */
     public function release(string $subscriptionScheduleId, ?bool $preserveCancelDate = null): StripeSubscriptionSchedule
     {
         $params = [];
@@ -93,7 +100,6 @@ class StripeSubscriptionScheduleService
 
     /**
      * @throws ApiErrorException
-     *
      * @deprecated use get method instead.
      */
     public function forSubscription(string $subscriptionId): ?StripeSubscriptionSchedule
@@ -101,7 +107,9 @@ class StripeSubscriptionScheduleService
         return $this->get($subscriptionId);
     }
 
-    /** @throws ApiErrorException */
+    /**
+     * @throws ApiErrorException
+     */
     public function fromSubscription(string $subscriptionId): StripeSubscriptionSchedule
     {
         $response = $this->stripe->subscriptionSchedules->create([
