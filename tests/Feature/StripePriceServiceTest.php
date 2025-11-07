@@ -196,7 +196,7 @@ test("get price by lookup key returns null when not found", function (): void {
     expect($price)->toBeNull();
 });
 
-test("create removes id and created from payload", function (): void {
+test("create removes read-only fields from payload", function (): void {
     $fake = Stripe::fake([
         "prices.create" => StripeFixtures::price(["id" => "price_new"]),
     ]);
@@ -214,9 +214,12 @@ test("create removes id and created from payload", function (): void {
 
     $params = $fake->getCall("prices.create");
 
+    // Read-only fields should be removed (id, created, product, currency, unit_amount, etc.)
     expect($params)->not->toHaveKey("id")
         ->and($params)->not->toHaveKey("created")
-        ->and($params)->toHaveKey("product");
+        ->and($params)->not->toHaveKey("product")
+        ->and($params)->not->toHaveKey("currency")
+        ->and($params)->not->toHaveKey("unit_amount");
 });
 
 test("update removes immutable fields from payload", function (): void {

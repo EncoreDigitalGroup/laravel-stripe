@@ -30,7 +30,6 @@ class StripeSubscriptionSchedulePhase
     private ?string $defaultPaymentMethod = null;
     private ?Collection $defaultTaxRates = null;
     private ?string $collectionMethod = null;
-    private ?string $invoiceSettings = null;
     private ?array $metadata = null;
 
     /** @phpstan-ignore complexity.functionLike */
@@ -129,11 +128,6 @@ class StripeSubscriptionSchedulePhase
             })->toArray();
         }
 
-        $invoiceSettings = null;
-        if ($this->invoiceSettings !== null) {
-            $invoiceSettings = is_string($this->invoiceSettings) ? $this->invoiceSettings : null;
-        }
-
         $array = [
             "start_date" => self::carbonToTimestamp($this->startDate),
             "end_date" => self::carbonToTimestamp($this->endDate),
@@ -145,7 +139,6 @@ class StripeSubscriptionSchedulePhase
             "default_payment_method" => $this->defaultPaymentMethod,
             "default_tax_rates" => $this->defaultTaxRates?->toArray(),
             "collection_method" => $this->collectionMethod,
-            "invoice_settings" => $invoiceSettings,
             "metadata" => $this->metadata,
         ];
 
@@ -223,13 +216,6 @@ class StripeSubscriptionSchedulePhase
         return $this;
     }
 
-    public function withInvoiceSettings(string $invoiceSettings): self
-    {
-        $this->invoiceSettings = $invoiceSettings;
-
-        return $this;
-    }
-
     public function withMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
@@ -285,11 +271,6 @@ class StripeSubscriptionSchedulePhase
     public function collectionMethod(): ?string
     {
         return $this->collectionMethod;
-    }
-
-    public function invoiceSettings(): ?string
-    {
-        return $this->invoiceSettings;
     }
 
     public function metadata(): ?array

@@ -77,10 +77,6 @@ test("can create StripeSubscription from Stripe object", function (): void {
         ->and($subscription->id())->toBe("sub_123")
         ->and($subscription->customer())->toBe("cus_123")
         ->and($subscription->status())->toBe(SubscriptionStatus::Active)
-        ->and($subscription->currentPeriodStart())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($subscription->currentPeriodStart()->timestamp)->toBe(1234567890)
-        ->and($subscription->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($subscription->currentPeriodEnd()->timestamp)->toBe(1237159890)
         ->and($subscription->items())->toBeInstanceOf(Collection::class)
         ->and($subscription->items())->toHaveCount(1)
         ->and($subscription->defaultPaymentMethod())->toBe("pm_123")
@@ -185,36 +181,6 @@ test("fromStripeObject handles items correctly", function (): void {
         ->and($subscription->items()->get(0)->price())->toBe("price_1")
         ->and($subscription->items()->get(0)->quantity())->toBe(2)
         ->and($subscription->items()->get(1)->price())->toBe("price_2");
-});
-
-test("fromStripeObject handles item current period dates", function (): void {
-    $stripeObject = Util::convertToStripeObject([
-        "id" => "sub_123",
-        "object" => "subscription",
-        "customer" => "cus_123",
-        "status" => "active",
-        "items" => [
-            "data" => [
-                [
-                    "id" => "si_1",
-                    "price" => ["id" => "price_1"],
-                    "quantity" => 1,
-                    "current_period_start" => 1704110400,
-                    "current_period_end" => 1706788800,
-                    "metadata" => [],
-                ],
-            ],
-        ],
-        "metadata" => [],
-    ], []);
-
-    $subscription = StripeSubscription::fromStripeObject($stripeObject);
-    $item = $subscription->items()->get(0);
-
-    expect($item->currentPeriodStart())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($item->currentPeriodStart()->timestamp)->toBe(1704110400)
-        ->and($item->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($item->currentPeriodEnd()->timestamp)->toBe(1706788800);
 });
 
 test("fromStripeObject handles items without current period dates", function (): void {

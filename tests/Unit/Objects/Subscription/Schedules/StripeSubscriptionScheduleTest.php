@@ -122,8 +122,9 @@ test("converts phases collection from Stripe object", function (): void {
         ->and($schedule->phases()->first()->endDate())->toBeInstanceOf(CarbonImmutable::class)
         ->and($schedule->phases()->first()->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
         ->and($schedule->phases()->first()->items())->toHaveCount(1)
-        ->and($schedule->phases()->first()->items()->first()["price"])->toBe("price_test123")
-        ->and($schedule->phases()->first()->items()->first()["quantity"])->toBe(2);
+        ->and($schedule->phases()->first()->items()->first())->toBeInstanceOf(StripePhaseItem::class)
+        ->and($schedule->phases()->first()->items()->first()->price())->toBe("price_test123")
+        ->and($schedule->phases()->first()->items()->first()->quantity())->toBe(2);
 });
 
 test("converts to array with all fields", function (): void {

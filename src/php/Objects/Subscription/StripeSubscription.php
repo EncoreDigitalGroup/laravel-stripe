@@ -36,8 +36,6 @@ class StripeSubscription
     private ?string $id = null;
     private ?string $customer = null;
     private ?SubscriptionStatus $status = null;
-    private ?CarbonImmutable $currentPeriodStart = null;
-    private ?CarbonImmutable $currentPeriodEnd = null;
     private ?CarbonImmutable $cancelAt = null;
     private ?CarbonImmutable $canceledAt = null;
     private ?CarbonImmutable $trialStart = null;
@@ -85,16 +83,6 @@ class StripeSubscription
 
         if ($status instanceof SubscriptionStatus) {
             $instance = $instance->withStatus($status);
-        }
-
-        $currentPeriodStart = self::timestampToCarbon($stripeSubscription->current_period_start ?? null);
-        if ($currentPeriodStart instanceof CarbonImmutable) {
-            $instance = $instance->withCurrentPeriodStart($currentPeriodStart);
-        }
-
-        $currentPeriodEnd = self::timestampToCarbon($stripeSubscription->current_period_end ?? null);
-        if ($currentPeriodEnd instanceof CarbonImmutable) {
-            $instance = $instance->withCurrentPeriodEnd($currentPeriodEnd);
         }
 
         $cancelAt = self::timestampToCarbon($stripeSubscription->cancel_at ?? null);
@@ -180,16 +168,6 @@ class StripeSubscription
 
             if (isset($item->price->id)) {
                 $subscriptionItem = $subscriptionItem->withPrice($item->price->id);
-            }
-
-            $currentPeriodStart = self::timestampToCarbon($item->current_period_start ?? null);
-            if ($currentPeriodStart instanceof CarbonImmutable) {
-                $subscriptionItem = $subscriptionItem->withCurrentPeriodStart($currentPeriodStart);
-            }
-
-            $currentPeriodEnd = self::timestampToCarbon($item->current_period_end ?? null);
-            if ($currentPeriodEnd instanceof CarbonImmutable) {
-                $subscriptionItem = $subscriptionItem->withCurrentPeriodEnd($currentPeriodEnd);
             }
 
             if (isset($item->metadata)) {
@@ -305,15 +283,13 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
             "id" => $this->id,
             "customer" => $this->customer,
             "status" => $this->status?->value,
-            "current_period_start" => self::carbonToTimestamp($this->currentPeriodStart),
-            "current_period_end" => self::carbonToTimestamp($this->currentPeriodEnd),
             "cancel_at" => self::carbonToTimestamp($this->cancelAt),
             "canceled_at" => self::carbonToTimestamp($this->canceledAt),
             "trial_start" => self::carbonToTimestamp($this->trialStart),
@@ -359,8 +335,6 @@ class StripeSubscription
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      * @throws ApiErrorException
      */
     public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
@@ -401,22 +375,6 @@ class StripeSubscription
     public function withStatus(SubscriptionStatus $status): self
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodStart() instead */
-    public function withCurrentPeriodStart(CarbonImmutable $currentPeriodStart): self
-    {
-        $this->currentPeriodStart = $currentPeriodStart;
-
-        return $this;
-    }
-
-    /** @deprecated Use StripeSubscriptionItem::withCurrentPeriodEnd() instead */
-    public function withCurrentPeriodEnd(CarbonImmutable $currentPeriodEnd): self
-    {
-        $this->currentPeriodEnd = $currentPeriodEnd;
 
         return $this;
     }
@@ -532,16 +490,6 @@ class StripeSubscription
     public function status(): ?SubscriptionStatus
     {
         return $this->status;
-    }
-
-    public function currentPeriodStart(): ?CarbonImmutable
-    {
-        return $this->currentPeriodStart;
-    }
-
-    public function currentPeriodEnd(): ?CarbonImmutable
-    {
-        return $this->currentPeriodEnd;
     }
 
     public function cancelAt(): ?CarbonImmutable
