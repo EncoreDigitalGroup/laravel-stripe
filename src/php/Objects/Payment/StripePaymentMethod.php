@@ -12,10 +12,10 @@ use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -25,11 +25,11 @@ use Stripe\StripeObject;
 
 class StripePaymentMethod
 {
-    use HasReadOnlyFields;
     use HasGet;
     use HasIdentifier;
     use HasMake;
     use HasMetadata;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -150,16 +150,6 @@ class StripePaymentMethod
         return Arr::whereNotNull($array);
     }
 
-    protected function getReadOnlyFields(): array
-    {
-        return ["id", "created"];
-    }
-
-    protected function getUpdateOnlyReadOnlyFields(): array
-    {
-        return ["type"];
-    }
-
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -246,5 +236,15 @@ class StripePaymentMethod
     public function usBankAccount(): ?Collection
     {
         return $this->usBankAccount;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created"];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["type"];
     }
 }

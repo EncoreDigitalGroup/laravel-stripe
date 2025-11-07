@@ -16,21 +16,19 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription;
 
 class StripeSubscription
 {
-    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasTimestamps;
 
     private ?string $id = null;
@@ -283,7 +281,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
@@ -307,11 +305,6 @@ class StripeSubscription
         ];
 
         return Arr::whereNotNull($array);
-    }
-
-    protected function getReadOnlyFields(): array
-    {
-        return ["id", "currency", "status", "customer"];
     }
 
     /**
@@ -558,5 +551,10 @@ class StripeSubscription
     public function description(): ?string
     {
         return $this->description;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "currency", "status", "customer"];
     }
 }

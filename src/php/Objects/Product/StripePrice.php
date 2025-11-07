@@ -17,8 +17,8 @@ use EncoreDigitalGroup\Stripe\Enums\RecurringUsageType;
 use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -28,9 +28,9 @@ use Stripe\StripeObject;
 
 class StripePrice
 {
-    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -299,25 +299,6 @@ class StripePrice
         return Arr::whereNotNull($array);
     }
 
-    protected function getReadOnlyFields(): array
-    {
-        return [
-            "id",
-            "created",
-            "product",
-            "currency",
-            "unit_amount",
-            "unit_amount_decimal",
-            "type",
-            "billing_scheme",
-            "recurring",
-            "tiers",
-            "tiers_mode",
-            "transform_quantity",
-            "custom_unit_amount"
-        ];
-    }
-
     // Fluent setters
     public function withId(string $id): self
     {
@@ -536,5 +517,24 @@ class StripePrice
     public function created(): ?CarbonImmutable
     {
         return $this->created;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return [
+            "id",
+            "created",
+            "product",
+            "currency",
+            "unit_amount",
+            "unit_amount_decimal",
+            "type",
+            "billing_scheme",
+            "recurring",
+            "tiers",
+            "tiers_mode",
+            "transform_quantity",
+            "custom_unit_amount",
+        ];
     }
 }

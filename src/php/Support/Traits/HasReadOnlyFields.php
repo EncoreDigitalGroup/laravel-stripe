@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2025. Encore Digital Group.
  * All Right Reserved.
@@ -8,13 +9,6 @@ namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
 trait HasReadOnlyFields
 {
-    abstract protected function getReadOnlyFields(): array;
-
-    protected function getUpdateOnlyReadOnlyFields(): array
-    {
-        return [];
-    }
-
     public function toCreateArray(): array
     {
         $array = $this->toArray();
@@ -40,5 +34,12 @@ trait HasReadOnlyFields
         }
 
         return $array;
+    }
+
+    abstract protected function getReadOnlyFields(): array;
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return [];
     }
 }

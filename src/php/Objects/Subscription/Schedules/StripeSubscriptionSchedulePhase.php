@@ -38,7 +38,7 @@ class StripeSubscriptionSchedulePhase
         $items = null;
 
         if (isset($obj->items)) {
-            $itemsData = isset($obj->items->data) ? $obj->items->data : (is_array($obj->items) ? $obj->items : null);
+            $itemsData = $obj->items->data ?? (is_array($obj->items) ? $obj->items : null);
 
             if ($itemsData) {
                 /** @phpstan-ignore-next-line argument.templateType */

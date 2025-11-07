@@ -17,8 +17,8 @@ use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -29,9 +29,9 @@ use Stripe\StripeObject;
 
 class StripeCustomer
 {
-    use HasReadOnlyFields;
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasSave;
 
     private ?string $id = null;
@@ -302,11 +302,6 @@ class StripeCustomer
         return Arr::whereNotNull($array);
     }
 
-    protected function getReadOnlyFields(): array
-    {
-        return ["id"];
-    }
-
     // Fluent setters
     public function withId(string $id): self
     {
@@ -398,5 +393,10 @@ class StripeCustomer
     public function shipping(): ?StripeShipping
     {
         return $this->shipping;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id"];
     }
 }

@@ -7,10 +7,8 @@
 
 namespace EncoreDigitalGroup\Stripe\Services;
 
-use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
-use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
 
 /** @internal */

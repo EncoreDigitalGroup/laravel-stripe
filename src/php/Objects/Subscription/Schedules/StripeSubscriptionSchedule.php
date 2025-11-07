@@ -26,8 +26,8 @@ use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
-    use HasReadOnlyFields;
     use HasMake;
+    use HasReadOnlyFields;
     use HasTimestamps;
 
     private ?string $id = null;
@@ -155,16 +155,6 @@ class StripeSubscriptionSchedule
         ];
 
         return Arr::whereNotNull($array);
-    }
-
-    protected function getReadOnlyFields(): array
-    {
-        return ["id", "object", "created", "canceled_at", "completed_at", "released_at", "status"];
-    }
-
-    protected function getUpdateOnlyReadOnlyFields(): array
-    {
-        return ["customer", "subscription", "released_subscription"];
     }
 
     // Fluent setters
@@ -384,5 +374,15 @@ class StripeSubscriptionSchedule
         $result->parentSubscription = $this->parentSubscription;
 
         return $result;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "object", "created", "canceled_at", "completed_at", "released_at", "status"];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["customer", "subscription", "released_subscription"];
     }
 }
