@@ -17,6 +17,9 @@ use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Stripe\Exception\ApiErrorException;
 use Stripe\WebhookEndpoint;
 
 class StripeWebhookEndpoint
@@ -114,13 +117,19 @@ class StripeWebhookEndpoint
         return Arr::whereNotNull($array);
     }
 
-    public function get(string $endpointId): self
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws ApiErrorException
+     * @throws NotFoundExceptionInterface
+     */
+    public function get(string $id): self
     {
         $service = app(StripeWebhookEndpointService::class);
 
-        return $service->get($endpointId);
+        return $service->get($id);
     }
 
+    /** @throws ApiErrorException */
     public function save(): self
     {
         $service = app(StripeWebhookEndpointService::class);
@@ -128,6 +137,7 @@ class StripeWebhookEndpoint
         return is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
     }
 
+    /** @throws ApiErrorException */
     public function delete(): self
     {
         if (is_null($this->id)) {

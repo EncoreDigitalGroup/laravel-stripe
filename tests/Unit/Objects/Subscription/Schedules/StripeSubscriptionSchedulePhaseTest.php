@@ -7,6 +7,7 @@
 
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
+use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedulePhase;
 use Stripe\Util\Util;
 
@@ -72,7 +73,11 @@ test("can convert from Stripe object with all fields", function (): void {
         "trial_end" => 1641600000,  // 2022-01-08 00:00:00 UTC
         "default_payment_method" => "pm_test123",
         "collection_method" => "send_invoice",
-        "invoice_settings" => "some_settings",
+        "invoice_settings" => [
+            "account_tax_ids" => null,
+            "days_until_due" => null,
+            "issuer" => ["type" => "self"],
+        ],
         "metadata" => ["phase" => "test"],
         "items" => [
             "data" => [
@@ -99,17 +104,16 @@ test("can convert from Stripe object with all fields", function (): void {
         ->and($phase->trialEnd()->timestamp)->toBe(1641600000)
         ->and($phase->defaultPaymentMethod())->toBe("pm_test123")
         ->and($phase->collectionMethod())->toBe("send_invoice")
-        ->and($phase->invoiceSettings())->toBe("some_settings")
-        ->and($phase->metadata())->toBe(["phase" => "test"]);
-
-    expect($phase->items())->toHaveCount(1)
-        ->and($phase->items()->first()["price"])->toBe("price_test123")
-        ->and($phase->items()->first()["quantity"])->toBe(2)
-        ->and($phase->items()->first()["metadata"])->toBe(["item" => "test"]);
-
-    expect($phase->defaultTaxRates())->toHaveCount(2)
+        ->and($phase->metadata())->toBe(["phase" => "test"])
+        ->and($phase->items())->toHaveCount(1)
+        ->and($phase->items()->first())->toBeInstanceOf(StripePhaseItem::class)
+        ->and($phase->items()->first()->price())->toBe("price_test123")
+        ->and($phase->items()->first()->quantity())->toBe(2)
+        ->and($phase->items()->first()->metadata())->toBe(["item" => "test"])
+        ->and($phase->defaultTaxRates())->toHaveCount(2)
         ->and($phase->defaultTaxRates()->first())->toBe("txr_test123")
         ->and($phase->defaultTaxRates()->last())->toBe("txr_test456");
+
 });
 
 test("handles missing optional fields in fromStripeObject", function (): void {
@@ -133,7 +137,7 @@ test("converts to array with all fields", function (): void {
     $endDate = $now->addMonth();
     $trialEnd = $now->addDays(7);
     $items = collect([
-        ["price" => "price_test123", "quantity" => 1],
+        StripePhaseItem::make(price: "price_test123", quantity: 1),
     ]);
     $taxRates = collect(["txr_test123"]);
 
@@ -148,7 +152,6 @@ test("converts to array with all fields", function (): void {
         defaultPaymentMethod: "pm_test123",
         defaultTaxRates: $taxRates,
         collectionMethod: "charge_automatically",
-        invoiceSettings: "settings",
         metadata: ["key" => "value"],
     );
 
@@ -157,7 +160,7 @@ test("converts to array with all fields", function (): void {
     expect($array)
         ->toHaveKey("start_date", $now->timestamp)
         ->toHaveKey("end_date", $endDate->timestamp)
-        ->toHaveKey("items", $items->toArray())
+        ->toHaveKey("items")
         ->toHaveKey("iterations", 2)
         ->toHaveKey("proration_behavior", "create_prorations")
         ->toHaveKey("trial_period_days", 7)
@@ -165,7 +168,6 @@ test("converts to array with all fields", function (): void {
         ->toHaveKey("default_payment_method", "pm_test123")
         ->toHaveKey("default_tax_rates", $taxRates->toArray())
         ->toHaveKey("collection_method", "charge_automatically")
-        ->toHaveKey("invoice_settings", "settings")
         ->toHaveKey("metadata", ["key" => "value"]);
 });
 

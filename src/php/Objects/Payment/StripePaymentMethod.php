@@ -15,6 +15,7 @@ use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasIdentifier;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -28,6 +29,7 @@ class StripePaymentMethod
     use HasIdentifier;
     use HasMake;
     use HasMetadata;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -234,5 +236,15 @@ class StripePaymentMethod
     public function usBankAccount(): ?Collection
     {
         return $this->usBankAccount;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created"];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["type"];
     }
 }

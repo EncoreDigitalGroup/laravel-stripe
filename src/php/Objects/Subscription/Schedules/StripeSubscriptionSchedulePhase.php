@@ -8,6 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules;
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\NullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
@@ -30,22 +31,41 @@ class StripeSubscriptionSchedulePhase
     private ?string $defaultPaymentMethod = null;
     private ?Collection $defaultTaxRates = null;
     private ?string $collectionMethod = null;
-    private ?string $invoiceSettings = null;
     private ?array $metadata = null;
 
     /** @phpstan-ignore complexity.functionLike */
     public static function fromStripeObject(StripeObject $obj): self
     {
         $items = null;
-        if (isset($obj->items->data)) {
-            /** @phpstan-ignore-next-line argument.templateType */
-            $items = collect($obj->items->data)->map(function ($item): array {
-                return [
-                    "price" => $item->price ?? null,
-                    "quantity" => $item->quantity ?? null,
-                    "metadata" => isset($item->metadata) ? $item->metadata->toArray() : null,
-                ];
-            });
+
+        if (isset($obj->items)) {
+            $itemsData = $obj->items->data ?? (is_array($obj->items) ? $obj->items : null);
+
+            if ($itemsData) {
+                /** @phpstan-ignore-next-line argument.templateType */
+                $items = collect($itemsData)->map(function ($item): StripePhaseItem {
+                    $priceId = is_string($item->price) ? $item->price : ($item->price->id ?? null);
+
+                    if (is_null($priceId) && isset($item->plan)) {
+                        $priceId = is_string($item->plan) ? $item->plan : ($item->plan->id ?? null);
+                    }
+
+                    if (is_null($priceId)) {
+                        throw new NullException("Price ID must not be null.");
+                    }
+
+                    $phaseItem = StripePhaseItem::make()
+                        ->withPrice($priceId)
+                        ->withQuantity($item->quantity ?? 1);
+
+                    if (isset($item->metadata)) {
+                        $metadata = is_array($item->metadata) ? $item->metadata : $item->metadata->toArray();
+                        $phaseItem->withMetadata($metadata);
+                    }
+
+                    return $phaseItem;
+                });
+            }
         }
 
         $defaultTaxRates = null;
@@ -91,9 +111,6 @@ class StripeSubscriptionSchedulePhase
         if ($obj->collection_method ?? null) {
             $instance->collectionMethod = $obj->collection_method;
         }
-        if ($obj->invoice_settings ?? null) {
-            $instance->invoiceSettings = $obj->invoice_settings;
-        }
         if (isset($obj->metadata)) {
             $instance->metadata = $obj->metadata->toArray();
         }
@@ -125,7 +142,6 @@ class StripeSubscriptionSchedulePhase
             "default_payment_method" => $this->defaultPaymentMethod,
             "default_tax_rates" => $this->defaultTaxRates?->toArray(),
             "collection_method" => $this->collectionMethod,
-            "invoice_settings" => $this->invoiceSettings,
             "metadata" => $this->metadata,
         ];
 
@@ -203,13 +219,6 @@ class StripeSubscriptionSchedulePhase
         return $this;
     }
 
-    public function withInvoiceSettings(string $invoiceSettings): self
-    {
-        $this->invoiceSettings = $invoiceSettings;
-
-        return $this;
-    }
-
     public function withMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
@@ -265,11 +274,6 @@ class StripeSubscriptionSchedulePhase
     public function collectionMethod(): ?string
     {
         return $this->collectionMethod;
-    }
-
-    public function invoiceSettings(): ?string
-    {
-        return $this->invoiceSettings;
     }
 
     public function metadata(): ?array

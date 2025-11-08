@@ -18,6 +18,7 @@ use EncoreDigitalGroup\Stripe\Enums\TaxBehavior;
 use EncoreDigitalGroup\Stripe\Enums\TiersMode;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -29,6 +30,7 @@ class StripePrice
 {
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -382,7 +384,7 @@ class StripePrice
         return $this;
     }
 
-    /** @param  Collection<StripeProductTier>  $tiers */
+    /** @param Collection<StripeProductTier> $tiers */
     public function withTiers(Collection $tiers): self
     {
         $this->tiers = $tiers;
@@ -515,5 +517,30 @@ class StripePrice
     public function created(): ?CarbonImmutable
     {
         return $this->created;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return [
+            "id",
+            "created",
+        ];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return [
+            "product",
+            "currency",
+            "unit_amount",
+            "unit_amount_decimal",
+            "type",
+            "billing_scheme",
+            "recurring",
+            "tiers",
+            "tiers_mode",
+            "transform_quantity",
+            "custom_unit_amount",
+        ];
     }
 }

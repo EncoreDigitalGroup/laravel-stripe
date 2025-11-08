@@ -15,6 +15,7 @@ use EncoreDigitalGroup\Stripe\Enums\SetupIntentUsage;
 use EncoreDigitalGroup\Stripe\Services\StripeSetupIntentService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
@@ -26,6 +27,7 @@ class StripeSetupIntent
     use HasGet;
     use HasMake;
     use HasMetadata;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -270,5 +272,10 @@ class StripeSetupIntent
     public function paymentMethodTypes(): ?Collection
     {
         return $this->paymentMethodTypes;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created", "client_secret"];
     }
 }

@@ -13,20 +13,21 @@ use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleStatus;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionScheduleService;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
-use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Stripe\Exception\ApiErrorException;
 use Stripe\StripeObject;
 use Stripe\SubscriptionSchedule as StripeApiSubscriptionSchedule;
 
 class StripeSubscriptionSchedule
 {
-    use HasGet;
     use HasMake;
-    use HasSave;
+    use HasReadOnlyFields;
     use HasTimestamps;
 
     private ?string $id = null;
@@ -321,87 +322,67 @@ class StripeSubscriptionSchedule
         return $this;
     }
 
-    public function get(?string $subscriptionId = null): self
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws ApiErrorException
+     * @throws NotFoundExceptionInterface
+     */
+    public function get(?string $id = null): self
     {
-        $scheduleService = app(StripeSubscriptionScheduleService::class);
-        $targetSubscriptionId = $this->resolveSubscriptionId($subscriptionId);
-        $schedule = $scheduleService->forSubscription($targetSubscriptionId);
+        $scheduleId = $id ?? $this->id;
 
-        if ($schedule === null) {
-            return $this->createEmptySchedule($subscriptionId);
+        if ($scheduleId === null || $scheduleId === "" || $scheduleId === "0") {
+            throw new InvalidArgumentException("Schedule ID is required to retrieve schedule");
         }
 
-        $schedule->parentSubscription = $this->parentSubscription;
-
-        return $schedule;
-    }
-
-    public function addPhase(StripePhaseItem $phaseItem): self
-    {
-        $newPhase = StripeSubscriptionSchedulePhase::make()
-            ->withItems(collect([$phaseItem]));
-
-        $this->phases = ($this->phases ?? collect())->push($newPhase);
-
-        return $this;
-    }
-
-    public function save(): self
-    {
         $scheduleService = app(StripeSubscriptionScheduleService::class);
 
-        if ($this->id !== null && $this->id !== "" && $this->id !== "0") {
-            // Update existing schedule
-            $result = $scheduleService->update($this->id, $this);
-        } else {
-            // Create new schedule
-            $result = $scheduleService->create($this);
+        return $scheduleService->get($scheduleId);
+    }
+
+    /** @throws ApiErrorException */
+    public function create(): self
+    {
+        if (!$this->parentSubscription instanceof StripeSubscription || $this->parentSubscription->id() === null) {
+            throw new InvalidArgumentException("Cannot create schedule: parent subscription must have an ID");
         }
 
-        // Preserve the parent subscription reference
+        $result = $this->service()->fromSubscription($this->parentSubscription->id());
         $result->parentSubscription = $this->parentSubscription;
 
         return $result;
     }
 
-    private function resolveSubscriptionId(?string $subscriptionId): string
+    public function addPhase(StripeSubscriptionSchedulePhase $phase): self
     {
-        $targetSubscriptionId = $subscriptionId ?? $this->parentSubscription?->id() ?? $this->subscription;
+        $this->phases = ($this->phases ?? collect())->push($phase);
 
-        if ($targetSubscriptionId === null) {
-            throw new InvalidArgumentException("Subscription ID is required to fetch schedule");
-        }
-
-        return $targetSubscriptionId;
+        return $this;
     }
 
-    private function createEmptySchedule(?string $subscriptionId): self
+    /** @throws ApiErrorException */
+    public function save(): self
     {
-        $newSchedule = self::make()->withPhases(collect([]));
+        $scheduleService = app(StripeSubscriptionScheduleService::class);
 
-        if ($this->parentSubscription instanceof StripeSubscription) {
-            $newSchedule = $this->populateFromParentSubscription($newSchedule);
-        } elseif ($subscriptionId !== null && $subscriptionId !== "" && $subscriptionId !== "0") {
-            $newSchedule = $newSchedule->withSubscription($subscriptionId);
+        if ($this->id !== null && $this->id !== "" && $this->id !== "0") {
+            $result = $scheduleService->update($this->id, $this);
+        } else {
+            $result = $scheduleService->create($this);
         }
 
-        $newSchedule->parentSubscription = $this->parentSubscription;
+        $result->parentSubscription = $this->parentSubscription;
 
-        return $newSchedule;
+        return $result;
     }
 
-    private function populateFromParentSubscription(self $schedule): self
+    protected function getReadOnlyFields(): array
     {
-        $customer = $this->parentSubscription?->customer();
-        $subId = $this->parentSubscription?->id();
+        return ["id", "object", "created", "canceled_at", "completed_at", "released_at", "status"];
+    }
 
-        if ($customer !== null) {
-            $schedule = $schedule->withCustomer($customer);
-        }
-        if ($subId !== null) {
-            return $schedule->withSubscription($subId);
-        }
-
-        return $schedule;
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return ["customer", "subscription", "released_subscription"];
     }
 }

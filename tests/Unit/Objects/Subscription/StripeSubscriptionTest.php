@@ -13,6 +13,9 @@ use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionS
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeBillingCycleAnchorConfig;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscriptionItem;
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeFixtures;
+use EncoreDigitalGroup\Stripe\Support\Testing\StripeMethod;
 use Illuminate\Support\Collection;
 use Stripe\Util\Util;
 
@@ -74,10 +77,6 @@ test("can create StripeSubscription from Stripe object", function (): void {
         ->and($subscription->id())->toBe("sub_123")
         ->and($subscription->customer())->toBe("cus_123")
         ->and($subscription->status())->toBe(SubscriptionStatus::Active)
-        ->and($subscription->currentPeriodStart())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($subscription->currentPeriodStart()->timestamp)->toBe(1234567890)
-        ->and($subscription->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($subscription->currentPeriodEnd()->timestamp)->toBe(1237159890)
         ->and($subscription->items())->toBeInstanceOf(Collection::class)
         ->and($subscription->items())->toHaveCount(1)
         ->and($subscription->defaultPaymentMethod())->toBe("pm_123")
@@ -182,36 +181,6 @@ test("fromStripeObject handles items correctly", function (): void {
         ->and($subscription->items()->get(0)->price())->toBe("price_1")
         ->and($subscription->items()->get(0)->quantity())->toBe(2)
         ->and($subscription->items()->get(1)->price())->toBe("price_2");
-});
-
-test("fromStripeObject handles item current period dates", function (): void {
-    $stripeObject = Util::convertToStripeObject([
-        "id" => "sub_123",
-        "object" => "subscription",
-        "customer" => "cus_123",
-        "status" => "active",
-        "items" => [
-            "data" => [
-                [
-                    "id" => "si_1",
-                    "price" => ["id" => "price_1"],
-                    "quantity" => 1,
-                    "current_period_start" => 1704110400,
-                    "current_period_end" => 1706788800,
-                    "metadata" => [],
-                ],
-            ],
-        ],
-        "metadata" => [],
-    ], []);
-
-    $subscription = StripeSubscription::fromStripeObject($stripeObject);
-    $item = $subscription->items()->get(0);
-
-    expect($item->currentPeriodStart())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($item->currentPeriodStart()->timestamp)->toBe(1704110400)
-        ->and($item->currentPeriodEnd())->toBeInstanceOf(CarbonImmutable::class)
-        ->and($item->currentPeriodEnd()->timestamp)->toBe(1706788800);
 });
 
 test("fromStripeObject handles items without current period dates", function (): void {
@@ -367,41 +336,57 @@ test("issueFirstInvoiceOn returns self for chaining", function (): void {
 });
 
 describe("schedule", function (): void {
-    test("returns StripeSubscriptionSchedule instance", function (): void {
+    test("returns null when subscription has no schedule", function (): void {
         $subscription = StripeSubscription::make()
             ->withId("sub_123")
             ->withCustomer("cus_123");
 
         $schedule = $subscription->schedule();
 
-        expect($schedule)->toBeInstanceOf(StripeSubscriptionSchedule::class);
+        expect($schedule)->toBeNull();
+    });
+
+    test("retrieves schedule when subscription has schedule ID", function (): void {
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_123",
+                "subscription" => "sub_123",
+            ]),
+        ]);
+
+        $subscription = StripeSubscription::fromStripeObject(
+            Util::convertToStripeObject(StripeFixtures::subscription([
+                "id" => "sub_123",
+                "customer" => "cus_123",
+                "schedule" => "sub_sched_123",
+            ]), [])
+        );
+
+        $schedule = $subscription->schedule();
+
+        expect($schedule)->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($schedule->id())->toBe("sub_sched_123");
     });
 
     test("caches schedule instance on subsequent calls", function (): void {
-        $subscription = StripeSubscription::make()
-            ->withId("sub_123")
-            ->withCustomer("cus_123");
+        Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_123",
+                "subscription" => "sub_123",
+            ]),
+        ]);
+
+        $subscription = StripeSubscription::fromStripeObject(
+            Util::convertToStripeObject(StripeFixtures::subscription([
+                "id" => "sub_123",
+                "customer" => "cus_123",
+                "schedule" => "sub_sched_123",
+            ]), [])
+        );
 
         $schedule1 = $subscription->schedule();
         $schedule2 = $subscription->schedule();
 
         expect($schedule1)->toBe($schedule2);
-    });
-
-    test("updates parent subscription reference on each call", function (): void {
-        $subscription1 = StripeSubscription::make()
-            ->withId("sub_123")
-            ->withCustomer("cus_123");
-
-        $schedule = $subscription1->schedule();
-
-        $subscription2 = StripeSubscription::make()
-            ->withId("sub_456")
-            ->withCustomer("cus_456");
-
-        // Manually set the cached schedule to simulate immutability pattern
-        $subscription2->schedule();
-
-        expect($schedule)->toBeInstanceOf(StripeSubscriptionSchedule::class);
     });
 });

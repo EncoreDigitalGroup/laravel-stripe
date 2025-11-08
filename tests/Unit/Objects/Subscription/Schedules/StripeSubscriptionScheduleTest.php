@@ -122,8 +122,9 @@ test("converts phases collection from Stripe object", function (): void {
         ->and($schedule->phases()->first()->endDate())->toBeInstanceOf(CarbonImmutable::class)
         ->and($schedule->phases()->first()->prorationBehavior())->toBe(SubscriptionScheduleProrationBehavior::None)
         ->and($schedule->phases()->first()->items())->toHaveCount(1)
-        ->and($schedule->phases()->first()->items()->first()["price"])->toBe("price_test123")
-        ->and($schedule->phases()->first()->items()->first()["quantity"])->toBe(2);
+        ->and($schedule->phases()->first()->items()->first())->toBeInstanceOf(StripePhaseItem::class)
+        ->and($schedule->phases()->first()->items()->first()->price())->toBe("price_test123")
+        ->and($schedule->phases()->first()->items()->first()->quantity())->toBe(2);
 });
 
 test("converts to array with all fields", function (): void {
@@ -192,48 +193,60 @@ test("formats timestamps correctly in toArray", function (): void {
 });
 
 describe("get", function (): void {
-    test("fetches schedule from API when schedule exists", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
-                StripeFixtures::subscriptionSchedule([
-                    "id" => "sub_sched_123",
-                    "subscription" => "sub_123",
-                    "customer" => "cus_123",
-                ]),
+    test("retrieves schedule by provided ID", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_123",
+                "subscription" => "sub_123",
+                "customer" => "cus_123",
             ]),
         ]);
 
-        $schedule = StripeSubscriptionSchedule::make()->get("sub_123");
+        $schedule = StripeSubscriptionSchedule::make()->get("sub_sched_123");
 
         expect($schedule)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
             ->and($schedule->id())->toBe("sub_sched_123")
-            ->and($schedule->subscription())->toBe("sub_123")
-            ->and($schedule->customer())->toBe("cus_123");
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRetrieve);
     });
 
-    test("returns new empty instance when no schedule exists", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([]),
+    test("retrieves schedule using object's ID when no parameter provided", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesRetrieve->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_456",
+                "subscription" => "sub_456",
+            ]),
         ]);
 
-        $schedule = StripeSubscriptionSchedule::make()->get("sub_nonexistent");
+        $schedule = StripeSubscriptionSchedule::make()->withId("sub_sched_456");
+        $result = $schedule->get();
 
-        expect($schedule)
+        expect($result)
             ->toBeInstanceOf(StripeSubscriptionSchedule::class)
-            ->and($schedule->id())->toBeNull()
-            ->and($schedule->subscription())->toBe("sub_nonexistent")
-            ->and($schedule->phases())->toBeInstanceOf(Collection::class)
-            ->and($schedule->phases())->toHaveCount(0);
+            ->and($result->id())->toBe("sub_sched_456")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesRetrieve);
     });
 
-    test("uses parent subscription ID when no parameter provided", function (): void {
-        Stripe::fake([
-            StripeMethod::SubscriptionSchedulesAll->value => StripeFixtures::subscriptionScheduleList([
-                StripeFixtures::subscriptionSchedule([
-                    "id" => "sub_sched_123",
-                    "subscription" => "sub_123",
-                ]),
+    test("throws exception when no ID is provided and object has no ID", function (): void {
+        $schedule = StripeSubscriptionSchedule::make();
+
+        expect(fn (): StripeSubscriptionSchedule => $schedule->get())->toThrow(InvalidArgumentException::class);
+    });
+
+    test("throws exception when provided ID is empty string", function (): void {
+        $schedule = StripeSubscriptionSchedule::make();
+
+        expect(fn (): StripeSubscriptionSchedule => $schedule->get(""))->toThrow(InvalidArgumentException::class);
+    });
+});
+
+describe("create", function (): void {
+    test("creates schedule from subscription using fromSubscription", function (): void {
+        $fake = Stripe::fake([
+            StripeMethod::SubscriptionSchedulesCreate->value => StripeFixtures::subscriptionSchedule([
+                "id" => "sub_sched_new",
+                "subscription" => "sub_123",
+                "customer" => "cus_123",
             ]),
         ]);
 
@@ -241,10 +254,30 @@ describe("get", function (): void {
             ->withId("sub_123")
             ->withCustomer("cus_123");
 
-        $schedule = $subscription->schedule()->get();
+        $newSchedule = $subscription->schedule();
 
-        expect($schedule->id())->toBe("sub_sched_123")
-            ->and($schedule->subscription())->toBe("sub_123");
+        expect($newSchedule)->toBeNull();
+
+        $createdSchedule = StripeSubscriptionSchedule::make()
+            ->setParentSubscription($subscription)
+            ->create();
+
+        expect($createdSchedule)
+            ->toBeInstanceOf(StripeSubscriptionSchedule::class)
+            ->and($createdSchedule->id())->toBe("sub_sched_new")
+            ->and($createdSchedule->subscription())->toBe("sub_123")
+            ->and($fake)->toHaveCalledStripeMethod(StripeMethod::SubscriptionSchedulesCreate);
+
+        $actualParams = $fake->getCall(StripeMethod::SubscriptionSchedulesCreate->value);
+        expect($actualParams)->toHaveKey("from_subscription", "sub_123");
+    });
+
+    test("throws exception when parent subscription has no ID", function (): void {
+        $subscription = StripeSubscription::make()->withCustomer("cus_123");
+
+        $schedule = StripeSubscriptionSchedule::make()->setParentSubscription($subscription);
+
+        expect(fn (): StripeSubscriptionSchedule => $schedule->create())->toThrow(InvalidArgumentException::class);
     });
 });
 
@@ -253,11 +286,14 @@ describe("addPhase", function (): void {
         $schedule = StripeSubscriptionSchedule::make()
             ->withPhases(collect([]));
 
-        $phaseItem = StripePhaseItem::make()
-            ->withPrice("price_123")
-            ->withQuantity(1);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_123")
+                    ->withQuantity(1)
+            ));
 
-        $result = $schedule->addPhase($phaseItem);
+        $result = $schedule->addPhase($phase);
 
         expect($result)->toBe($schedule)
             ->and($schedule->phases())->toHaveCount(1)
@@ -276,11 +312,14 @@ describe("addPhase", function (): void {
         $schedule = StripeSubscriptionSchedule::make()
             ->withPhases(collect([$existingPhase]));
 
-        $newPhaseItem = StripePhaseItem::make()
-            ->withPrice("price_new")
-            ->withQuantity(2);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_new")
+                    ->withQuantity(2)
+            ));
 
-        $schedule->addPhase($newPhaseItem);
+        $schedule->addPhase($phase);
 
         expect($schedule->phases())->toHaveCount(2)
             ->and($schedule->phases()->last()->items()->first()->price())->toBe("price_new")
@@ -292,11 +331,14 @@ describe("addPhase", function (): void {
 
         expect($schedule->phases())->toBeNull();
 
-        $phaseItem = StripePhaseItem::make()
-            ->withPrice("price_123")
-            ->withQuantity(1);
+        $phase = StripeSubscriptionSchedulePhase::make()
+            ->withItems(Collection::make()->add(
+                StripePhaseItem::make()
+                    ->withPrice("price_123")
+                    ->withQuantity(1)
+            ));
 
-        $schedule->addPhase($phaseItem);
+        $schedule->addPhase($phase);
 
         expect($schedule->phases())->toBeInstanceOf(Collection::class)
             ->and($schedule->phases())->toHaveCount(1);
@@ -356,7 +398,8 @@ describe("save", function (): void {
             ->withId("sub_123")
             ->withCustomer("cus_123");
 
-        $schedule = $subscription->schedule()
+        $schedule = StripeSubscriptionSchedule::make()
+            ->setParentSubscription($subscription)
             ->withCustomer("cus_123");
 
         $result = $schedule->save();

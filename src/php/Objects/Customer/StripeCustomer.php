@@ -18,17 +18,20 @@ use EncoreDigitalGroup\Stripe\Services\StripeCustomerService;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;
 use EncoreDigitalGroup\Stripe\Services\StripeSubscriptionService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPGenesis\Common\Traits\HasMake;
 use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
 use Stripe\StripeObject;
 
 class StripeCustomer
 {
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasSave;
 
     private ?string $id = null;
@@ -153,7 +156,12 @@ class StripeCustomer
         return $shipping;
     }
 
-    /** @returns Collection<StripeSubscription> */
+    /**
+     * @returns Collection<StripeSubscription>
+     *
+     * @throws ClassPropertyNullException
+     * @throws ApiErrorException
+     */
     public function subscriptions(bool $refresh = false): Collection
     {
         if ($this->subscriptions instanceof Collection && !$refresh) {
@@ -169,7 +177,12 @@ class StripeCustomer
         return $this->subscriptions;
     }
 
-    /** @returns Collection<StripePaymentMethod> */
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     *
+     * @returns Collection<StripePaymentMethod>
+     */
     public function paymentMethods(bool $refresh = false): Collection
     {
         if ($this->paymentMethods instanceof Collection && !$refresh) {
@@ -185,6 +198,11 @@ class StripeCustomer
         return $this->paymentMethods;
     }
 
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     * @throws VariableNullException
+     */
     public function addPaymentMethod(StripePaymentMethod $paymentMethod): self
     {
         $paymentMethod = app(StripePaymentMethodService::class)->create($paymentMethod);
@@ -207,6 +225,7 @@ class StripeCustomer
         return $this;
     }
 
+    /** @throws ClassPropertyNullException */
     public function createSetupIntent(): StripeSetupIntent
     {
         if (is_null($this->id)) {
@@ -216,6 +235,10 @@ class StripeCustomer
         return StripeSetupIntent::make()->withCustomer($this->id);
     }
 
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
     public function hasDefaultPaymentMethod(): bool
     {
         if (is_null($this->id)) {
@@ -231,6 +254,10 @@ class StripeCustomer
         return $this->hasDefaultPaymentMethod;
     }
 
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
     public function save(): self
     {
         if (!is_null($this->defaultPaymentMethod)) {
@@ -366,5 +393,10 @@ class StripeCustomer
     public function shipping(): ?StripeShipping
     {
         return $this->shipping;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id"];
     }
 }

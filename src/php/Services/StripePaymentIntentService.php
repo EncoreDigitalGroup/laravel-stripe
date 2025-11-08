@@ -21,12 +21,8 @@ class StripePaymentIntentService
     /** @throws ApiErrorException */
     public function create(StripePaymentIntent $paymentIntent): StripePaymentIntent
     {
-        $data = $paymentIntent->toArray();
-
-        unset($data["id"], $data["created"], $data["client_secret"]);
-
         /** @phpstan-ignore-next-line */
-        $stripePaymentIntent = $this->stripe->paymentIntents->create($data);
+        $stripePaymentIntent = $this->stripe->paymentIntents->create($paymentIntent->toCreateArray());
 
         return StripePaymentIntent::fromStripeObject($stripePaymentIntent);
     }
@@ -42,11 +38,7 @@ class StripePaymentIntentService
     /** @throws ApiErrorException */
     public function update(string $paymentIntentId, StripePaymentIntent $paymentIntent): StripePaymentIntent
     {
-        $data = $paymentIntent->toArray();
-
-        unset($data["id"], $data["created"], $data["client_secret"]);
-
-        $stripePaymentIntent = $this->stripe->paymentIntents->update($paymentIntentId, $data);
+        $stripePaymentIntent = $this->stripe->paymentIntents->update($paymentIntentId, $paymentIntent->toUpdateArray());
 
         return StripePaymentIntent::fromStripeObject($stripePaymentIntent);
     }

@@ -9,12 +9,14 @@ namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasStripe;
+use Stripe\Exception\ApiErrorException;
 
 /** @internal */
 class StripeSubscriptionScheduleService
 {
     use HasStripe;
 
+    /** @throws ApiErrorException */
     public function create(StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
         $data = $subscriptionSchedule->toArray();
@@ -26,6 +28,7 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @throws ApiErrorException */
     public function get(string $subscriptionScheduleId): StripeSubscriptionSchedule
     {
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->retrieve($subscriptionScheduleId);
@@ -33,17 +36,19 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @throws ApiErrorException */
     public function update(string $subscriptionScheduleId, StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
     {
         $data = $subscriptionSchedule->toArray();
 
-        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"]);
+        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"], $data["customer"], $data["subscription"], $data["released_subscription"]);
 
         $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->update($subscriptionScheduleId, $data);
 
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @throws ApiErrorException */
     public function cancel(string $subscriptionScheduleId, ?bool $invoiceNow = null, ?bool $prorate = null): StripeSubscriptionSchedule
     {
         $params = [];
@@ -61,6 +66,7 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
+    /** @throws ApiErrorException */
     public function release(string $subscriptionScheduleId, ?bool $preserveCancelDate = null): StripeSubscriptionSchedule
     {
         $params = [];
@@ -74,16 +80,13 @@ class StripeSubscriptionScheduleService
         return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 
-    public function forSubscription(string $subscriptionId): ?StripeSubscriptionSchedule
+    /** @throws ApiErrorException */
+    public function fromSubscription(string $subscriptionId): StripeSubscriptionSchedule
     {
-        $params = ["subscription" => $subscriptionId];
+        $response = $this->stripe->subscriptionSchedules->create([
+            "from_subscription" => $subscriptionId,
+        ]);
 
-        $stripeSubscriptionSchedules = $this->stripe->subscriptionSchedules->all($params);
-
-        if (empty($stripeSubscriptionSchedules->data)) {
-            return null;
-        }
-
-        return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedules->data[0]);
+        return StripeSubscriptionSchedule::fromStripeObject($response);
     }
 }

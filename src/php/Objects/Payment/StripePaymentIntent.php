@@ -15,6 +15,7 @@ use EncoreDigitalGroup\Stripe\Enums\PaymentIntentSetupFutureUsage;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentStatus;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasMetadata;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use Illuminate\Support\Collection;
 use PHPGenesis\Common\Traits\HasMake;
@@ -24,6 +25,7 @@ class StripePaymentIntent
 {
     use HasMake;
     use HasMetadata;
+    use HasReadOnlyFields;
     use HasTimestamps;
 
     private ?string $id = null;
@@ -53,9 +55,8 @@ class StripePaymentIntent
         $instance = self::setBasicProperties($instance, $paymentIntent);
         $instance = self::setEnumProperties($instance, $paymentIntent);
         $instance = self::setRelationProperties($instance, $paymentIntent);
-        $instance = self::setAdditionalProperties($instance, $paymentIntent);
 
-        return $instance;
+        return self::setAdditionalProperties($instance, $paymentIntent);
     }
 
     private static function setBasicProperties(self $instance, PaymentIntent $paymentIntent): self
@@ -378,7 +379,7 @@ class StripePaymentIntent
         return $this->lastPaymentError;
     }
 
-    /** @param  Collection<int, PaymentMethodType>  $paymentMethodTypes */
+    /** @param Collection<int, PaymentMethodType> $paymentMethodTypes */
     public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
     {
         $this->paymentMethodTypes = $paymentMethodTypes;
@@ -390,5 +391,10 @@ class StripePaymentIntent
     public function paymentMethodTypes(): ?Collection
     {
         return $this->paymentMethodTypes;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created", "client_secret"];
     }
 }

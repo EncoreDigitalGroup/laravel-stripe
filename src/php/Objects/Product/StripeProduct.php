@@ -11,6 +11,7 @@ use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Services\StripeProductService;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasReadOnlyFields;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasSave;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
@@ -21,6 +22,7 @@ class StripeProduct
 {
     use HasGet;
     use HasMake;
+    use HasReadOnlyFields;
     use HasSave;
     use HasTimestamps;
 
@@ -334,5 +336,10 @@ class StripeProduct
     public function updated(): ?CarbonImmutable
     {
         return $this->updated;
+    }
+
+    protected function getReadOnlyFields(): array
+    {
+        return ["id", "created", "updated"];
     }
 }
