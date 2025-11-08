@@ -8,6 +8,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules;
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\NullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
@@ -49,7 +50,9 @@ class StripeSubscriptionSchedulePhase
                         $priceId = is_string($item->plan) ? $item->plan : ($item->plan->id ?? null);
                     }
 
-                    assert(!is_null($priceId), "price id must not be null");
+                    if (is_null($priceId)) {
+                        throw new NullException("Price ID must not be null.");
+                    }
 
                     $phaseItem = StripePhaseItem::make()
                         ->withPrice($priceId)

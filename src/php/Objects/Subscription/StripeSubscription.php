@@ -140,7 +140,7 @@ class StripeSubscription
         }
 
         if ($stripeSubscription->description ?? null) {
-            $instance->withDescription($stripeSubscription->description);
+            $instance = $instance->withDescription($stripeSubscription->description);
         }
 
         if ($stripeSubscription->schedule ?? null) {
@@ -281,7 +281,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [

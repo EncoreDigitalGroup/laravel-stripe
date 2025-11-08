@@ -214,12 +214,12 @@ test("create removes read-only fields from payload", function (): void {
 
     $params = $fake->getCall("prices.create");
 
-    // Read-only fields should be removed (id, created, product, currency, unit_amount, etc.)
+    // Read-only fields should be removed (id, created, etc...)
     expect($params)->not->toHaveKey("id")
         ->and($params)->not->toHaveKey("created")
-        ->and($params)->not->toHaveKey("product")
-        ->and($params)->not->toHaveKey("currency")
-        ->and($params)->not->toHaveKey("unit_amount");
+        ->and($params)->toHaveKey("product")
+        ->and($params)->toHaveKey("currency")
+        ->and($params)->toHaveKey("unit_amount");
 });
 
 test("update removes immutable fields from payload", function (): void {

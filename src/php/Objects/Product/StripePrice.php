@@ -288,7 +288,7 @@ class StripePrice
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers" => $this->tiers?->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->all(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
@@ -384,7 +384,7 @@ class StripePrice
         return $this;
     }
 
-    /** @param  Collection<StripeProductTier>  $tiers */
+    /** @param Collection<StripeProductTier> $tiers */
     public function withTiers(Collection $tiers): self
     {
         $this->tiers = $tiers;
@@ -524,6 +524,12 @@ class StripePrice
         return [
             "id",
             "created",
+        ];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return [
             "product",
             "currency",
             "unit_amount",

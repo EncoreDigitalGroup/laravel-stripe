@@ -37,7 +37,7 @@ class StripeCustomerService
     /** @throws ApiErrorException */
     public function update(string $customerId, StripeCustomer $customer): StripeCustomer
     {
-        $stripeCustomer = $this->stripe->customers->update($customerId, $customer->toCreateArray());
+        $stripeCustomer = $this->stripe->customers->update($customerId, $customer->toUpdateArray());
 
         return StripeCustomer::fromStripeObject($stripeCustomer);
     }
@@ -60,7 +60,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->all($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn (Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn(Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
@@ -74,7 +74,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->search($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn (Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn(Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /** @throws ApiErrorException */
