@@ -59,7 +59,13 @@ class StripeSubscriptionSchedulePhase
                         ->withQuantity($item->quantity ?? 1);
 
                     if (isset($item->metadata)) {
-                        $metadata = is_array($item->metadata) ? $item->metadata : $item->metadata->toArray();
+                        $metadata = [];
+                        if (is_array($item->metadata)) {
+                            $metadata = $item->metadata;
+                        } elseif (is_object($item->metadata) && method_exists($item->metadata, "toArray")) {
+                            $metadata = $item->metadata->toArray();
+                        }
+                        /** @var array<string,mixed> $metadata */
                         $phaseItem->withMetadata($metadata);
                     }
 
@@ -112,7 +118,13 @@ class StripeSubscriptionSchedulePhase
             $instance->collectionMethod = $obj->collection_method;
         }
         if (isset($obj->metadata)) {
-            $instance->metadata = $obj->metadata->toArray();
+            if (is_array($obj->metadata)) {
+                $instance->metadata = $obj->metadata;
+            } elseif (is_object($obj->metadata) && method_exists($obj->metadata, "toArray")) {
+                /** @var array<string,mixed> $metadataArray */
+                $metadataArray = $obj->metadata->toArray();
+                $instance->metadata = $metadataArray;
+            }
         }
 
         return $instance;
