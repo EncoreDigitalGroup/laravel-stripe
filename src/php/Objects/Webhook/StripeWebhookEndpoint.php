@@ -81,6 +81,7 @@ class StripeWebhookEndpoint
             $instance = $instance->withLivemode($stripeEndpoint->livemode);
         }
         if (isset($stripeEndpoint->metadata)) {
+            /** @var array<string,mixed> $metadataArray */
             $metadataArray = $stripeEndpoint->metadata->toArray();
             $instance = $instance->withMetadata($metadataArray);
         }

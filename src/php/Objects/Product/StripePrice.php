@@ -107,7 +107,9 @@ class StripePrice
         }
 
         if (isset($stripePrice->metadata)) {
-            $instance = $instance->withMetadata($stripePrice->metadata->toArray());
+            /** @var array<string,mixed> $metadataArray */
+            $metadataArray = $stripePrice->metadata->toArray();
+            $instance = $instance->withMetadata($metadataArray);
         }
 
         if ($stripePrice->lookup_key ?? null) {

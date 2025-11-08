@@ -104,7 +104,9 @@ class StripeSubscriptionSchedule
             $instance->livemode = $obj->livemode;
         }
         if (isset($obj->metadata)) {
-            $instance->metadata = $obj->metadata->toArray();
+            /** @var array<string,mixed> $metadataArray */
+            $metadataArray = $obj->metadata->toArray();
+            $instance->metadata = $metadataArray;
         }
         if ($phases) {
             $instance->phases = $phases;

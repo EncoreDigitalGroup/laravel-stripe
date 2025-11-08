@@ -112,7 +112,9 @@ class StripeSubscription
         }
 
         if (isset($stripeSubscription->metadata)) {
-            $instance = $instance->withMetadata($stripeSubscription->metadata->toArray());
+            /** @var array<string,mixed> $metadataArray */
+            $metadataArray = $stripeSubscription->metadata->toArray();
+            $instance = $instance->withMetadata($metadataArray);
         }
 
         if ($stripeSubscription->currency ?? null) {
@@ -169,7 +171,9 @@ class StripeSubscription
             }
 
             if (isset($item->metadata)) {
-                $subscriptionItem = $subscriptionItem->withMetadata($item->metadata->toArray());
+                /** @var array<string,mixed> $metadataArray */
+                $metadataArray = $item->metadata->toArray();
+                $subscriptionItem = $subscriptionItem->withMetadata($metadataArray);
             }
 
             $items[] = $subscriptionItem;
@@ -281,7 +285,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [

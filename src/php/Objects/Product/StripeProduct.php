@@ -73,7 +73,9 @@ class StripeProduct
         }
 
         if (isset($stripeProduct->metadata)) {
-            $instance = $instance->withMetadata($stripeProduct->metadata->toArray());
+            /** @var array<string,mixed> $metadataArray */
+            $metadataArray = $stripeProduct->metadata->toArray();
+            $instance = $instance->withMetadata($metadataArray);
         }
 
         $instance = self::setRelatedIds($instance, $stripeProduct);
