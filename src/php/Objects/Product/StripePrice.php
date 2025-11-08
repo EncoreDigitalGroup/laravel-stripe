@@ -288,7 +288,7 @@ class StripePrice
             "nickname" => $this->nickname,
             "metadata" => $this->metadata,
             "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
             "tiers_mode" => $this->tiersMode?->value,
             "transform_quantity" => $this->transformQuantity,
             "custom_unit_amount" => $this->customUnitAmount?->toArray(),
