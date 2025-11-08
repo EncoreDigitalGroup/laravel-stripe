@@ -59,14 +59,13 @@ class StripeSubscriptionSchedulePhase
                         ->withQuantity($item->quantity ?? 1);
 
                     if (isset($item->metadata)) {
-                        $metadata = [];
                         if (is_array($item->metadata)) {
-                            $metadata = $item->metadata;
+                            $phaseItem->withMetadata($item->metadata);
                         } elseif (is_object($item->metadata) && method_exists($item->metadata, "toArray")) {
+                            /** @var array<string,mixed> $metadata */
                             $metadata = $item->metadata->toArray();
+                            $phaseItem->withMetadata($metadata);
                         }
-                        /** @var array<string,mixed> $metadata */
-                        $phaseItem->withMetadata($metadata);
                     }
 
                     return $phaseItem;
