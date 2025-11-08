@@ -21,19 +21,8 @@ class StripeSubscriptionService
     /** @throws ApiErrorException */
     public function create(StripeSubscription $subscription): StripeSubscription
     {
-        $data = $subscription->toArray();
-
-        // Remove read-only fields that can't be sent on create
-        unset(
-            $data["id"],
-            $data["status"],
-            $data["current_period_start"],
-            $data["current_period_end"],
-            $data["canceled_at"]
-        );
-
         /** @phpstan-ignore argument.type */
-        $stripeSubscription = $this->stripe->subscriptions->create($data);
+        $stripeSubscription = $this->stripe->subscriptions->create($subscription->toCreateArray());
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
     }
@@ -104,7 +93,7 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->all($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn(Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 
     /**
@@ -118,6 +107,6 @@ class StripeSubscriptionService
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn(Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

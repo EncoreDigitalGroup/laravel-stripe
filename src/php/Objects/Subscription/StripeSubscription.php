@@ -555,6 +555,20 @@ class StripeSubscription
 
     protected function getReadOnlyFields(): array
     {
-        return ["id", "currency", "status", "customer"];
+        return [
+            "id",
+            "status",
+            "current_period_start",
+            "current_period_end",
+            "canceled_at",
+        ];
+    }
+
+    protected function getUpdateOnlyReadOnlyFields(): array
+    {
+        return [
+            "currency",
+            "customer",
+        ];
     }
 }
