@@ -172,6 +172,16 @@ class StripeSubscription
                 $subscriptionItem = $subscriptionItem->withMetadata($item->metadata->toArray());
             }
 
+            $currentPeriodStart = self::timestampToCarbon($item->current_period_start ?? null);
+            if (!is_null($currentPeriodStart)) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodStart($currentPeriodStart);
+            }
+
+            $currentPeriodEnd = self::timestampToCarbon($item->current_period_end ?? null);
+            if (!is_null($currentPeriodEnd)) {
+                $subscriptionItem = $subscriptionItem->withCurrentPeriodEnd($currentPeriodEnd);
+            }
+
             $items[] = $subscriptionItem;
         }
 
@@ -281,7 +291,7 @@ class StripeSubscription
     {
         $items = null;
         if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
         }
 
         $array = [
