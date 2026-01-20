@@ -163,7 +163,7 @@ test("can search subscriptions", function (): void {
     ]);
 
     $service = StripeSubscriptionService::make();
-    $subscriptions = $service->search('customer:"cus_search"');
+    $subscriptions = $service->search("customer:\"cus_search\"");
 
     expect($subscriptions)
         ->toHaveCount(1)

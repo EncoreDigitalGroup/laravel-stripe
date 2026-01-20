@@ -157,7 +157,7 @@ test("can search prices", function (): void {
     ]);
 
     $service = StripePriceService::make();
-    $prices = $service->search('nickname:"Premium Plan"');
+    $prices = $service->search("nickname:\"Premium Plan\"");
 
     expect($prices)
         ->toHaveCount(1)
