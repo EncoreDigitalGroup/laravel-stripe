@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2025. Encore Digital Group.
+ * Copyright (c) 2025-2026. Encore Digital Group.
  * All Right Reserved.
  */
 
@@ -22,8 +22,10 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__ . "/../../../resources/views", "stripe");
         Blade::componentNamespace('EncoreDigitalGroup\\Common\\Stripe\\Views', "stripe");
 
-        FilamentAsset::register([
-            Js::make("financialConnections", __DIR__ . "/../../../dist/bundle.js"),
-        ], "encoredigitalgroup/common-stripe");
+        if (class_exists(FilamentAsset::class)) {
+            FilamentAsset::register([
+                Js::make("financialConnections", __DIR__ . "/../../../dist/bundle.js"),
+            ], "encoredigitalgroup/common-stripe");
+        }
     }
 }
