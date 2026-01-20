@@ -155,7 +155,7 @@ test("can search products", function (): void {
     ]);
 
     $service = StripeProductService::make();
-    $products = $service->search('name:"Searchable Product"');
+    $products = $service->search("name:\"Searchable Product\"");
 
     expect($products)
         ->toHaveCount(1)

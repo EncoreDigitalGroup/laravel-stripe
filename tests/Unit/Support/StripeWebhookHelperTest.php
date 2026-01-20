@@ -34,7 +34,7 @@ describe("StripeWebhookHelper", function (): void {
     });
 
     test("constructEvent throws exception for invalid signature", function (): void {
-        $payload = '{"id": "evt_test", "object": "event"}';
+        $payload = "{\"id\": \"evt_test\", \"object\": \"event\"}";
         $signature = "invalid_signature";
         $secret = "whsec_test";
 
@@ -43,7 +43,7 @@ describe("StripeWebhookHelper", function (): void {
     });
 
     test("constructEvent returns StripeEvent for valid signature", function (): void {
-        $payload = '{"id": "evt_test", "object": "event", "type": "customer.created", "data": {"object": {}}}';
+        $payload = "{\"id\": \"evt_test\", \"object\": \"event\", \"type\": \"customer.created\", \"data\": {\"object\": {}}}";
         $timestamp = time();
         $secret = "whsec_test";
 
