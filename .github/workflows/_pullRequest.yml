@@ -62,7 +62,7 @@ jobs:
         name: StaticAnalysis
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_staticAnalysis.yml@v3
         with:
-            phpVersion: '8.3'
+            phpVersion: '8.4'
             path: 'src/'
             branch: ${{ github.head_ref }}
 
@@ -71,7 +71,7 @@ jobs:
         name: Tests
         uses: EncoreDigitalGroup/ci-workflows/.github/workflows/php_test.yml@v3
         with:
-            phpVersion: '8.3'
+            phpVersion: '8.4'
             branch: ${{ github.head_ref }}
 
     BundleAsset:
