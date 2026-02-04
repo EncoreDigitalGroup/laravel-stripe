@@ -67,6 +67,28 @@ class StripeWebhookEndpoint
         return $instance;
     }
 
+    private static function setOptionalProperties(self $instance, WebhookEndpoint $stripeEndpoint): self
+    {
+        if (isset($stripeEndpoint->disabled)) {
+            $instance = $instance->withDisabled($stripeEndpoint->disabled);
+        }
+        if (isset($stripeEndpoint->livemode)) {
+            $instance = $instance->withLivemode($stripeEndpoint->livemode);
+        }
+        if (isset($stripeEndpoint->metadata)) {
+            $metadataArray = $stripeEndpoint->metadata->toArray();
+            $instance = $instance->withMetadata($metadataArray);
+        }
+        if ($stripeEndpoint->secret ?? null) {
+            $instance = $instance->withSecret($stripeEndpoint->secret);
+        }
+        if ($stripeEndpoint->status ?? null) {
+            return $instance->withStatus($stripeEndpoint->status);
+        }
+
+        return $instance;
+    }
+
     public function withUrl(string $url): self
     {
         $this->url = $url;
@@ -93,28 +115,6 @@ class StripeWebhookEndpoint
         $this->created = $created;
 
         return $this;
-    }
-
-    private static function setOptionalProperties(self $instance, WebhookEndpoint $stripeEndpoint): self
-    {
-        if (isset($stripeEndpoint->disabled)) {
-            $instance = $instance->withDisabled($stripeEndpoint->disabled);
-        }
-        if (isset($stripeEndpoint->livemode)) {
-            $instance = $instance->withLivemode($stripeEndpoint->livemode);
-        }
-        if (isset($stripeEndpoint->metadata)) {
-            $metadataArray = $stripeEndpoint->metadata->toArray();
-            $instance = $instance->withMetadata($metadataArray);
-        }
-        if ($stripeEndpoint->secret ?? null) {
-            $instance = $instance->withSecret($stripeEndpoint->secret);
-        }
-        if ($stripeEndpoint->status ?? null) {
-            return $instance->withStatus($stripeEndpoint->status);
-        }
-
-        return $instance;
     }
 
     public function withDisabled(bool $disabled): self

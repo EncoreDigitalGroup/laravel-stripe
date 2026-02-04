@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;

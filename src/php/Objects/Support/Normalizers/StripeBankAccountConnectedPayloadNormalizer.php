@@ -27,7 +27,7 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $result["stripeCustomerId"] = $data->getStripeCustomerId();
 
         $result["accounts"] = array_map(
-            fn($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
+            fn ($accountData): mixed => $this->objectNormalizer->denormalize($accountData, StripeBankAccount::class),
             $data->accounts
         );
 
@@ -45,6 +45,24 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         $payload = $this->handleSecurityKeys($payload, $data, $format, $context);
 
         return $this->handleAccounts($payload, $data, $format, $context);
+    }
+
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof StripeBankAccountConnectedPayload;
+    }
+
+    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return $type === StripeBankAccountConnectedPayload::class || $type === StripeBankAccountConnectedPayload::class . "[]";
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            StripeBankAccountConnectedPayload::class => true,
+            StripeBankAccountConnectedPayload::class . "[]" => true,
+        ];
     }
 
     private function extractData(mixed $data): mixed
@@ -117,23 +135,5 @@ class StripeBankAccountConnectedPayloadNormalizer extends AbstractNormalizer imp
         }
 
         return $payload;
-    }
-
-    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
-    {
-        return $data instanceof StripeBankAccountConnectedPayload;
-    }
-
-    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
-    {
-        return $type === StripeBankAccountConnectedPayload::class || $type === StripeBankAccountConnectedPayload::class . "[]";
-    }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [
-            StripeBankAccountConnectedPayload::class => true,
-            StripeBankAccountConnectedPayload::class . "[]" => true,
-        ];
     }
 }

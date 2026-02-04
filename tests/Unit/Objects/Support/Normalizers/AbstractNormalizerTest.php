@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 

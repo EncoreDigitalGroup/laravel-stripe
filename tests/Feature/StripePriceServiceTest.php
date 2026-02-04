@@ -1,7 +1,5 @@
 <?php
 
-
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
 use EncoreDigitalGroup\Stripe\Services\StripePriceService;

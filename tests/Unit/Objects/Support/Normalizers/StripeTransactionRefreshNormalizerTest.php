@@ -1,7 +1,5 @@
 <?php
 
-
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeTransactionRefreshNormalizer;

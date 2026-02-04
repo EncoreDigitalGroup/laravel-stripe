@@ -96,7 +96,7 @@ class StripePriceService
         $stripePrices = $this->stripe->prices->all($params);
 
         return collect($stripePrices->data)
-            ->map(fn(Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn (Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**
@@ -110,7 +110,7 @@ class StripePriceService
         $stripePrices = $this->stripe->prices->search($params);
 
         return collect($stripePrices->data)
-            ->map(fn(Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
+            ->map(fn (Price $stripePrice): StripePrice => StripePrice::fromStripeObject($stripePrice));
     }
 
     /**

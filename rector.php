@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 use PHPGenesis\DevUtilities\Rector\Rector;

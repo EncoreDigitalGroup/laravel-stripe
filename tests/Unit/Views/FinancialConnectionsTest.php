@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Views\FinancialConnections;
 
 describe("FinancialConnections", function (): void {

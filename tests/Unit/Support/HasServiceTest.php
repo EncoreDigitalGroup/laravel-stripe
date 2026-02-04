@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\StdLib\Exceptions\NotImplementedException;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;

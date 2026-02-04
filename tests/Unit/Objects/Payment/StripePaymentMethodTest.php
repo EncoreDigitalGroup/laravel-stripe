@@ -1,6 +1,5 @@
 <?php
 
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;

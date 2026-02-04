@@ -1,7 +1,5 @@
 <?php
 
-
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleEndBehavior;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;

@@ -1,6 +1,5 @@
 <?php
 
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentCaptureMethod;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentConfirmationMethod;

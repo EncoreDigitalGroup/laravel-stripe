@@ -53,7 +53,7 @@ class StripePaymentMethodService
         $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
 
         return collect($stripePaymentMethods->data)
-            ->map(fn(PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
+            ->map(fn (PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
     }
 
     /** @throws ApiErrorException */

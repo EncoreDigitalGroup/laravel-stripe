@@ -67,6 +67,62 @@ class StripeSetupIntent
         return $instance;
     }
 
+    private static function setEnumProperties(self $instance, SetupIntent $setupIntent): self
+    {
+        if ($setupIntent->status ?? null) {
+            $instance = $instance->withStatus(SetupIntentStatus::from($setupIntent->status));
+        }
+
+        if ($setupIntent->usage ?? null) {
+            return $instance->withUsage(SetupIntentUsage::from($setupIntent->usage));
+        }
+
+        return $instance;
+    }
+
+    private static function setRelationProperties(self $instance, SetupIntent $setupIntent): self
+    {
+        if ($setupIntent->customer ?? null) {
+            $customerId = is_string($setupIntent->customer) ? $setupIntent->customer : $setupIntent->customer->id;
+            $instance = $instance->withCustomer($customerId);
+        }
+
+        if ($setupIntent->payment_method ?? null) {
+            $paymentMethodId = is_string($setupIntent->payment_method) ? $setupIntent->payment_method : $setupIntent->payment_method->id;
+            $instance = $instance->withPaymentMethod($paymentMethodId);
+        }
+
+        return $instance;
+    }
+
+    private static function setAdditionalProperties(self $instance, SetupIntent $setupIntent): self
+    {
+        if ($setupIntent->created ?? null) {
+            $created = self::timestampToCarbon($setupIntent->created);
+            if ($created instanceof CarbonImmutable) {
+                $instance = $instance->withCreated($created);
+            }
+        }
+
+        if (isset($setupIntent->last_setup_error)) {
+            $errorJson = json_encode($setupIntent->last_setup_error);
+            $lastSetupError = $errorJson !== false ? json_decode($errorJson, true) : null;
+            $instance = $instance->withLastSetupError($lastSetupError);
+        }
+
+        if (isset($setupIntent->payment_method_types)) {
+            $paymentMethodTypes = collect($setupIntent->payment_method_types)
+                ->map(fn (string $type): PaymentMethodType => PaymentMethodType::from($type));
+            $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
+        }
+
+        if (isset($setupIntent->metadata)) {
+            return $instance->withMetadata(self::extractMetadata($setupIntent));
+        }
+
+        return $instance;
+    }
+
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -88,19 +144,6 @@ class StripeSetupIntent
         return $this;
     }
 
-    private static function setEnumProperties(self $instance, SetupIntent $setupIntent): self
-    {
-        if ($setupIntent->status ?? null) {
-            $instance = $instance->withStatus(SetupIntentStatus::from($setupIntent->status));
-        }
-
-        if ($setupIntent->usage ?? null) {
-            return $instance->withUsage(SetupIntentUsage::from($setupIntent->usage));
-        }
-
-        return $instance;
-    }
-
     public function withStatus(SetupIntentStatus $status): self
     {
         $this->status = $status;
@@ -115,21 +158,6 @@ class StripeSetupIntent
         return $this;
     }
 
-    private static function setRelationProperties(self $instance, SetupIntent $setupIntent): self
-    {
-        if ($setupIntent->customer ?? null) {
-            $customerId = is_string($setupIntent->customer) ? $setupIntent->customer : $setupIntent->customer->id;
-            $instance = $instance->withCustomer($customerId);
-        }
-
-        if ($setupIntent->payment_method ?? null) {
-            $paymentMethodId = is_string($setupIntent->payment_method) ? $setupIntent->payment_method : $setupIntent->payment_method->id;
-            $instance = $instance->withPaymentMethod($paymentMethodId);
-        }
-
-        return $instance;
-    }
-
     public function withCustomer(string $customer): self
     {
         $this->customer = $customer;
@@ -142,34 +170,6 @@ class StripeSetupIntent
         $this->paymentMethod = $paymentMethod;
 
         return $this;
-    }
-
-    private static function setAdditionalProperties(self $instance, SetupIntent $setupIntent): self
-    {
-        if ($setupIntent->created ?? null) {
-            $created = self::timestampToCarbon($setupIntent->created);
-            if ($created instanceof CarbonImmutable) {
-                $instance = $instance->withCreated($created);
-            }
-        }
-
-        if (isset($setupIntent->last_setup_error)) {
-            $errorJson = json_encode($setupIntent->last_setup_error);
-            $lastSetupError = $errorJson !== false ? json_decode($errorJson, true) : null;
-            $instance = $instance->withLastSetupError($lastSetupError);
-        }
-
-        if (isset($setupIntent->payment_method_types)) {
-            $paymentMethodTypes = collect($setupIntent->payment_method_types)
-                ->map(fn(string $type): PaymentMethodType => PaymentMethodType::from($type));
-            $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
-        }
-
-        if (isset($setupIntent->metadata)) {
-            return $instance->withMetadata(self::extractMetadata($setupIntent));
-        }
-
-        return $instance;
     }
 
     public function withCreated(CarbonImmutable $created): self
@@ -206,7 +206,7 @@ class StripeSetupIntent
             "created" => self::carbonToTimestamp($this->created),
             "client_secret" => $this->clientSecret,
             "last_setup_error" => $this->lastSetupError,
-            "payment_method_types" => $this->paymentMethodTypes?->map(fn(PaymentMethodType $type): string => $type->value)?->toArray(),
+            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)?->toArray(),
             "metadata" => $this->metadata,
         ];
 

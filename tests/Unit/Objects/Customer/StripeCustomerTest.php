@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\VariableNullException;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;

@@ -1,7 +1,5 @@
 <?php
 
-
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\CollectionMethod;
 use EncoreDigitalGroup\Stripe\Enums\ProrationBehavior;

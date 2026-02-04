@@ -16,6 +16,15 @@ class StripeConfig
         $this->boot();
     }
 
+    public static function make(): StripeConfig
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self;
+        }
+
+        return self::$instance;
+    }
+
     private function boot(): void
     {
         if (!$this->booted) {
@@ -24,14 +33,5 @@ class StripeConfig
 
             $this->booted = true;
         }
-    }
-
-    public static function make(): StripeConfig
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
     }
 }

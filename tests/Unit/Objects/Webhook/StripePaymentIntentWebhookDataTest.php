@@ -1,7 +1,5 @@
 <?php
 
-
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads\StripePaymentIntentWebhookData;
 use Stripe\StripeObject;

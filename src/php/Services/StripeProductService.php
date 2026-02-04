@@ -84,7 +84,7 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn(Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
@@ -98,6 +98,6 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn(Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }

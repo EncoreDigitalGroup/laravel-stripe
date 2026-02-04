@@ -183,50 +183,6 @@ class StripeSubscription
         return collect($items);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function withMetadata(array $metadata): self
-    {
-        $this->metadata = $metadata;
-
-        return $this;
-    }
-
-    public function toArray(): array
-    {
-        $items = null;
-        if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
-        }
-
-        $array = [
-            "id" => $this->id,
-            "customer" => $this->customer,
-            "status" => $this->status?->value,
-            "cancel_at" => self::carbonToTimestamp($this->cancelAt),
-            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
-            "trial_start" => self::carbonToTimestamp($this->trialStart),
-            "trial_end" => self::carbonToTimestamp($this->trialEnd),
-            "items" => $items,
-            "default_payment_method" => $this->defaultPaymentMethod,
-            "metadata" => $this->metadata,
-            "currency" => $this->currency,
-            "collection_method" => $this->collectionMethod?->value,
-            "billing_cycle_anchor_config" => $this->billingCycleAnchorConfig?->toArray(),
-            "proration_behavior" => $this->prorationBehavior?->value,
-            "cancel_at_period_end" => $this->cancelAtPeriodEnd,
-            "days_until_due" => $this->daysUntilDue,
-            "description" => $this->description,
-        ];
-
-        return Arr::whereNotNull($array);
-    }
-
     private static function extractCustomerId(mixed $customer): string
     {
         if (is_string($customer)) {
@@ -307,6 +263,50 @@ class StripeSubscription
         }
 
         return ProrationBehavior::from($prorationBehavior);
+    }
+
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function toArray(): array
+    {
+        $items = null;
+        if ($this->items instanceof Collection) {
+            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
+        }
+
+        $array = [
+            "id" => $this->id,
+            "customer" => $this->customer,
+            "status" => $this->status?->value,
+            "cancel_at" => self::carbonToTimestamp($this->cancelAt),
+            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
+            "trial_start" => self::carbonToTimestamp($this->trialStart),
+            "trial_end" => self::carbonToTimestamp($this->trialEnd),
+            "items" => $items,
+            "default_payment_method" => $this->defaultPaymentMethod,
+            "metadata" => $this->metadata,
+            "currency" => $this->currency,
+            "collection_method" => $this->collectionMethod?->value,
+            "billing_cycle_anchor_config" => $this->billingCycleAnchorConfig?->toArray(),
+            "proration_behavior" => $this->prorationBehavior?->value,
+            "cancel_at_period_end" => $this->cancelAtPeriodEnd,
+            "days_until_due" => $this->daysUntilDue,
+            "description" => $this->description,
+        ];
+
+        return Arr::whereNotNull($array);
     }
 
     public function withCustomer(string $customer): self

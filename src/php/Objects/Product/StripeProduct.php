@@ -76,6 +76,66 @@ class StripeProduct
         return $instance;
     }
 
+    private static function setRelatedIds(self $instance, Product $stripeProduct): self
+    {
+        if (isset($stripeProduct->default_price)) {
+            $defaultPrice = is_string($stripeProduct->default_price)
+                ? $stripeProduct->default_price
+                : $stripeProduct->default_price->id;
+            $instance = $instance->withDefaultPrice($defaultPrice);
+        }
+
+        if (isset($stripeProduct->tax_code)) {
+            $taxCode = is_string($stripeProduct->tax_code) ? $stripeProduct->tax_code : $stripeProduct->tax_code->id;
+            $instance = $instance->withTaxCode($taxCode);
+        }
+
+        return $instance;
+    }
+
+    private static function setExtendedProperties(self $instance, Product $stripeProduct): self
+    {
+        if ($stripeProduct->unit_label ?? null) {
+            $instance = $instance->withUnitLabel($stripeProduct->unit_label);
+        }
+
+        if ($stripeProduct->url ?? null) {
+            $instance = $instance->withUrl($stripeProduct->url);
+        }
+
+        if (isset($stripeProduct->shippable)) {
+            $instance = $instance->withShippable($stripeProduct->shippable);
+        }
+
+        if (isset($stripeProduct->package_dimensions)) {
+            /** @var StripeObject $pkgDim */
+            $pkgDim = $stripeProduct->package_dimensions;
+            $packageDimensions = [
+                "height" => $pkgDim->height ?? null,
+                "length" => $pkgDim->length ?? null,
+                "weight" => $pkgDim->weight ?? null,
+                "width" => $pkgDim->width ?? null,
+            ];
+            $instance = $instance->withPackageDimensions($packageDimensions);
+        }
+
+        if ($stripeProduct->created ?? null) {
+            $created = self::timestampToCarbon($stripeProduct->created);
+            if ($created instanceof CarbonImmutable) {
+                $instance = $instance->withCreated($created);
+            }
+        }
+
+        if ($stripeProduct->updated ?? null) {
+            $updated = self::timestampToCarbon($stripeProduct->updated);
+            if ($updated instanceof CarbonImmutable) {
+                $instance = $instance->withUpdated($updated);
+            }
+        }
+
+        return $instance;
+    }
+
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -142,23 +202,6 @@ class StripeProduct
         return Arr::whereNotNull($array);
     }
 
-    private static function setRelatedIds(self $instance, Product $stripeProduct): self
-    {
-        if (isset($stripeProduct->default_price)) {
-            $defaultPrice = is_string($stripeProduct->default_price)
-                ? $stripeProduct->default_price
-                : $stripeProduct->default_price->id;
-            $instance = $instance->withDefaultPrice($defaultPrice);
-        }
-
-        if (isset($stripeProduct->tax_code)) {
-            $taxCode = is_string($stripeProduct->tax_code) ? $stripeProduct->tax_code : $stripeProduct->tax_code->id;
-            $instance = $instance->withTaxCode($taxCode);
-        }
-
-        return $instance;
-    }
-
     public function withDefaultPrice(string $defaultPrice): self
     {
         $this->defaultPrice = $defaultPrice;
@@ -171,49 +214,6 @@ class StripeProduct
         $this->taxCode = $taxCode;
 
         return $this;
-    }
-
-    private static function setExtendedProperties(self $instance, Product $stripeProduct): self
-    {
-        if ($stripeProduct->unit_label ?? null) {
-            $instance = $instance->withUnitLabel($stripeProduct->unit_label);
-        }
-
-        if ($stripeProduct->url ?? null) {
-            $instance = $instance->withUrl($stripeProduct->url);
-        }
-
-        if (isset($stripeProduct->shippable)) {
-            $instance = $instance->withShippable($stripeProduct->shippable);
-        }
-
-        if (isset($stripeProduct->package_dimensions)) {
-            /** @var StripeObject $pkgDim */
-            $pkgDim = $stripeProduct->package_dimensions;
-            $packageDimensions = [
-                "height" => $pkgDim->height ?? null,
-                "length" => $pkgDim->length ?? null,
-                "weight" => $pkgDim->weight ?? null,
-                "width" => $pkgDim->width ?? null,
-            ];
-            $instance = $instance->withPackageDimensions($packageDimensions);
-        }
-
-        if ($stripeProduct->created ?? null) {
-            $created = self::timestampToCarbon($stripeProduct->created);
-            if ($created instanceof CarbonImmutable) {
-                $instance = $instance->withCreated($created);
-            }
-        }
-
-        if ($stripeProduct->updated ?? null) {
-            $updated = self::timestampToCarbon($stripeProduct->updated);
-            if ($updated instanceof CarbonImmutable) {
-                $instance = $instance->withUpdated($updated);
-            }
-        }
-
-        return $instance;
     }
 
     public function withUnitLabel(string $unitLabel): self

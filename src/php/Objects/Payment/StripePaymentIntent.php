@@ -87,6 +87,75 @@ class StripePaymentIntent
         return $instance;
     }
 
+    private static function setEnumProperties(self $instance, PaymentIntent $paymentIntent): self
+    {
+        if ($paymentIntent->status ?? null) {
+            $instance = $instance->withStatus(PaymentIntentStatus::from($paymentIntent->status));
+        }
+
+        if ($paymentIntent->capture_method ?? null) {
+            $instance = $instance->withCaptureMethod(PaymentIntentCaptureMethod::from($paymentIntent->capture_method));
+        }
+
+        if ($paymentIntent->confirmation_method ?? null) {
+            $instance = $instance->withConfirmationMethod(PaymentIntentConfirmationMethod::from($paymentIntent->confirmation_method));
+        }
+
+        if ($paymentIntent->setup_future_usage ?? null) {
+            return $instance->withSetupFutureUsage(PaymentIntentSetupFutureUsage::from($paymentIntent->setup_future_usage));
+        }
+
+        return $instance;
+    }
+
+    private static function setRelationProperties(self $instance, PaymentIntent $paymentIntent): self
+    {
+        if ($paymentIntent->customer ?? null) {
+            $customerId = is_string($paymentIntent->customer) ? $paymentIntent->customer : $paymentIntent->customer->id;
+            $instance = $instance->withCustomer($customerId);
+        }
+
+        if ($paymentIntent->invoice ?? null) {
+            $invoiceId = is_string($paymentIntent->invoice) ? $paymentIntent->invoice : $paymentIntent->invoice->id;
+            $instance = $instance->withInvoice($invoiceId);
+        }
+
+        if ($paymentIntent->payment_method ?? null) {
+            $paymentMethodId = is_string($paymentIntent->payment_method) ? $paymentIntent->payment_method : $paymentIntent->payment_method->id;
+            $instance = $instance->withPaymentMethod($paymentMethodId);
+        }
+
+        return $instance;
+    }
+
+    private static function setAdditionalProperties(self $instance, PaymentIntent $paymentIntent): self
+    {
+        if ($paymentIntent->created ?? null) {
+            $created = self::timestampToCarbon($paymentIntent->created);
+            if ($created instanceof CarbonImmutable) {
+                $instance = $instance->withCreated($created);
+            }
+        }
+
+        if (isset($paymentIntent->last_payment_error)) {
+            $errorJson = json_encode($paymentIntent->last_payment_error);
+            $lastPaymentError = $errorJson !== false ? json_decode($errorJson, true) : null;
+            $instance = $instance->withLastPaymentError($lastPaymentError);
+        }
+
+        if (isset($paymentIntent->payment_method_types)) {
+            $paymentMethodTypes = collect($paymentIntent->payment_method_types)
+                ->map(fn (string $type): PaymentMethodType => PaymentMethodType::from($type));
+            $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
+        }
+
+        if (isset($paymentIntent->metadata)) {
+            return $instance->withMetadata(self::extractMetadata($paymentIntent));
+        }
+
+        return $instance;
+    }
+
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -136,27 +205,6 @@ class StripePaymentIntent
         return $this;
     }
 
-    private static function setEnumProperties(self $instance, PaymentIntent $paymentIntent): self
-    {
-        if ($paymentIntent->status ?? null) {
-            $instance = $instance->withStatus(PaymentIntentStatus::from($paymentIntent->status));
-        }
-
-        if ($paymentIntent->capture_method ?? null) {
-            $instance = $instance->withCaptureMethod(PaymentIntentCaptureMethod::from($paymentIntent->capture_method));
-        }
-
-        if ($paymentIntent->confirmation_method ?? null) {
-            $instance = $instance->withConfirmationMethod(PaymentIntentConfirmationMethod::from($paymentIntent->confirmation_method));
-        }
-
-        if ($paymentIntent->setup_future_usage ?? null) {
-            return $instance->withSetupFutureUsage(PaymentIntentSetupFutureUsage::from($paymentIntent->setup_future_usage));
-        }
-
-        return $instance;
-    }
-
     public function withStatus(PaymentIntentStatus $status): self
     {
         $this->status = $status;
@@ -185,26 +233,6 @@ class StripePaymentIntent
         return $this;
     }
 
-    private static function setRelationProperties(self $instance, PaymentIntent $paymentIntent): self
-    {
-        if ($paymentIntent->customer ?? null) {
-            $customerId = is_string($paymentIntent->customer) ? $paymentIntent->customer : $paymentIntent->customer->id;
-            $instance = $instance->withCustomer($customerId);
-        }
-
-        if ($paymentIntent->invoice ?? null) {
-            $invoiceId = is_string($paymentIntent->invoice) ? $paymentIntent->invoice : $paymentIntent->invoice->id;
-            $instance = $instance->withInvoice($invoiceId);
-        }
-
-        if ($paymentIntent->payment_method ?? null) {
-            $paymentMethodId = is_string($paymentIntent->payment_method) ? $paymentIntent->payment_method : $paymentIntent->payment_method->id;
-            $instance = $instance->withPaymentMethod($paymentMethodId);
-        }
-
-        return $instance;
-    }
-
     public function withCustomer(string $customer): self
     {
         $this->customer = $customer;
@@ -224,34 +252,6 @@ class StripePaymentIntent
         $this->paymentMethod = $paymentMethod;
 
         return $this;
-    }
-
-    private static function setAdditionalProperties(self $instance, PaymentIntent $paymentIntent): self
-    {
-        if ($paymentIntent->created ?? null) {
-            $created = self::timestampToCarbon($paymentIntent->created);
-            if ($created instanceof CarbonImmutable) {
-                $instance = $instance->withCreated($created);
-            }
-        }
-
-        if (isset($paymentIntent->last_payment_error)) {
-            $errorJson = json_encode($paymentIntent->last_payment_error);
-            $lastPaymentError = $errorJson !== false ? json_decode($errorJson, true) : null;
-            $instance = $instance->withLastPaymentError($lastPaymentError);
-        }
-
-        if (isset($paymentIntent->payment_method_types)) {
-            $paymentMethodTypes = collect($paymentIntent->payment_method_types)
-                ->map(fn(string $type): PaymentMethodType => PaymentMethodType::from($type));
-            $instance = $instance->withPaymentMethodTypes($paymentMethodTypes);
-        }
-
-        if (isset($paymentIntent->metadata)) {
-            return $instance->withMetadata(self::extractMetadata($paymentIntent));
-        }
-
-        return $instance;
     }
 
     public function withCreated(CarbonImmutable $created): self
@@ -295,7 +295,7 @@ class StripePaymentIntent
             "created" => self::carbonToTimestamp($this->created),
             "client_secret" => $this->clientSecret,
             "last_payment_error" => $this->lastPaymentError,
-            "payment_method_types" => $this->paymentMethodTypes?->map(fn(PaymentMethodType $type): string => $type->value)?->toArray(),
+            "payment_method_types" => $this->paymentMethodTypes?->map(fn (PaymentMethodType $type): string => $type->value)?->toArray(),
             "metadata" => $this->metadata,
         ];
 

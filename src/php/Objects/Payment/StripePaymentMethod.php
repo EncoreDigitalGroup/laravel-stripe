@@ -72,34 +72,6 @@ class StripePaymentMethod
         return self::extractBillingDetails($instance, $paymentMethod);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function withType(PaymentMethodType $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function withCustomer(string $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
-    public function withCreated(CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
     private static function extractBillingDetails(self $instance, PaymentMethod $paymentMethod): self
     {
         if (!isset($paymentMethod->billing_details)) {
@@ -116,13 +88,6 @@ class StripePaymentMethod
         }
 
         return $instance;
-    }
-
-    public function withBillingDetails(StripeAddress $billingDetails): self
-    {
-        $this->billingDetails = $billingDetails;
-
-        return $this;
     }
 
     /**
@@ -155,6 +120,41 @@ class StripePaymentMethod
         }
 
         return $instance;
+    }
+
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withType(PaymentMethodType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function withCustomer(string $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withCreated(CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withBillingDetails(StripeAddress $billingDetails): self
+    {
+        $this->billingDetails = $billingDetails;
+
+        return $this;
     }
 
     /** @param Collection<string, mixed> $card */

@@ -28,19 +28,6 @@ class FakeStripeClient extends StripeClient
         parent::__construct($mergedConfig);
     }
 
-    protected function normalizeFakes(array $fakes): array
-    {
-        $normalized = [];
-        foreach ($fakes as $key => $value) {
-            /** @phpstan-ignore-next-line */
-            $stringKey = $key instanceof BackedEnum ? $key->value : (string)$key;
-
-            $normalized[$stringKey] = $value;
-        }
-
-        return $normalized;
-    }
-
     public function fake(string|BackedEnum $method, mixed $response): self
     {
         $stringMethod = $method instanceof BackedEnum ? $method->value : $method;
@@ -100,6 +87,19 @@ class FakeStripeClient extends StripeClient
             "No fake registered for Stripe method [{$method}]. " .
             "Register a fake using Stripe::fake(['{$method}' => ...]) in your test."
         );
+    }
+
+    protected function normalizeFakes(array $fakes): array
+    {
+        $normalized = [];
+        foreach ($fakes as $key => $value) {
+            /** @phpstan-ignore-next-line */
+            $stringKey = $key instanceof BackedEnum ? $key->value : (string) $key;
+
+            $normalized[$stringKey] = $value;
+        }
+
+        return $normalized;
     }
 
     protected function recordCall(string $method, array $params): void
@@ -176,6 +176,6 @@ class FakeStripeClient extends StripeClient
     /** @param mixed $name */
     public function __get($name): FakeStripeService
     {
-        return new FakeStripeService((string)$name, $this);
+        return new FakeStripeService((string) $name, $this);
     }
 }

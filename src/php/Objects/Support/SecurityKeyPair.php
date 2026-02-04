@@ -31,34 +31,6 @@ class SecurityKeyPair
         return $securityKey;
     }
 
-    private static function put(string $stripeCustomerId, SecurityKeyPair $securityKey, int $ttlInMinutes = 60): void
-    {
-        Cache::put(self::publicCacheKey($stripeCustomerId), $securityKey->publicKey, $ttlInMinutes);
-        Cache::put(self::privateCacheKey($stripeCustomerId), $securityKey->privateKey, $ttlInMinutes);
-        Cache::put(self::matchCacheKey($securityKey->publicKey), $securityKey->privateKey, $ttlInMinutes);
-        Cache::put(self::tenantCacheKey($securityKey->publicKey), $securityKey->tenantId, $ttlInMinutes);
-    }
-
-    private static function publicCacheKey(string $stripeCustomerId): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".public.{$stripeCustomerId}";
-    }
-
-    private static function privateCacheKey(string $stripeCustomerId): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".private.{$stripeCustomerId}";
-    }
-
-    private static function matchCacheKey(string $publicKey): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".match.{$publicKey}";
-    }
-
-    private static function tenantCacheKey(string $publicKey): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".tenant.{$publicKey}";
-    }
-
     public static function validate(string $stripeCustomerId, string $publicKey, string $privateKey): bool
     {
         $securityKey = self::get($stripeCustomerId);
@@ -100,5 +72,33 @@ class SecurityKeyPair
         Cache::forget(self::privateCacheKey($stripeCustomerId));
         Cache::forget(self::matchCacheKey($publicKey));
         Cache::forget(self::tenantCacheKey($publicKey));
+    }
+
+    private static function put(string $stripeCustomerId, SecurityKeyPair $securityKey, int $ttlInMinutes = 60): void
+    {
+        Cache::put(self::publicCacheKey($stripeCustomerId), $securityKey->publicKey, $ttlInMinutes);
+        Cache::put(self::privateCacheKey($stripeCustomerId), $securityKey->privateKey, $ttlInMinutes);
+        Cache::put(self::matchCacheKey($securityKey->publicKey), $securityKey->privateKey, $ttlInMinutes);
+        Cache::put(self::tenantCacheKey($securityKey->publicKey), $securityKey->tenantId, $ttlInMinutes);
+    }
+
+    private static function publicCacheKey(string $stripeCustomerId): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".public.{$stripeCustomerId}";
+    }
+
+    private static function privateCacheKey(string $stripeCustomerId): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".private.{$stripeCustomerId}";
+    }
+
+    private static function matchCacheKey(string $publicKey): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".match.{$publicKey}";
+    }
+
+    private static function tenantCacheKey(string $publicKey): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".tenant.{$publicKey}";
     }
 }

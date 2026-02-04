@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProductTier;
 
 describe("StripeProductTier", function (): void {

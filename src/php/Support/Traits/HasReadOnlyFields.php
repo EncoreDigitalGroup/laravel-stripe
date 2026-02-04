@@ -16,8 +16,6 @@ trait HasReadOnlyFields
         return $array;
     }
 
-    abstract protected function getReadOnlyFields(): array;
-
     public function toUpdateArray(): array
     {
         $array = $this->toArray();
@@ -32,6 +30,8 @@ trait HasReadOnlyFields
 
         return $array;
     }
+
+    abstract protected function getReadOnlyFields(): array;
 
     protected function getUpdateOnlyReadOnlyFields(): array
     {

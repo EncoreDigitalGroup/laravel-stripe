@@ -49,6 +49,24 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         return $bankAccount;
     }
 
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof StripeBankAccount;
+    }
+
+    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            StripeBankAccount::class => true,
+            StripeBankAccount::class . "[]" => true,
+        ];
+    }
+
     private function setBasicProperties(StripeBankAccount $bankAccount, array $data): StripeBankAccount
     {
         if (isset($data["id"])) {
@@ -100,23 +118,5 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         }
 
         return $bankAccount;
-    }
-
-    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
-    {
-        return $data instanceof StripeBankAccount;
-    }
-
-    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
-    {
-        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
-    }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [
-            StripeBankAccount::class => true,
-            StripeBankAccount::class . "[]" => true,
-        ];
     }
 }

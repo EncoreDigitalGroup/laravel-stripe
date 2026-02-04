@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Support\Config\Authentication;
 use EncoreDigitalGroup\Stripe\Support\Config\StripeConfig;
 

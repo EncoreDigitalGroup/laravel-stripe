@@ -1,6 +1,5 @@
 <?php
 
-
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use Illuminate\Support\Facades\Request;
 use Stripe\Event;

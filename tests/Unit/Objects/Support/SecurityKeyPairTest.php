@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;
 use Illuminate\Support\Facades\Cache;
 

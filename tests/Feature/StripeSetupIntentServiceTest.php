@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Enums\SetupIntentStatus;
 use EncoreDigitalGroup\Stripe\Enums\SetupIntentUsage;

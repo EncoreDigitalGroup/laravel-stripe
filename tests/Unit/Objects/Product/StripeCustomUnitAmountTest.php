@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeCustomUnitAmount;
 
 describe("StripeCustomUnitAmount", function (): void {

@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeBankAccountConnectedPayloadNormalizer;
 use EncoreDigitalGroup\Stripe\Objects\Support\SecurityKeyPair;

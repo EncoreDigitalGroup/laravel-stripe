@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tests;
 
 use Illuminate\Encryption\Encrypter;

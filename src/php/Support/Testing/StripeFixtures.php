@@ -44,22 +44,6 @@ class StripeFixtures
         ], $overrides);
     }
 
-    protected static function randomId(int $length = 24): string
-    {
-        return self::randomString($length);
-    }
-
-    protected static function randomString(int $length = 16): string
-    {
-        $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $string = "";
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[rand(0, strlen($characters) - 1)];
-        }
-
-        return $string;
-    }
-
     public static function customerList(array $customers = [], array $overrides = []): array
     {
         return array_merge([
@@ -587,5 +571,21 @@ class StripeFixtures
             "has_more" => false,
             "url" => "/v1/payment_methods",
         ], $overrides);
+    }
+
+    protected static function randomId(int $length = 24): string
+    {
+        return self::randomString($length);
+    }
+
+    protected static function randomString(int $length = 16): string
+    {
+        $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $string = "";
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $string;
     }
 }

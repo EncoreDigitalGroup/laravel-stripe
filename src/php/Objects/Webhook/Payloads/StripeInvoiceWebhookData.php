@@ -262,7 +262,7 @@ class StripeInvoiceWebhookData implements IWebhookData
             "currency" => $this->currency,
             "created" => self::carbonToTimestamp($this->created),
             "due_date" => self::carbonToTimestamp($this->dueDate),
-            "lines" => $this->lines !== null && $this->lines !== [] ? array_map(fn($line): array => $line->toArray(), $this->lines) : null,
+            "lines" => $this->lines !== null && $this->lines !== [] ? array_map(fn ($line): array => $line->toArray(), $this->lines) : null,
             "metadata" => $this->metadata,
         ];
 

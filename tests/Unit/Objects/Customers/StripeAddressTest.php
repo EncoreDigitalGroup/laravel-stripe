@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;
 
 test("can create address with all fields", function (): void {

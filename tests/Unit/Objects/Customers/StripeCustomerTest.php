@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeShipping;
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeAddress;

@@ -1,7 +1,5 @@
 <?php
 
-
-
 use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
 use EncoreDigitalGroup\Stripe\Stripe;

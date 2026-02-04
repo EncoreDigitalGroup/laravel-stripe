@@ -61,13 +61,6 @@ class StripeCustomer
         return self::applyDefaultPaymentMethod($instance, $stripeCustomer);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     private static function applyBasicProperties(self $instance, Customer $stripeCustomer): self
     {
         if (isset($stripeCustomer->address)) {
@@ -93,41 +86,6 @@ class StripeCustomer
         }
 
         return $instance;
-    }
-
-    public function withAddress(StripeAddress $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function withDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function withEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function withName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function withPhone(string $phone): self
-    {
-        $this->phone = $phone;
-
-        return $this;
     }
 
     private static function applyShippingIfPresent(self $instance, Customer $stripeCustomer): self
@@ -172,13 +130,6 @@ class StripeCustomer
         return $shipping;
     }
 
-    public function withShipping(StripeShipping $shipping): self
-    {
-        $this->shipping = $shipping;
-
-        return $this;
-    }
-
     private static function applyDefaultPaymentMethod(self $instance, Customer $stripeCustomer): self
     {
         if (!isset($stripeCustomer->invoice_settings)) {
@@ -198,6 +149,55 @@ class StripeCustomer
         }
 
         return $instance;
+    }
+
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withAddress(StripeAddress $address): self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function withEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function withName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function withPhone(string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function withShipping(StripeShipping $shipping): self
+    {
+        $this->shipping = $shipping;
+
+        return $this;
     }
 
     /**
@@ -322,7 +322,7 @@ class StripeCustomer
             }
 
             $paymentMethods = $this->paymentMethods();
-            $paymentMethodExists = $paymentMethods->contains(fn($pm): bool => $pm->id() === $this->defaultPaymentMethod);
+            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
 
             if (!$paymentMethodExists) {
                 throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
