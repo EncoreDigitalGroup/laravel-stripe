@@ -1,4 +1,3 @@
-
 import {FinancialConnection} from "./FinancialConnection";
 
 declare global {
