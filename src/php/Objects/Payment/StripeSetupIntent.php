@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Payment;
 
 use Carbon\CarbonImmutable;
@@ -128,6 +123,77 @@ class StripeSetupIntent
         return $instance;
     }
 
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function withClientSecret(string $clientSecret): self
+    {
+        $this->clientSecret = $clientSecret;
+
+        return $this;
+    }
+
+    public function withStatus(SetupIntentStatus $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function withUsage(SetupIntentUsage $usage): self
+    {
+        $this->usage = $usage;
+
+        return $this;
+    }
+
+    public function withCustomer(string $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withPaymentMethod(string $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
+
+        return $this;
+    }
+
+    public function withCreated(CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withLastSetupError(?array $lastSetupError): self
+    {
+        $this->lastSetupError = $lastSetupError;
+
+        return $this;
+    }
+
+    /** @param Collection<int, PaymentMethodType> $paymentMethodTypes */
+    public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
+    {
+        $this->paymentMethodTypes = $paymentMethodTypes;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         $array = [
@@ -152,23 +218,9 @@ class StripeSetupIntent
         return app(StripeSetupIntentService::class);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function id(): ?string
     {
         return $this->id;
-    }
-
-    public function withCustomer(string $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
     }
 
     public function customer(): ?string
@@ -176,23 +228,9 @@ class StripeSetupIntent
         return $this->customer;
     }
 
-    public function withDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
     public function description(): ?string
     {
         return $this->description;
-    }
-
-    public function withPaymentMethod(string $paymentMethod): self
-    {
-        $this->paymentMethod = $paymentMethod;
-
-        return $this;
     }
 
     public function paymentMethod(): ?string
@@ -200,23 +238,9 @@ class StripeSetupIntent
         return $this->paymentMethod;
     }
 
-    public function withStatus(SetupIntentStatus $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
     public function status(): ?SetupIntentStatus
     {
         return $this->status;
-    }
-
-    public function withUsage(SetupIntentUsage $usage): self
-    {
-        $this->usage = $usage;
-
-        return $this;
     }
 
     public function usage(): ?SetupIntentUsage
@@ -224,23 +248,9 @@ class StripeSetupIntent
         return $this->usage;
     }
 
-    public function withCreated(CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
     public function created(): ?CarbonImmutable
     {
         return $this->created;
-    }
-
-    public function withClientSecret(string $clientSecret): self
-    {
-        $this->clientSecret = $clientSecret;
-
-        return $this;
     }
 
     public function clientSecret(): ?string
@@ -248,24 +258,9 @@ class StripeSetupIntent
         return $this->clientSecret;
     }
 
-    public function withLastSetupError(?array $lastSetupError): self
-    {
-        $this->lastSetupError = $lastSetupError;
-
-        return $this;
-    }
-
     public function lastSetupError(): ?array
     {
         return $this->lastSetupError;
-    }
-
-    /** @param  Collection<int, PaymentMethodType>  $paymentMethodTypes */
-    public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
-    {
-        $this->paymentMethodTypes = $paymentMethodTypes;
-
-        return $this;
     }
 
     /** @return ?Collection<PaymentMethodType> */

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use Carbon\CarbonImmutable;
 use EncoreDigitalGroup\Stripe\Enums\SubscriptionScheduleProrationBehavior;
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripePhaseItem;

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025-2026. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Providers;
 
 use Filament\Support\Assets\Js;
@@ -15,8 +10,6 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 /** @codeCoverageIgnore */
 class ServiceProvider extends BaseServiceProvider
 {
-    public function register(): void {}
-
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__ . "/../../../resources/views", "stripe");
@@ -28,4 +21,6 @@ class ServiceProvider extends BaseServiceProvider
             ], "encoredigitalgroup/common-stripe");
         }
     }
+
+    public function register(): void {}
 }

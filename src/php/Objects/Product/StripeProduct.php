@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use Carbon\CarbonImmutable;
@@ -141,34 +136,6 @@ class StripeProduct
         return $instance;
     }
 
-    public function service(): StripeProductService
-    {
-        return app(StripeProductService::class);
-    }
-
-    public function toArray(): array
-    {
-        $array = [
-            "id" => $this->id,
-            "name" => $this->name,
-            "description" => $this->description,
-            "active" => $this->active,
-            "images" => $this->images,
-            "metadata" => $this->metadata,
-            "default_price" => $this->defaultPrice,
-            "tax_code" => $this->taxCode,
-            "unit_label" => $this->unitLabel,
-            "url" => $this->url,
-            "shippable" => $this->shippable,
-            "package_dimensions" => $this->packageDimensions,
-            "created" => self::carbonToTimestamp($this->created),
-            "updated" => self::carbonToTimestamp($this->updated),
-        ];
-
-        return Arr::whereNotNull($array);
-    }
-
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -197,6 +164,8 @@ class StripeProduct
         return $this;
     }
 
+    // Fluent setters
+
     public function withImages(array $images): self
     {
         $this->images = $images;
@@ -209,6 +178,28 @@ class StripeProduct
         $this->metadata = $metadata;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        $array = [
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "active" => $this->active,
+            "images" => $this->images,
+            "metadata" => $this->metadata,
+            "default_price" => $this->defaultPrice,
+            "tax_code" => $this->taxCode,
+            "unit_label" => $this->unitLabel,
+            "url" => $this->url,
+            "shippable" => $this->shippable,
+            "package_dimensions" => $this->packageDimensions,
+            "created" => self::carbonToTimestamp($this->created),
+            "updated" => self::carbonToTimestamp($this->updated),
+        ];
+
+        return Arr::whereNotNull($array);
     }
 
     public function withDefaultPrice(string $defaultPrice): self
@@ -267,7 +258,13 @@ class StripeProduct
         return $this;
     }
 
+    public function service(): StripeProductService
+    {
+        return app(StripeProductService::class);
+    }
+
     // Getters
+
     public function id(): ?string
     {
         return $this->id;

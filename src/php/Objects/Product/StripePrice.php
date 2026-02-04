@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use Carbon\CarbonImmutable;
@@ -140,6 +135,44 @@ class StripePrice
         return $instance;
     }
 
+    /** @return ?Collection<StripeProductTier> */
+    private static function extractTiers(Price $stripePrice): ?Collection
+    {
+        if (!isset($stripePrice->tiers)) {
+            return null;
+        }
+
+        $tiers = [];
+        /** @var StripeObject $tier */
+        foreach ($stripePrice->tiers as $tier) {
+            $tierInstance = StripeProductTier::make();
+
+            if (isset($tier->up_to)) {
+                $tierInstance = $tierInstance->withUpTo($tier->up_to);
+            }
+
+            if (isset($tier->unit_amount)) {
+                $tierInstance = $tierInstance->withUnitAmount($tier->unit_amount);
+            }
+
+            if (isset($tier->unit_amount_decimal)) {
+                $tierInstance = $tierInstance->withUnitAmountDecimal($tier->unit_amount_decimal);
+            }
+
+            if (isset($tier->flat_amount)) {
+                $tierInstance = $tierInstance->withFlatAmount($tier->flat_amount);
+            }
+
+            if (isset($tier->flat_amount_decimal)) {
+                $tierInstance = $tierInstance->withFlatAmountDecimal($tier->flat_amount_decimal);
+            }
+
+            $tiers[] = $tierInstance;
+        }
+
+        return new Collection($tiers);
+    }
+
     private static function setMiscProperties(self $instance, Price $stripePrice): self
     {
         if (isset($stripePrice->recurring)) {
@@ -204,44 +237,6 @@ class StripePrice
         return $recurring;
     }
 
-    /** @return ?Collection<StripeProductTier> */
-    private static function extractTiers(Price $stripePrice): ?Collection
-    {
-        if (!isset($stripePrice->tiers)) {
-            return null;
-        }
-
-        $tiers = [];
-        /** @var StripeObject $tier */
-        foreach ($stripePrice->tiers as $tier) {
-            $tierInstance = StripeProductTier::make();
-
-            if (isset($tier->up_to)) {
-                $tierInstance = $tierInstance->withUpTo($tier->up_to);
-            }
-
-            if (isset($tier->unit_amount)) {
-                $tierInstance = $tierInstance->withUnitAmount($tier->unit_amount);
-            }
-
-            if (isset($tier->unit_amount_decimal)) {
-                $tierInstance = $tierInstance->withUnitAmountDecimal($tier->unit_amount_decimal);
-            }
-
-            if (isset($tier->flat_amount)) {
-                $tierInstance = $tierInstance->withFlatAmount($tier->flat_amount);
-            }
-
-            if (isset($tier->flat_amount_decimal)) {
-                $tierInstance = $tierInstance->withFlatAmountDecimal($tier->flat_amount_decimal);
-            }
-
-            $tiers[] = $tierInstance;
-        }
-
-        return new Collection($tiers);
-    }
-
     private static function extractCustomUnitAmount(Price $stripePrice): ?StripeCustomUnitAmount
     {
         if (!isset($stripePrice->custom_unit_amount)) {
@@ -268,38 +263,6 @@ class StripePrice
         return $customUnitAmount;
     }
 
-    public function service(): StripePriceService
-    {
-        return app(StripePriceService::class);
-    }
-
-    public function toArray(): array
-    {
-        $array = [
-            "id" => $this->id,
-            "product" => $this->product,
-            "active" => $this->active,
-            "currency" => $this->currency,
-            "unit_amount" => $this->unitAmount,
-            "unit_amount_decimal" => $this->unitAmountDecimal,
-            "type" => $this->type?->value,
-            "billing_scheme" => $this->billingScheme?->value,
-            "recurring" => $this->recurring?->toArray(),
-            "nickname" => $this->nickname,
-            "metadata" => $this->metadata,
-            "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
-            "tiers_mode" => $this->tiersMode?->value,
-            "transform_quantity" => $this->transformQuantity,
-            "custom_unit_amount" => $this->customUnitAmount?->toArray(),
-            "tax_behavior" => $this->taxBehavior?->value,
-            "created" => self::carbonToTimestamp($this->created),
-        ];
-
-        return Arr::whereNotNull($array);
-    }
-
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -356,12 +319,7 @@ class StripePrice
         return $this;
     }
 
-    public function withRecurring(StripeRecurring $recurring): self
-    {
-        $this->recurring = $recurring;
-
-        return $this;
-    }
+    // Fluent setters
 
     public function withNickname(string $nickname): self
     {
@@ -375,6 +333,32 @@ class StripePrice
         $this->metadata = $metadata;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        $array = [
+            "id" => $this->id,
+            "product" => $this->product,
+            "active" => $this->active,
+            "currency" => $this->currency,
+            "unit_amount" => $this->unitAmount,
+            "unit_amount_decimal" => $this->unitAmountDecimal,
+            "type" => $this->type?->value,
+            "billing_scheme" => $this->billingScheme?->value,
+            "recurring" => $this->recurring?->toArray(),
+            "nickname" => $this->nickname,
+            "metadata" => $this->metadata,
+            "lookup_key" => $this->lookupKey,
+            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers_mode" => $this->tiersMode?->value,
+            "transform_quantity" => $this->transformQuantity,
+            "custom_unit_amount" => $this->customUnitAmount?->toArray(),
+            "tax_behavior" => $this->taxBehavior?->value,
+            "created" => self::carbonToTimestamp($this->created),
+        ];
+
+        return Arr::whereNotNull($array);
     }
 
     public function withLookupKey(string $lookupKey): self
@@ -399,9 +383,9 @@ class StripePrice
         return $this;
     }
 
-    public function withTransformQuantity(int $transformQuantity): self
+    public function withRecurring(StripeRecurring $recurring): self
     {
-        $this->transformQuantity = $transformQuantity;
+        $this->recurring = $recurring;
 
         return $this;
     }
@@ -427,7 +411,20 @@ class StripePrice
         return $this;
     }
 
+    public function service(): StripePriceService
+    {
+        return app(StripePriceService::class);
+    }
+
+    public function withTransformQuantity(int $transformQuantity): self
+    {
+        $this->transformQuantity = $transformQuantity;
+
+        return $this;
+    }
+
     // Getters
+
     public function id(): ?string
     {
         return $this->id;

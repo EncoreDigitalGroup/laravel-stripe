@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
 use EncoreDigitalGroup\Stripe\Services\StripeWebhookEndpointService;
 use EncoreDigitalGroup\Stripe\Stripe;

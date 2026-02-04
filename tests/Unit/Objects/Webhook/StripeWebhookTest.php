@@ -1,9 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
 use EncoreDigitalGroup\Stripe\Objects\Support\StripeWebhook;
 use Illuminate\Support\Facades\Request;
 use Stripe\Event;

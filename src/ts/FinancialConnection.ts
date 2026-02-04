@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
 import {loadStripe} from "@stripe/stripe-js";
 import axios from "axios";
 
