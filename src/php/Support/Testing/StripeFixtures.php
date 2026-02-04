@@ -578,6 +578,98 @@ class StripeFixtures
         ], $overrides);
     }
 
+    public static function invoice(array $overrides = []): array
+    {
+        $now = time();
+
+        return array_merge([
+            "id" => "in_" . self::randomId(),
+            "object" => "invoice",
+            "account_country" => "US",
+            "account_name" => null,
+            "amount_due" => 2000,
+            "amount_paid" => 2000,
+            "amount_remaining" => 0,
+            "attempt_count" => 1,
+            "attempted" => true,
+            "auto_advance" => false,
+            "billing_reason" => "subscription_cycle",
+            "charge" => "ch_" . self::randomId(),
+            "collection_method" => "charge_automatically",
+            "created" => $now,
+            "currency" => "usd",
+            "customer" => "cus_" . self::randomId(),
+            "default_payment_method" => null,
+            "description" => null,
+            "due_date" => null,
+            "ending_balance" => 0,
+            "hosted_invoice_url" => "https://invoice.stripe.com/i/" . self::randomString(32),
+            "invoice_pdf" => "https://pay.stripe.com/invoice/" . self::randomString(32) . "/pdf",
+            "lines" => [
+                "object" => "list",
+                "data" => [
+                    self::invoiceLineItem(),
+                ],
+                "has_more" => false,
+                "total_count" => 1,
+                "url" => "/v1/invoices/in_" . self::randomId() . "/lines",
+            ],
+            "livemode" => false,
+            "metadata" => [],
+            "number" => "INV-" . self::randomString(8),
+            "paid" => true,
+            "payment_intent" => "pi_" . self::randomId(),
+            "period_end" => $now,
+            "period_start" => $now - 2592000,
+            "status" => "paid",
+            "subscription" => "sub_" . self::randomId(),
+            "subtotal" => 2000,
+            "tax" => null,
+            "total" => 2000,
+        ], $overrides);
+    }
+
+    public static function invoiceList(array $invoices = [], array $overrides = []): array
+    {
+        return array_merge([
+            "object" => "list",
+            "data" => $invoices,
+            "has_more" => false,
+            "url" => "/v1/invoices",
+        ], $overrides);
+    }
+
+    public static function invoiceLineItem(array $overrides = []): array
+    {
+        $now = time();
+
+        return array_merge([
+            "id" => "il_" . self::randomId(),
+            "object" => "line_item",
+            "amount" => 2000,
+            "currency" => "usd",
+            "description" => "1 x Test Subscription (at $20.00 / month)",
+            "discount_amounts" => [],
+            "discountable" => true,
+            "discounts" => [],
+            "livemode" => false,
+            "metadata" => [],
+            "period" => [
+                "end" => $now + 2592000,
+                "start" => $now,
+            ],
+            "price" => self::price(),
+            "proration" => false,
+            "quantity" => 1,
+            "subscription" => "sub_" . self::randomId(),
+            "tax_amounts" => [],
+            "tax_rates" => [],
+            "type" => "subscription",
+            "unit_amount" => 2000,
+            "unit_amount_decimal" => "2000",
+        ], $overrides);
+    }
+
     protected static function randomId(int $length = 24): string
     {
         return self::randomString($length);
