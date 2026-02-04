@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
@@ -60,7 +55,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->all($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn (Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn(Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /**
@@ -74,7 +69,7 @@ class StripeCustomerService
         $stripeCustomers = $this->stripe->customers->search($params);
 
         return collect($stripeCustomers->data)
-            ->map(fn (Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
+            ->map(fn(Customer $stripeCustomer): StripeCustomer => StripeCustomer::fromStripeObject($stripeCustomer));
     }
 
     /** @throws ApiErrorException */

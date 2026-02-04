@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
 use Carbon\CarbonImmutable;
@@ -49,6 +44,22 @@ class StripeFixtures
         ], $overrides);
     }
 
+    protected static function randomId(int $length = 24): string
+    {
+        return self::randomString($length);
+    }
+
+    protected static function randomString(int $length = 16): string
+    {
+        $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $string = "";
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $string;
+    }
+
     public static function customerList(array $customers = [], array $overrides = []): array
     {
         return array_merge([
@@ -91,37 +102,6 @@ class StripeFixtures
             "data" => $products,
             "has_more" => false,
             "url" => "/v1/products",
-        ], $overrides);
-    }
-
-    public static function price(array $overrides = []): array
-    {
-        return array_merge([
-            "id" => "price_" . self::randomId(),
-            "object" => "price",
-            "active" => true,
-            "billing_scheme" => "per_unit",
-            "created" => time(),
-            "currency" => "usd",
-            "custom_unit_amount" => null,
-            "livemode" => false,
-            "lookup_key" => null,
-            "metadata" => [],
-            "nickname" => null,
-            "product" => "prod_" . self::randomId(),
-            "recurring" => [
-                "aggregate_usage" => null,
-                "interval" => "month",
-                "interval_count" => 1,
-                "trial_period_days" => null,
-                "usage_type" => "licensed",
-            ],
-            "tax_behavior" => "unspecified",
-            "tiers_mode" => null,
-            "transform_quantity" => null,
-            "type" => "recurring",
-            "unit_amount" => 1000,
-            "unit_amount_decimal" => "1000",
         ], $overrides);
     }
 
@@ -217,6 +197,37 @@ class StripeFixtures
                 ],
             ],
             "trial_start" => null,
+        ], $overrides);
+    }
+
+    public static function price(array $overrides = []): array
+    {
+        return array_merge([
+            "id" => "price_" . self::randomId(),
+            "object" => "price",
+            "active" => true,
+            "billing_scheme" => "per_unit",
+            "created" => time(),
+            "currency" => "usd",
+            "custom_unit_amount" => null,
+            "livemode" => false,
+            "lookup_key" => null,
+            "metadata" => [],
+            "nickname" => null,
+            "product" => "prod_" . self::randomId(),
+            "recurring" => [
+                "aggregate_usage" => null,
+                "interval" => "month",
+                "interval_count" => 1,
+                "trial_period_days" => null,
+                "usage_type" => "licensed",
+            ],
+            "tax_behavior" => "unspecified",
+            "tiers_mode" => null,
+            "transform_quantity" => null,
+            "type" => "recurring",
+            "unit_amount" => 1000,
+            "unit_amount_decimal" => "1000",
         ], $overrides);
     }
 
@@ -576,21 +587,5 @@ class StripeFixtures
             "has_more" => false,
             "url" => "/v1/payment_methods",
         ], $overrides);
-    }
-
-    protected static function randomId(int $length = 24): string
-    {
-        return self::randomString($length);
-    }
-
-    protected static function randomString(int $length = 16): string
-    {
-        $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $string = "";
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[rand(0, strlen($characters) - 1)];
-        }
-
-        return $string;
     }
 }

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Product\StripeProduct;
@@ -36,14 +31,6 @@ class StripeProductService
     }
 
     /** @throws ApiErrorException */
-    public function update(string $productId, StripeProduct $product): StripeProduct
-    {
-        $stripeProduct = $this->stripe->products->update($productId, $product->toUpdateArray());
-
-        return StripeProduct::fromStripeObject($stripeProduct);
-    }
-
-    /** @throws ApiErrorException */
     public function delete(string $productId): bool
     {
         $result = $this->stripe->products->delete($productId);
@@ -61,6 +48,14 @@ class StripeProductService
         $stripeProduct = $this->stripe->products->update($productId, [
             "active" => false,
         ]);
+
+        return StripeProduct::fromStripeObject($stripeProduct);
+    }
+
+    /** @throws ApiErrorException */
+    public function update(string $productId, StripeProduct $product): StripeProduct
+    {
+        $stripeProduct = $this->stripe->products->update($productId, $product->toUpdateArray());
 
         return StripeProduct::fromStripeObject($stripeProduct);
     }
@@ -89,7 +84,7 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->all($params);
 
         return collect($stripeProducts->data)
-            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn(Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 
     /**
@@ -103,6 +98,6 @@ class StripeProductService
         $stripeProducts = $this->stripe->products->search($params);
 
         return collect($stripeProducts->data)
-            ->map(fn (Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
+            ->map(fn(Product $stripeProduct): StripeProduct => StripeProduct::fromStripeObject($stripeProduct));
     }
 }

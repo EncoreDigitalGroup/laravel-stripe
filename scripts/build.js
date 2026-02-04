@@ -1,7 +1,4 @@
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
+
 
 const esbuild = require("esbuild");
 

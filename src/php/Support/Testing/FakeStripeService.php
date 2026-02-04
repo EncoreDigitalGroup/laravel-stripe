@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
 /**
@@ -27,6 +22,29 @@ class FakeStripeService
     public function all(array $params = []): mixed
     {
         return $this->__call("all", [$params]);
+    }
+
+    public function __call(string $method, array $arguments): mixed
+    {
+        $fullMethod = "{$this->serviceName}.{$method}";
+
+        // Extract parameters - handle various argument patterns
+        // Some methods take (id, params), others just (params)
+        if ($arguments === []) {
+            $params = [];
+        } elseif (count($arguments) === 1) {
+            // Could be just ID (string) or params (array)
+            $params = is_array($arguments[0]) ? $arguments[0] : [];
+        } elseif (isset($arguments[1]) && is_array($arguments[1])) {
+            // Multiple arguments - typically (id, params)
+            // For methods like update, retrieve, delete, the ID is separate from params
+            // We should not add it to the params array since real Stripe doesn't do that
+            $params = $arguments[1];
+        } else {
+            $params = [];
+        }
+
+        return $this->client->resolveFake($fullMethod, $params);
     }
 
     public function create(array $params = []): mixed
@@ -52,28 +70,5 @@ class FakeStripeService
     public function search(array $params = []): mixed
     {
         return $this->__call("search", [$params]);
-    }
-
-    public function __call(string $method, array $arguments): mixed
-    {
-        $fullMethod = "{$this->serviceName}.{$method}";
-
-        // Extract parameters - handle various argument patterns
-        // Some methods take (id, params), others just (params)
-        if ($arguments === []) {
-            $params = [];
-        } elseif (count($arguments) === 1) {
-            // Could be just ID (string) or params (array)
-            $params = is_array($arguments[0]) ? $arguments[0] : [];
-        } elseif (isset($arguments[1]) && is_array($arguments[1])) {
-            // Multiple arguments - typically (id, params)
-            // For methods like update, retrieve, delete, the ID is separate from params
-            // We should not add it to the params array since real Stripe doesn't do that
-            $params = $arguments[1];
-        } else {
-            $params = [];
-        }
-
-        return $this->client->resolveFake($fullMethod, $params);
     }
 }

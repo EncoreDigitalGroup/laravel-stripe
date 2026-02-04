@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Webhook\StripeWebhookEndpoint;
@@ -83,6 +78,6 @@ class StripeWebhookEndpointService
         $stripeEndpoints = $this->stripe->webhookEndpoints->all($params);
 
         return collect($stripeEndpoints->data)
-            ->map(fn (WebhookEndpoint $stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
+            ->map(fn(WebhookEndpoint $stripeEndpoint): StripeWebhookEndpoint => StripeWebhookEndpoint::fromStripeObject($stripeEndpoint));
     }
 }

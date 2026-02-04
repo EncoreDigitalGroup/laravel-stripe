@@ -1,9 +1,6 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
+
 use EncoreDigitalGroup\Stripe\Enums\BillingScheme;
 use EncoreDigitalGroup\Stripe\Enums\PriceType;
 use EncoreDigitalGroup\Stripe\Enums\RecurringInterval;

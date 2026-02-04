@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Product;
 
 use Carbon\CarbonImmutable;
@@ -92,6 +87,48 @@ class StripePrice
         return self::setEnumProperties($instance, $stripePrice);
     }
 
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withProduct(string $product): self
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function withActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    public function withCurrency(string $currency): self
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function withUnitAmount(int $unitAmount): self
+    {
+        $this->unitAmount = $unitAmount;
+
+        return $this;
+    }
+
+    public function withUnitAmountDecimal(string $unitAmountDecimal): self
+    {
+        $this->unitAmountDecimal = $unitAmountDecimal;
+
+        return $this;
+    }
+
     private static function setEnumProperties(self $instance, Price $stripePrice): self
     {
         if (isset($stripePrice->type)) {
@@ -117,6 +154,69 @@ class StripePrice
         return $instance;
     }
 
+    public function withType(PriceType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function withBillingScheme(BillingScheme $billingScheme): self
+    {
+        $this->billingScheme = $billingScheme;
+
+        return $this;
+    }
+
+    // Fluent setters
+
+    public function withNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function toArray(): array
+    {
+        $array = [
+            "id" => $this->id,
+            "product" => $this->product,
+            "active" => $this->active,
+            "currency" => $this->currency,
+            "unit_amount" => $this->unitAmount,
+            "unit_amount_decimal" => $this->unitAmountDecimal,
+            "type" => $this->type?->value,
+            "billing_scheme" => $this->billingScheme?->value,
+            "recurring" => $this->recurring?->toArray(),
+            "nickname" => $this->nickname,
+            "metadata" => $this->metadata,
+            "lookup_key" => $this->lookupKey,
+            "tiers" => $this->tiers?->map(fn(StripeProductTier $tier): array => $tier->toArray())->values()->all(),
+            "tiers_mode" => $this->tiersMode?->value,
+            "transform_quantity" => $this->transformQuantity,
+            "custom_unit_amount" => $this->customUnitAmount?->toArray(),
+            "tax_behavior" => $this->taxBehavior?->value,
+            "created" => self::carbonToTimestamp($this->created),
+        ];
+
+        return Arr::whereNotNull($array);
+    }
+
+    public function withLookupKey(string $lookupKey): self
+    {
+        $this->lookupKey = $lookupKey;
+
+        return $this;
+    }
+
     private static function setAdvancedProperties(self $instance, Price $stripePrice): self
     {
         $instance = self::setTierProperties($instance, $stripePrice);
@@ -138,6 +238,59 @@ class StripePrice
         }
 
         return $instance;
+    }
+
+    /** @return ?Collection<StripeProductTier> */
+    private static function extractTiers(Price $stripePrice): ?Collection
+    {
+        if (!isset($stripePrice->tiers)) {
+            return null;
+        }
+
+        $tiers = [];
+        /** @var StripeObject $tier */
+        foreach ($stripePrice->tiers as $tier) {
+            $tierInstance = StripeProductTier::make();
+
+            if (isset($tier->up_to)) {
+                $tierInstance = $tierInstance->withUpTo($tier->up_to);
+            }
+
+            if (isset($tier->unit_amount)) {
+                $tierInstance = $tierInstance->withUnitAmount($tier->unit_amount);
+            }
+
+            if (isset($tier->unit_amount_decimal)) {
+                $tierInstance = $tierInstance->withUnitAmountDecimal($tier->unit_amount_decimal);
+            }
+
+            if (isset($tier->flat_amount)) {
+                $tierInstance = $tierInstance->withFlatAmount($tier->flat_amount);
+            }
+
+            if (isset($tier->flat_amount_decimal)) {
+                $tierInstance = $tierInstance->withFlatAmountDecimal($tier->flat_amount_decimal);
+            }
+
+            $tiers[] = $tierInstance;
+        }
+
+        return new Collection($tiers);
+    }
+
+    /** @param Collection<StripeProductTier> $tiers */
+    public function withTiers(Collection $tiers): self
+    {
+        $this->tiers = $tiers;
+
+        return $this;
+    }
+
+    public function withTiersMode(TiersMode $tiersMode): self
+    {
+        $this->tiersMode = $tiersMode;
+
+        return $this;
     }
 
     private static function setMiscProperties(self $instance, Price $stripePrice): self
@@ -204,42 +357,11 @@ class StripePrice
         return $recurring;
     }
 
-    /** @return ?Collection<StripeProductTier> */
-    private static function extractTiers(Price $stripePrice): ?Collection
+    public function withRecurring(StripeRecurring $recurring): self
     {
-        if (!isset($stripePrice->tiers)) {
-            return null;
-        }
+        $this->recurring = $recurring;
 
-        $tiers = [];
-        /** @var StripeObject $tier */
-        foreach ($stripePrice->tiers as $tier) {
-            $tierInstance = StripeProductTier::make();
-
-            if (isset($tier->up_to)) {
-                $tierInstance = $tierInstance->withUpTo($tier->up_to);
-            }
-
-            if (isset($tier->unit_amount)) {
-                $tierInstance = $tierInstance->withUnitAmount($tier->unit_amount);
-            }
-
-            if (isset($tier->unit_amount_decimal)) {
-                $tierInstance = $tierInstance->withUnitAmountDecimal($tier->unit_amount_decimal);
-            }
-
-            if (isset($tier->flat_amount)) {
-                $tierInstance = $tierInstance->withFlatAmount($tier->flat_amount);
-            }
-
-            if (isset($tier->flat_amount_decimal)) {
-                $tierInstance = $tierInstance->withFlatAmountDecimal($tier->flat_amount_decimal);
-            }
-
-            $tiers[] = $tierInstance;
-        }
-
-        return new Collection($tiers);
+        return $this;
     }
 
     private static function extractCustomUnitAmount(Price $stripePrice): ?StripeCustomUnitAmount
@@ -268,144 +390,6 @@ class StripePrice
         return $customUnitAmount;
     }
 
-    public function service(): StripePriceService
-    {
-        return app(StripePriceService::class);
-    }
-
-    public function toArray(): array
-    {
-        $array = [
-            "id" => $this->id,
-            "product" => $this->product,
-            "active" => $this->active,
-            "currency" => $this->currency,
-            "unit_amount" => $this->unitAmount,
-            "unit_amount_decimal" => $this->unitAmountDecimal,
-            "type" => $this->type?->value,
-            "billing_scheme" => $this->billingScheme?->value,
-            "recurring" => $this->recurring?->toArray(),
-            "nickname" => $this->nickname,
-            "metadata" => $this->metadata,
-            "lookup_key" => $this->lookupKey,
-            "tiers" => $this->tiers?->map(fn (StripeProductTier $tier): array => $tier->toArray())->values()->all(),
-            "tiers_mode" => $this->tiersMode?->value,
-            "transform_quantity" => $this->transformQuantity,
-            "custom_unit_amount" => $this->customUnitAmount?->toArray(),
-            "tax_behavior" => $this->taxBehavior?->value,
-            "created" => self::carbonToTimestamp($this->created),
-        ];
-
-        return Arr::whereNotNull($array);
-    }
-
-    // Fluent setters
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function withProduct(string $product): self
-    {
-        $this->product = $product;
-
-        return $this;
-    }
-
-    public function withActive(bool $active): self
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    public function withCurrency(string $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
-    public function withUnitAmount(int $unitAmount): self
-    {
-        $this->unitAmount = $unitAmount;
-
-        return $this;
-    }
-
-    public function withUnitAmountDecimal(string $unitAmountDecimal): self
-    {
-        $this->unitAmountDecimal = $unitAmountDecimal;
-
-        return $this;
-    }
-
-    public function withType(PriceType $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function withBillingScheme(BillingScheme $billingScheme): self
-    {
-        $this->billingScheme = $billingScheme;
-
-        return $this;
-    }
-
-    public function withRecurring(StripeRecurring $recurring): self
-    {
-        $this->recurring = $recurring;
-
-        return $this;
-    }
-
-    public function withNickname(string $nickname): self
-    {
-        $this->nickname = $nickname;
-
-        return $this;
-    }
-
-    public function withMetadata(array $metadata): self
-    {
-        $this->metadata = $metadata;
-
-        return $this;
-    }
-
-    public function withLookupKey(string $lookupKey): self
-    {
-        $this->lookupKey = $lookupKey;
-
-        return $this;
-    }
-
-    /** @param Collection<StripeProductTier> $tiers */
-    public function withTiers(Collection $tiers): self
-    {
-        $this->tiers = $tiers;
-
-        return $this;
-    }
-
-    public function withTiersMode(TiersMode $tiersMode): self
-    {
-        $this->tiersMode = $tiersMode;
-
-        return $this;
-    }
-
-    public function withTransformQuantity(int $transformQuantity): self
-    {
-        $this->transformQuantity = $transformQuantity;
-
-        return $this;
-    }
-
     public function withCustomUnitAmount(StripeCustomUnitAmount $customUnitAmount): self
     {
         $this->customUnitAmount = $customUnitAmount;
@@ -427,7 +411,20 @@ class StripePrice
         return $this;
     }
 
+    public function service(): StripePriceService
+    {
+        return app(StripePriceService::class);
+    }
+
+    public function withTransformQuantity(int $transformQuantity): self
+    {
+        $this->transformQuantity = $transformQuantity;
+
+        return $this;
+    }
+
     // Getters
+
     public function id(): ?string
     {
         return $this->id;

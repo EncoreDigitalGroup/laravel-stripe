@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules\StripeSubscriptionSchedule;
@@ -15,18 +10,6 @@ use Stripe\Exception\ApiErrorException;
 class StripeSubscriptionScheduleService
 {
     use HasStripe;
-
-    /** @throws ApiErrorException */
-    public function create(StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
-    {
-        $data = $subscriptionSchedule->toArray();
-
-        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"]);
-
-        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($data);
-
-        return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
-    }
 
     /** @throws ApiErrorException */
     public function get(string $subscriptionScheduleId): StripeSubscriptionSchedule
@@ -88,5 +71,17 @@ class StripeSubscriptionScheduleService
         ]);
 
         return StripeSubscriptionSchedule::fromStripeObject($response);
+    }
+
+    /** @throws ApiErrorException */
+    public function create(StripeSubscriptionSchedule $subscriptionSchedule): StripeSubscriptionSchedule
+    {
+        $data = $subscriptionSchedule->toArray();
+
+        unset($data["id"], $data["object"], $data["created"], $data["canceled_at"], $data["completed_at"], $data["released_at"], $data["status"]);
+
+        $stripeSubscriptionSchedule = $this->stripe->subscriptionSchedules->create($data);
+
+        return StripeSubscriptionSchedule::fromStripeObject($stripeSubscriptionSchedule);
     }
 }

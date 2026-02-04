@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
 use Carbon\CarbonImmutable;
@@ -52,24 +47,6 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         $bankAccount = $this->setTransactionRefresh($bankAccount, $data, $format, $context);
 
         return $bankAccount;
-    }
-
-    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
-    {
-        return $data instanceof StripeBankAccount;
-    }
-
-    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
-    {
-        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
-    }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [
-            StripeBankAccount::class => true,
-            StripeBankAccount::class . "[]" => true,
-        ];
     }
 
     private function setBasicProperties(StripeBankAccount $bankAccount, array $data): StripeBankAccount
@@ -123,5 +100,23 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         }
 
         return $bankAccount;
+    }
+
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof StripeBankAccount;
+    }
+
+    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return $type === StripeBankAccount::class || $type === StripeBankAccount::class . "[]";
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            StripeBankAccount::class => true,
+            StripeBankAccount::class . "[]" => true,
+        ];
     }
 }

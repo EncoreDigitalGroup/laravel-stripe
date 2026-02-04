@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
@@ -72,6 +67,34 @@ class StripeWebhookEndpoint
         return $instance;
     }
 
+    public function withUrl(string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function withEnabledEvents(array $enabledEvents): self
+    {
+        $this->enabledEvents = $enabledEvents;
+
+        return $this;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function withCreated(CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
     private static function setOptionalProperties(self $instance, WebhookEndpoint $stripeEndpoint): self
     {
         if (isset($stripeEndpoint->disabled)) {
@@ -94,10 +117,14 @@ class StripeWebhookEndpoint
         return $instance;
     }
 
-    public function service(): StripeWebhookEndpointService
+    public function withDisabled(bool $disabled): self
     {
-        return app(StripeWebhookEndpointService::class);
+        $this->disabled = $disabled;
+
+        return $this;
     }
+
+    // Fluent setters
 
     public function toArray(): array
     {
@@ -115,6 +142,25 @@ class StripeWebhookEndpoint
         ];
 
         return Arr::whereNotNull($array);
+    }
+
+    public function withSecret(string $secret): self
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function withStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function service(): StripeWebhookEndpointService
+    {
+        return app(StripeWebhookEndpointService::class);
     }
 
     /**
@@ -149,57 +195,8 @@ class StripeWebhookEndpoint
         return $service->delete($this->id);
     }
 
-    // Fluent setters
-    public function withUrl(string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    public function withEnabledEvents(array $enabledEvents): self
-    {
-        $this->enabledEvents = $enabledEvents;
-
-        return $this;
-    }
-
-    public function withDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function withDisabled(bool $disabled): self
-    {
-        $this->disabled = $disabled;
-
-        return $this;
-    }
-
-    public function withSecret(string $secret): self
-    {
-        $this->secret = $secret;
-
-        return $this;
-    }
-
-    public function withStatus(string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function withCreated(CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
     // Getter methods
+
     public function url(): ?string
     {
         return $this->url;

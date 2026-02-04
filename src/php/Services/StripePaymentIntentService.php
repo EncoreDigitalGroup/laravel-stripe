@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentIntent;
@@ -77,7 +72,7 @@ class StripePaymentIntentService
         $stripePaymentIntents = $this->stripe->paymentIntents->all($params);
 
         return collect($stripePaymentIntents->data)
-            ->map(fn (PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
+            ->map(fn(PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
     }
 
     /**
@@ -91,6 +86,6 @@ class StripePaymentIntentService
         $stripePaymentIntents = $this->stripe->paymentIntents->search($params);
 
         return collect($stripePaymentIntents->data)
-            ->map(fn (PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
+            ->map(fn(PaymentIntent $stripePaymentIntent): StripePaymentIntent => StripePaymentIntent::fromStripeObject($stripePaymentIntent));
     }
 }

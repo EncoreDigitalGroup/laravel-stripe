@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Number;
@@ -19,6 +14,14 @@ class SecurityKeyPair
     public string $privateKey;
     public int|string $tenantId;
 
+    public static function generate(string $stripeCustomerId, int $tenantId, int $ttlInMinutes = 60): void
+    {
+        $securityKey = self::make();
+        $securityKey->tenantId = $tenantId;
+
+        self::put($stripeCustomerId, $securityKey, $ttlInMinutes);
+    }
+
     public static function make(): SecurityKeyPair
     {
         $securityKey = new self;
@@ -28,12 +31,32 @@ class SecurityKeyPair
         return $securityKey;
     }
 
-    public static function generate(string $stripeCustomerId, int $tenantId, int $ttlInMinutes = 60): void
+    private static function put(string $stripeCustomerId, SecurityKeyPair $securityKey, int $ttlInMinutes = 60): void
     {
-        $securityKey = self::make();
-        $securityKey->tenantId = $tenantId;
+        Cache::put(self::publicCacheKey($stripeCustomerId), $securityKey->publicKey, $ttlInMinutes);
+        Cache::put(self::privateCacheKey($stripeCustomerId), $securityKey->privateKey, $ttlInMinutes);
+        Cache::put(self::matchCacheKey($securityKey->publicKey), $securityKey->privateKey, $ttlInMinutes);
+        Cache::put(self::tenantCacheKey($securityKey->publicKey), $securityKey->tenantId, $ttlInMinutes);
+    }
 
-        self::put($stripeCustomerId, $securityKey, $ttlInMinutes);
+    private static function publicCacheKey(string $stripeCustomerId): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".public.{$stripeCustomerId}";
+    }
+
+    private static function privateCacheKey(string $stripeCustomerId): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".private.{$stripeCustomerId}";
+    }
+
+    private static function matchCacheKey(string $publicKey): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".match.{$publicKey}";
+    }
+
+    private static function tenantCacheKey(string $publicKey): string
+    {
+        return self::SECURITY_CACHE_KEY_PREFIX . ".tenant.{$publicKey}";
     }
 
     public static function validate(string $stripeCustomerId, string $publicKey, string $privateKey): bool
@@ -77,33 +100,5 @@ class SecurityKeyPair
         Cache::forget(self::privateCacheKey($stripeCustomerId));
         Cache::forget(self::matchCacheKey($publicKey));
         Cache::forget(self::tenantCacheKey($publicKey));
-    }
-
-    private static function put(string $stripeCustomerId, SecurityKeyPair $securityKey, int $ttlInMinutes = 60): void
-    {
-        Cache::put(self::publicCacheKey($stripeCustomerId), $securityKey->publicKey, $ttlInMinutes);
-        Cache::put(self::privateCacheKey($stripeCustomerId), $securityKey->privateKey, $ttlInMinutes);
-        Cache::put(self::matchCacheKey($securityKey->publicKey), $securityKey->privateKey, $ttlInMinutes);
-        Cache::put(self::tenantCacheKey($securityKey->publicKey), $securityKey->tenantId, $ttlInMinutes);
-    }
-
-    private static function publicCacheKey(string $stripeCustomerId): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".public.{$stripeCustomerId}";
-    }
-
-    private static function privateCacheKey(string $stripeCustomerId): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".private.{$stripeCustomerId}";
-    }
-
-    private static function matchCacheKey(string $publicKey): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".match.{$publicKey}";
-    }
-
-    private static function tenantCacheKey(string $publicKey): string
-    {
-        return self::SECURITY_CACHE_KEY_PREFIX . ".tenant.{$publicKey}";
     }
 }

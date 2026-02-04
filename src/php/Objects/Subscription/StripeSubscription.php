@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription;
 
 use Carbon\CarbonImmutable;
@@ -188,6 +183,50 @@ class StripeSubscription
         return collect($items);
     }
 
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function toArray(): array
+    {
+        $items = null;
+        if ($this->items instanceof Collection) {
+            $items = $this->items->map(fn(StripeSubscriptionItem $item): array => $item->toArray())->all();
+        }
+
+        $array = [
+            "id" => $this->id,
+            "customer" => $this->customer,
+            "status" => $this->status?->value,
+            "cancel_at" => self::carbonToTimestamp($this->cancelAt),
+            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
+            "trial_start" => self::carbonToTimestamp($this->trialStart),
+            "trial_end" => self::carbonToTimestamp($this->trialEnd),
+            "items" => $items,
+            "default_payment_method" => $this->defaultPaymentMethod,
+            "metadata" => $this->metadata,
+            "currency" => $this->currency,
+            "collection_method" => $this->collectionMethod?->value,
+            "billing_cycle_anchor_config" => $this->billingCycleAnchorConfig?->toArray(),
+            "proration_behavior" => $this->prorationBehavior?->value,
+            "cancel_at_period_end" => $this->cancelAtPeriodEnd,
+            "days_until_due" => $this->daysUntilDue,
+            "description" => $this->description,
+        ];
+
+        return Arr::whereNotNull($array);
+    }
+
     private static function extractCustomerId(mixed $customer): string
     {
         if (is_string($customer)) {
@@ -270,102 +309,6 @@ class StripeSubscription
         return ProrationBehavior::from($prorationBehavior);
     }
 
-    public function issueFirstInvoiceOn(CarbonInterface $date): self
-    {
-        $this->billingCycleAnchorConfig = StripeBillingCycleAnchorConfig::make()
-            ->withDayOfMonth($date->day)
-            ->withMonth($date->month)
-            ->withHour($date->hour)
-            ->withMinute($date->minute)
-            ->withSecond($date->second);
-
-        return $this;
-    }
-
-    public function service(): StripeSubscriptionService
-    {
-        return app(StripeSubscriptionService::class);
-    }
-
-    public function toArray(): array
-    {
-        $items = null;
-        if ($this->items instanceof Collection) {
-            $items = $this->items->map(fn (StripeSubscriptionItem $item): array => $item->toArray())->all();
-        }
-
-        $array = [
-            "id" => $this->id,
-            "customer" => $this->customer,
-            "status" => $this->status?->value,
-            "cancel_at" => self::carbonToTimestamp($this->cancelAt),
-            "canceled_at" => self::carbonToTimestamp($this->canceledAt),
-            "trial_start" => self::carbonToTimestamp($this->trialStart),
-            "trial_end" => self::carbonToTimestamp($this->trialEnd),
-            "items" => $items,
-            "default_payment_method" => $this->defaultPaymentMethod,
-            "metadata" => $this->metadata,
-            "currency" => $this->currency,
-            "collection_method" => $this->collectionMethod?->value,
-            "billing_cycle_anchor_config" => $this->billingCycleAnchorConfig?->toArray(),
-            "proration_behavior" => $this->prorationBehavior?->value,
-            "cancel_at_period_end" => $this->cancelAtPeriodEnd,
-            "days_until_due" => $this->daysUntilDue,
-            "description" => $this->description,
-        ];
-
-        return Arr::whereNotNull($array);
-    }
-
-    /**
-     * This is custom as we are saving multiple objects which the HasSave trait does not cover.
-     *
-     * @throws ApiErrorException
-     */
-    public function save(): self
-    {
-        $service = app(StripeSubscriptionService::class);
-
-        $result = is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
-
-        // Save schedule changes if the schedule was accessed
-        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
-            $savedSchedule = $this->subscriptionSchedule->save();
-            $result->subscriptionSchedule = $savedSchedule;
-        }
-
-        return $result;
-    }
-
-    /** @throws ApiErrorException */
-    public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
-    {
-        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule && !$refresh) {
-            return $this->subscriptionSchedule;
-        }
-
-        if ($this->subscriptionScheduleId !== null && $this->subscriptionScheduleId !== "" && $this->subscriptionScheduleId !== "0") {
-            $this->subscriptionSchedule = app(StripeSubscriptionScheduleService::class)->get($this->subscriptionScheduleId);
-            $this->subscriptionSchedule->setParentSubscription($this);
-
-            return $this->subscriptionSchedule;
-        }
-
-        return null;
-    }
-
-    public function scheduleId(): ?string
-    {
-        return $this->subscriptionScheduleId;
-    }
-
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function withCustomer(string $customer): self
     {
         $this->customer = $customer;
@@ -422,13 +365,6 @@ class StripeSubscription
         return $this;
     }
 
-    public function withMetadata(array $metadata): self
-    {
-        $this->metadata = $metadata;
-
-        return $this;
-    }
-
     public function withCurrency(string $currency): self
     {
         $this->currency = $currency;
@@ -476,6 +412,65 @@ class StripeSubscription
         $this->description = $description;
 
         return $this;
+    }
+
+    public function issueFirstInvoiceOn(CarbonInterface $date): self
+    {
+        $this->billingCycleAnchorConfig = StripeBillingCycleAnchorConfig::make()
+            ->withDayOfMonth($date->day)
+            ->withMonth($date->month)
+            ->withHour($date->hour)
+            ->withMinute($date->minute)
+            ->withSecond($date->second);
+
+        return $this;
+    }
+
+    public function service(): StripeSubscriptionService
+    {
+        return app(StripeSubscriptionService::class);
+    }
+
+    /**
+     * This is custom as we are saving multiple objects which the HasSave trait does not cover.
+     *
+     * @throws ApiErrorException
+     */
+    public function save(): self
+    {
+        $service = app(StripeSubscriptionService::class);
+
+        $result = is_null($this->id) ? $service->create($this) : $service->update($this->id, $this);
+
+        // Save schedule changes if the schedule was accessed
+        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule) {
+            $savedSchedule = $this->subscriptionSchedule->save();
+            $result->subscriptionSchedule = $savedSchedule;
+        }
+
+        return $result;
+    }
+
+    /** @throws ApiErrorException */
+    public function schedule(bool $refresh = false): ?StripeSubscriptionSchedule
+    {
+        if ($this->subscriptionSchedule instanceof StripeSubscriptionSchedule && !$refresh) {
+            return $this->subscriptionSchedule;
+        }
+
+        if ($this->subscriptionScheduleId !== null && $this->subscriptionScheduleId !== "" && $this->subscriptionScheduleId !== "0") {
+            $this->subscriptionSchedule = app(StripeSubscriptionScheduleService::class)->get($this->subscriptionScheduleId);
+            $this->subscriptionSchedule->setParentSubscription($this);
+
+            return $this->subscriptionSchedule;
+        }
+
+        return null;
+    }
+
+    public function scheduleId(): ?string
+    {
+        return $this->subscriptionScheduleId;
     }
 
     public function id(): ?string

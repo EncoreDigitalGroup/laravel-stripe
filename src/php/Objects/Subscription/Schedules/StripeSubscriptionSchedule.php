@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules;
 
 use Carbon\CarbonImmutable;
@@ -128,11 +123,6 @@ class StripeSubscriptionSchedule
         return $instance;
     }
 
-    public function service(): StripeSubscriptionScheduleService
-    {
-        return app(StripeSubscriptionScheduleService::class);
-    }
-
     public function toArray(): array
     {
         $array = [
@@ -146,7 +136,7 @@ class StripeSubscriptionSchedule
             "end_behavior" => $this->endBehavior?->value,
             "livemode" => $this->livemode,
             "metadata" => $this->metadata,
-            "phases" => $this->phases?->map(fn ($phase) => $phase->toArray())->toArray(),
+            "phases" => $this->phases?->map(fn($phase) => $phase->toArray())->toArray(),
             "released_at" => self::carbonToTimestamp($this->releasedAt),
             "released_subscription" => $this->releasedSubscription,
             "status" => $this->status?->value,
@@ -157,13 +147,14 @@ class StripeSubscriptionSchedule
         return Arr::whereNotNull($array);
     }
 
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
 
         return $this;
     }
+
+    // Fluent setters
 
     public function withCustomer(string $customer): self
     {
@@ -233,11 +224,6 @@ class StripeSubscriptionSchedule
         $this->completedAt = $completedAt;
 
         return $this;
-    }
-
-    public function id(): ?string
-    {
-        return $this->id;
     }
 
     public function object(): ?string
@@ -340,19 +326,6 @@ class StripeSubscriptionSchedule
         return $scheduleService->get($scheduleId);
     }
 
-    /** @throws ApiErrorException */
-    public function create(): self
-    {
-        if (!$this->parentSubscription instanceof StripeSubscription || $this->parentSubscription->id() === null) {
-            throw new InvalidArgumentException("Cannot create schedule: parent subscription must have an ID");
-        }
-
-        $result = $this->service()->fromSubscription($this->parentSubscription->id());
-        $result->parentSubscription = $this->parentSubscription;
-
-        return $result;
-    }
-
     public function addPhase(StripeSubscriptionSchedulePhase $phase): self
     {
         $this->phases = ($this->phases ?? collect())->push($phase);
@@ -374,6 +347,29 @@ class StripeSubscriptionSchedule
         $result->parentSubscription = $this->parentSubscription;
 
         return $result;
+    }
+
+    /** @throws ApiErrorException */
+    public function create(): self
+    {
+        if (!$this->parentSubscription instanceof StripeSubscription || $this->parentSubscription->id() === null) {
+            throw new InvalidArgumentException("Cannot create schedule: parent subscription must have an ID");
+        }
+
+        $result = $this->service()->fromSubscription($this->parentSubscription->id());
+        $result->parentSubscription = $this->parentSubscription;
+
+        return $result;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+
+    public function service(): StripeSubscriptionScheduleService
+    {
+        return app(StripeSubscriptionScheduleService::class);
     }
 
     protected function getReadOnlyFields(): array

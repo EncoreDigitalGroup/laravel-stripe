@@ -1,8 +1,5 @@
 <?php
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
+
 use Tests\TestCase;
 use EncoreDigitalGroup\Stripe\Support\Testing\FakeStripeClient;
 

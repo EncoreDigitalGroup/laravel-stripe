@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripeSetupIntent;
@@ -68,6 +63,6 @@ class StripeSetupIntentService
         $stripeSetupIntents = $this->stripe->setupIntents->all($params);
 
         return collect($stripeSetupIntents->data)
-            ->map(fn (SetupIntent $stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
+            ->map(fn(SetupIntent $stripeSetupIntent): StripeSetupIntent => StripeSetupIntent::fromStripeObject($stripeSetupIntent));
     }
 }

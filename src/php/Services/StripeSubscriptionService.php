@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Subscription\StripeSubscription;
@@ -37,20 +32,23 @@ class StripeSubscriptionService
         return $this->list(["customer" => $customerId]);
     }
 
+    /**
+     * @return Collection<int, StripeSubscription>
+     *
+     * @throws ApiErrorException
+     */
+    public function list(array $params = []): Collection
+    {
+        $stripeSubscriptions = $this->stripe->subscriptions->all($params);
+
+        return collect($stripeSubscriptions->data)
+            ->map(fn(Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+    }
+
     /** @throws ApiErrorException */
     public function get(string $subscriptionId): StripeSubscription
     {
         $stripeSubscription = $this->stripe->subscriptions->retrieve($subscriptionId);
-
-        return StripeSubscription::fromStripeObject($stripeSubscription);
-    }
-
-    /** @throws ApiErrorException */
-    public function update(string $subscriptionId, StripeSubscription $subscription): StripeSubscription
-    {
-        $data = $subscription->toUpdateArray();
-
-        $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
 
         return StripeSubscription::fromStripeObject($stripeSubscription);
     }
@@ -74,6 +72,16 @@ class StripeSubscriptionService
     }
 
     /** @throws ApiErrorException */
+    public function update(string $subscriptionId, StripeSubscription $subscription): StripeSubscription
+    {
+        $data = $subscription->toUpdateArray();
+
+        $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, $data);
+
+        return StripeSubscription::fromStripeObject($stripeSubscription);
+    }
+
+    /** @throws ApiErrorException */
     public function resume(string $subscriptionId): StripeSubscription
     {
         $stripeSubscription = $this->stripe->subscriptions->update($subscriptionId, [
@@ -88,25 +96,12 @@ class StripeSubscriptionService
      *
      * @throws ApiErrorException
      */
-    public function list(array $params = []): Collection
-    {
-        $stripeSubscriptions = $this->stripe->subscriptions->all($params);
-
-        return collect($stripeSubscriptions->data)
-            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
-    }
-
-    /**
-     * @return Collection<int, StripeSubscription>
-     *
-     * @throws ApiErrorException
-     */
     public function search(string $query, array $params = []): Collection
     {
         $params["query"] = $query;
         $stripeSubscriptions = $this->stripe->subscriptions->search($params);
 
         return collect($stripeSubscriptions->data)
-            ->map(fn (Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
+            ->map(fn(Subscription $stripeSubscription): StripeSubscription => StripeSubscription::fromStripeObject($stripeSubscription));
     }
 }

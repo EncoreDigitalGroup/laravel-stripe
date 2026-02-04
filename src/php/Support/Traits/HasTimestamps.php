@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
 use Carbon\CarbonImmutable;
@@ -23,6 +18,6 @@ trait HasTimestamps
 
     protected static function carbonToTimestamp(?CarbonImmutable $carbon): ?int
     {
-        return $carbon instanceof CarbonImmutable ? (int) $carbon->timestamp : null;
+        return $carbon instanceof CarbonImmutable ? (int)$carbon->timestamp : null;
     }
 }

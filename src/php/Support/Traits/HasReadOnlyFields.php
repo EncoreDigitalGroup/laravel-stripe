@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
 trait HasReadOnlyFields
@@ -21,6 +16,8 @@ trait HasReadOnlyFields
         return $array;
     }
 
+    abstract protected function getReadOnlyFields(): array;
+
     public function toUpdateArray(): array
     {
         $array = $this->toArray();
@@ -35,8 +32,6 @@ trait HasReadOnlyFields
 
         return $array;
     }
-
-    abstract protected function getReadOnlyFields(): array;
 
     protected function getUpdateOnlyReadOnlyFields(): array
     {

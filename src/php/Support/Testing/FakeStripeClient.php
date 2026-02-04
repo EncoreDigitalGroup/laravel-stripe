@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
 use BackedEnum;
@@ -31,6 +26,19 @@ class FakeStripeClient extends StripeClient
 
         $mergedConfig = array_merge(["api_key" => "sk_test_fake"], $config);
         parent::__construct($mergedConfig);
+    }
+
+    protected function normalizeFakes(array $fakes): array
+    {
+        $normalized = [];
+        foreach ($fakes as $key => $value) {
+            /** @phpstan-ignore-next-line */
+            $stringKey = $key instanceof BackedEnum ? $key->value : (string)$key;
+
+            $normalized[$stringKey] = $value;
+        }
+
+        return $normalized;
     }
 
     public function fake(string|BackedEnum $method, mixed $response): self
@@ -94,19 +102,6 @@ class FakeStripeClient extends StripeClient
         );
     }
 
-    protected function normalizeFakes(array $fakes): array
-    {
-        $normalized = [];
-        foreach ($fakes as $key => $value) {
-            /** @phpstan-ignore-next-line */
-            $stringKey = $key instanceof BackedEnum ? $key->value : (string) $key;
-
-            $normalized[$stringKey] = $value;
-        }
-
-        return $normalized;
-    }
-
     protected function recordCall(string $method, array $params): void
     {
         if ($this->shouldRecord) {
@@ -133,21 +128,6 @@ class FakeStripeClient extends StripeClient
         }
 
         return $response;
-    }
-
-    protected function findWildcardMatch(string $method): mixed
-    {
-        foreach ($this->fakes as $pattern => $response) {
-            if (str_contains($pattern, "*")) {
-                // Quote the pattern first, then replace escaped asterisks with .*
-                $regex = "/^" . str_replace('\*', ".*", preg_quote($pattern, "/")) . '$/';
-                if (preg_match($regex, $method)) {
-                    return $response;
-                }
-            }
-        }
-
-        return null;
     }
 
     protected function arrayToStripeObject(array $data): StripeObject
@@ -178,9 +158,24 @@ class FakeStripeClient extends StripeClient
         return $result;
     }
 
-    /** @param  mixed  $name */
+    protected function findWildcardMatch(string $method): mixed
+    {
+        foreach ($this->fakes as $pattern => $response) {
+            if (str_contains($pattern, "*")) {
+                // Quote the pattern first, then replace escaped asterisks with .*
+                $regex = "/^" . str_replace('\*', ".*", preg_quote($pattern, "/")) . '$/';
+                if (preg_match($regex, $method)) {
+                    return $response;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /** @param mixed $name */
     public function __get($name): FakeStripeService
     {
-        return new FakeStripeService((string) $name, $this);
+        return new FakeStripeService((string)$name, $this);
     }
 }
