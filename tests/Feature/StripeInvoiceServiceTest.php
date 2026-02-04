@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Objects\Invoice\StripeInvoice;
 use EncoreDigitalGroup\Stripe\Services\StripeInvoiceService;
 use EncoreDigitalGroup\Stripe\Stripe;

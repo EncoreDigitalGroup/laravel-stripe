@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Enums\InvoiceBillingReason;
 
 test("InvoiceBillingReason has correct values", function (): void {

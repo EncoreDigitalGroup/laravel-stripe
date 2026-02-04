@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Enums\InvoiceStatus;
 
 test("InvoiceStatus has correct values", function (): void {
