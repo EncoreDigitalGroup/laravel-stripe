@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Number;
@@ -19,6 +14,14 @@ class SecurityKeyPair
     public string $privateKey;
     public int|string $tenantId;
 
+    public static function generate(string $stripeCustomerId, int $tenantId, int $ttlInMinutes = 60): void
+    {
+        $securityKey = self::make();
+        $securityKey->tenantId = $tenantId;
+
+        self::put($stripeCustomerId, $securityKey, $ttlInMinutes);
+    }
+
     public static function make(): SecurityKeyPair
     {
         $securityKey = new self;
@@ -26,14 +29,6 @@ class SecurityKeyPair
         $securityKey->privateKey = Str::guid();
 
         return $securityKey;
-    }
-
-    public static function generate(string $stripeCustomerId, int $tenantId, int $ttlInMinutes = 60): void
-    {
-        $securityKey = self::make();
-        $securityKey->tenantId = $tenantId;
-
-        self::put($stripeCustomerId, $securityKey, $ttlInMinutes);
     }
 
     public static function validate(string $stripeCustomerId, string $publicKey, string $privateKey): bool

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
@@ -48,6 +43,19 @@ class StripePaymentMethodService
         ]);
     }
 
+    /**
+     * @return Collection<int, StripePaymentMethod>
+     *
+     * @throws ApiErrorException
+     */
+    public function list(array $params = []): Collection
+    {
+        $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
+
+        return collect($stripePaymentMethods->data)
+            ->map(fn (PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
+    }
+
     /** @throws ApiErrorException */
     public function update(string $paymentMethodId, StripePaymentMethod $paymentMethod): StripePaymentMethod
     {
@@ -72,18 +80,5 @@ class StripePaymentMethodService
         $stripePaymentMethod = $this->stripe->paymentMethods->detach($paymentMethodId);
 
         return StripePaymentMethod::fromStripeObject($stripePaymentMethod);
-    }
-
-    /**
-     * @return Collection<int, StripePaymentMethod>
-     *
-     * @throws ApiErrorException
-     */
-    public function list(array $params = []): Collection
-    {
-        $stripePaymentMethods = $this->stripe->paymentMethods->all($params);
-
-        return collect($stripePaymentMethods->data)
-            ->map(fn (PaymentMethod $stripePaymentMethod): StripePaymentMethod => StripePaymentMethod::fromStripeObject($stripePaymentMethod));
     }
 }

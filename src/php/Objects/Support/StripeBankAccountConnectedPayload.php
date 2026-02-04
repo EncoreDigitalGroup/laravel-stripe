@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Support;
 
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
@@ -21,6 +16,11 @@ class StripeBankAccountConnectedPayload
     #[SerializedName("stripeCustomerId")]
     private ?string $stripeCustomerId = null;
 
+    public function getSecurityKeys(): ?SecurityKeyPair
+    {
+        return $this->securityKeys;
+    }
+
     public function setSecurityKeys(array $securityKeys): static
     {
         $this->securityKeys = new SecurityKeyPair;
@@ -30,9 +30,9 @@ class StripeBankAccountConnectedPayload
         return $this;
     }
 
-    public function getSecurityKeys(): ?SecurityKeyPair
+    public function getStripeCustomerId(): ?string
     {
-        return $this->securityKeys;
+        return $this->stripeCustomerId;
     }
 
     public function setStripeCustomerId(string $stripeCustomerId): static
@@ -40,10 +40,5 @@ class StripeBankAccountConnectedPayload
         $this->stripeCustomerId = $stripeCustomerId;
 
         return $this;
-    }
-
-    public function getStripeCustomerId(): ?string
-    {
-        return $this->stripeCustomerId;
     }
 }

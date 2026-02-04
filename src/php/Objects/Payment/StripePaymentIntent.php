@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Payment;
 
 use Carbon\CarbonImmutable;
@@ -161,6 +156,126 @@ class StripePaymentIntent
         return $instance;
     }
 
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withAmount(int $amount): self
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function withAmountCapturable(int $amountCapturable): self
+    {
+        $this->amountCapturable = $amountCapturable;
+
+        return $this;
+    }
+
+    public function withAmountReceived(int $amountReceived): self
+    {
+        $this->amountReceived = $amountReceived;
+
+        return $this;
+    }
+
+    public function withCurrency(string $currency): self
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function withClientSecret(string $clientSecret): self
+    {
+        $this->clientSecret = $clientSecret;
+
+        return $this;
+    }
+
+    public function withStatus(PaymentIntentStatus $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function withCaptureMethod(PaymentIntentCaptureMethod $captureMethod): self
+    {
+        $this->captureMethod = $captureMethod;
+
+        return $this;
+    }
+
+    public function withConfirmationMethod(PaymentIntentConfirmationMethod $confirmationMethod): self
+    {
+        $this->confirmationMethod = $confirmationMethod;
+
+        return $this;
+    }
+
+    public function withSetupFutureUsage(PaymentIntentSetupFutureUsage $setupFutureUsage): self
+    {
+        $this->setupFutureUsage = $setupFutureUsage;
+
+        return $this;
+    }
+
+    public function withCustomer(string $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withInvoice(string $invoice): self
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    public function withPaymentMethod(string $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
+
+        return $this;
+    }
+
+    public function withCreated(CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withLastPaymentError(?array $lastPaymentError): self
+    {
+        $this->lastPaymentError = $lastPaymentError;
+
+        return $this;
+    }
+
+    /** @param Collection<int, PaymentMethodType> $paymentMethodTypes */
+    public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
+    {
+        $this->paymentMethodTypes = $paymentMethodTypes;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         $array = [
@@ -187,23 +302,9 @@ class StripePaymentIntent
         return Arr::whereNotNull($array);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function id(): ?string
     {
         return $this->id;
-    }
-
-    public function withAmount(int $amount): self
-    {
-        $this->amount = $amount;
-
-        return $this;
     }
 
     public function amount(): ?int
@@ -211,23 +312,9 @@ class StripePaymentIntent
         return $this->amount;
     }
 
-    public function withAmountCapturable(int $amountCapturable): self
-    {
-        $this->amountCapturable = $amountCapturable;
-
-        return $this;
-    }
-
     public function amountCapturable(): ?int
     {
         return $this->amountCapturable;
-    }
-
-    public function withAmountReceived(int $amountReceived): self
-    {
-        $this->amountReceived = $amountReceived;
-
-        return $this;
     }
 
     public function amountReceived(): ?int
@@ -235,23 +322,9 @@ class StripePaymentIntent
         return $this->amountReceived;
     }
 
-    public function withCurrency(string $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
     public function currency(): ?string
     {
         return $this->currency;
-    }
-
-    public function withCustomer(string $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
     }
 
     public function customer(): ?string
@@ -259,23 +332,9 @@ class StripePaymentIntent
         return $this->customer;
     }
 
-    public function withDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
     public function description(): ?string
     {
         return $this->description;
-    }
-
-    public function withInvoice(string $invoice): self
-    {
-        $this->invoice = $invoice;
-
-        return $this;
     }
 
     public function invoice(): ?string
@@ -283,23 +342,9 @@ class StripePaymentIntent
         return $this->invoice;
     }
 
-    public function withPaymentMethod(string $paymentMethod): self
-    {
-        $this->paymentMethod = $paymentMethod;
-
-        return $this;
-    }
-
     public function paymentMethod(): ?string
     {
         return $this->paymentMethod;
-    }
-
-    public function withStatus(PaymentIntentStatus $status): self
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     public function status(): ?PaymentIntentStatus
@@ -307,23 +352,9 @@ class StripePaymentIntent
         return $this->status;
     }
 
-    public function withCaptureMethod(PaymentIntentCaptureMethod $captureMethod): self
-    {
-        $this->captureMethod = $captureMethod;
-
-        return $this;
-    }
-
     public function captureMethod(): ?PaymentIntentCaptureMethod
     {
         return $this->captureMethod;
-    }
-
-    public function withConfirmationMethod(PaymentIntentConfirmationMethod $confirmationMethod): self
-    {
-        $this->confirmationMethod = $confirmationMethod;
-
-        return $this;
     }
 
     public function confirmationMethod(): ?PaymentIntentConfirmationMethod
@@ -331,23 +362,9 @@ class StripePaymentIntent
         return $this->confirmationMethod;
     }
 
-    public function withSetupFutureUsage(PaymentIntentSetupFutureUsage $setupFutureUsage): self
-    {
-        $this->setupFutureUsage = $setupFutureUsage;
-
-        return $this;
-    }
-
     public function setupFutureUsage(): ?PaymentIntentSetupFutureUsage
     {
         return $this->setupFutureUsage;
-    }
-
-    public function withCreated(CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
     }
 
     public function created(): ?CarbonImmutable
@@ -355,36 +372,14 @@ class StripePaymentIntent
         return $this->created;
     }
 
-    public function withClientSecret(string $clientSecret): self
-    {
-        $this->clientSecret = $clientSecret;
-
-        return $this;
-    }
-
     public function clientSecret(): ?string
     {
         return $this->clientSecret;
     }
 
-    public function withLastPaymentError(?array $lastPaymentError): self
-    {
-        $this->lastPaymentError = $lastPaymentError;
-
-        return $this;
-    }
-
     public function lastPaymentError(): ?array
     {
         return $this->lastPaymentError;
-    }
-
-    /** @param Collection<int, PaymentMethodType> $paymentMethodTypes */
-    public function withPaymentMethodTypes(Collection $paymentMethodTypes): self
-    {
-        $this->paymentMethodTypes = $paymentMethodTypes;
-
-        return $this;
     }
 
     /** @return ?Collection<PaymentMethodType> */

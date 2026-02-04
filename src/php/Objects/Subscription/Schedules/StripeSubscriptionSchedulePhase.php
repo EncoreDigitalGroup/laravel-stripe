@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Subscription\Schedules;
 
 use Carbon\CarbonImmutable;
@@ -149,6 +144,14 @@ class StripeSubscriptionSchedulePhase
     }
 
     // Fluent setters
+
+    public function withMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
     public function withStartDate(CarbonImmutable $startDate): self
     {
         $this->startDate = $startDate;
@@ -215,13 +218,6 @@ class StripeSubscriptionSchedulePhase
     public function withCollectionMethod(string $collectionMethod): self
     {
         $this->collectionMethod = $collectionMethod;
-
-        return $this;
-    }
-
-    public function withMetadata(array $metadata): self
-    {
-        $this->metadata = $metadata;
 
         return $this;
     }

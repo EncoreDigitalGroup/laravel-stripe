@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Payment;
 
 use Carbon\CarbonImmutable;
@@ -127,6 +122,57 @@ class StripePaymentMethod
         return $instance;
     }
 
+    public function withId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function withType(PaymentMethodType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function withCustomer(string $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withCreated(CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withBillingDetails(StripeAddress $billingDetails): self
+    {
+        $this->billingDetails = $billingDetails;
+
+        return $this;
+    }
+
+    /** @param Collection<string, mixed> $card */
+    public function withCard(Collection $card): self
+    {
+        $this->card = $card;
+
+        return $this;
+    }
+
+    /** @param Collection<string, mixed> $usBankAccount */
+    public function withUsBankAccount(Collection $usBankAccount): self
+    {
+        $this->usBankAccount = $usBankAccount;
+
+        return $this;
+    }
+
     public function service(): StripePaymentMethodService
     {
         return app(StripePaymentMethodService::class);
@@ -150,23 +196,9 @@ class StripePaymentMethod
         return Arr::whereNotNull($array);
     }
 
-    public function withId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function id(): ?string
     {
         return $this->id;
-    }
-
-    public function withType(PaymentMethodType $type): self
-    {
-        $this->type = $type;
-
-        return $this;
     }
 
     public function type(): ?PaymentMethodType
@@ -174,23 +206,9 @@ class StripePaymentMethod
         return $this->type;
     }
 
-    public function withCustomer(string $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
     public function customer(): ?string
     {
         return $this->customer;
-    }
-
-    public function withCreated(CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
     }
 
     public function created(): ?CarbonImmutable
@@ -198,38 +216,15 @@ class StripePaymentMethod
         return $this->created;
     }
 
-    public function withBillingDetails(StripeAddress $billingDetails): self
-    {
-        $this->billingDetails = $billingDetails;
-
-        return $this;
-    }
-
     public function billingDetails(): ?StripeAddress
     {
         return $this->billingDetails;
-    }
-
-    /** @param  Collection<string, mixed>  $card */
-    public function withCard(Collection $card): self
-    {
-        $this->card = $card;
-
-        return $this;
     }
 
     /** @return ?Collection<string, mixed> */
     public function card(): ?Collection
     {
         return $this->card;
-    }
-
-    /** @param  Collection<string, mixed>  $usBankAccount */
-    public function withUsBankAccount(Collection $usBankAccount): self
-    {
-        $this->usBankAccount = $usBankAccount;
-
-        return $this;
     }
 
     /** @return ?Collection<string, mixed> */

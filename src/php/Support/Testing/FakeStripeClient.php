@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Testing;
 
 use BackedEnum;
@@ -135,21 +130,6 @@ class FakeStripeClient extends StripeClient
         return $response;
     }
 
-    protected function findWildcardMatch(string $method): mixed
-    {
-        foreach ($this->fakes as $pattern => $response) {
-            if (str_contains($pattern, "*")) {
-                // Quote the pattern first, then replace escaped asterisks with .*
-                $regex = "/^" . str_replace('\*', ".*", preg_quote($pattern, "/")) . '$/';
-                if (preg_match($regex, $method)) {
-                    return $response;
-                }
-            }
-        }
-
-        return null;
-    }
-
     protected function arrayToStripeObject(array $data): StripeObject
     {
         // Ensure we have an 'object' key for proper conversion
@@ -178,7 +158,22 @@ class FakeStripeClient extends StripeClient
         return $result;
     }
 
-    /** @param  mixed  $name */
+    protected function findWildcardMatch(string $method): mixed
+    {
+        foreach ($this->fakes as $pattern => $response) {
+            if (str_contains($pattern, "*")) {
+                // Quote the pattern first, then replace escaped asterisks with .*
+                $regex = "/^" . str_replace('\*', ".*", preg_quote($pattern, "/")) . '$/';
+                if (preg_match($regex, $method)) {
+                    return $response;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /** @param mixed $name */
     public function __get($name): FakeStripeService
     {
         return new FakeStripeService((string) $name, $this);

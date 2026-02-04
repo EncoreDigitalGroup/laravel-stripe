@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook;
 
 use Carbon\CarbonImmutable;
@@ -31,6 +26,18 @@ class StripeWebhookEvent
     private IWebhookData|array|null $data = null;
     private ?CarbonImmutable $created = null;
     private ?string $apiVersion = null;
+
+    /**
+     * Create a StripeWebhookEvent from raw webhook request data
+     *
+     * @throws SignatureVerificationException
+     */
+    public static function fromRequest(string $payload, string $signature, string $secret): self
+    {
+        $event = StripeWebhookHelper::constructEvent($payload, $signature, $secret);
+
+        return self::fromStripeEvent($event);
+    }
 
     /** Create a StripeWebhookEvent from a verified Stripe Event object */
     public static function fromStripeEvent(StripeEvent $event): self
@@ -60,16 +67,25 @@ class StripeWebhookEvent
             ->withApiVersion($event->api_version ?? null);
     }
 
-    /**
-     * Create a StripeWebhookEvent from raw webhook request data
-     *
-     * @throws SignatureVerificationException
-     */
-    public static function fromRequest(string $payload, string $signature, string $secret): self
+    public function withApiVersion(?string $apiVersion): self
     {
-        $event = StripeWebhookHelper::constructEvent($payload, $signature, $secret);
+        $this->apiVersion = $apiVersion;
 
-        return self::fromStripeEvent($event);
+        return $this;
+    }
+
+    public function withCreated(?CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withData(IWebhookData|array|null $data): self
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     public function withType(?string $type): self
@@ -84,35 +100,14 @@ class StripeWebhookEvent
         return $this->type;
     }
 
-    public function withData(IWebhookData|array|null $data): self
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
     public function data(): IWebhookData|array|null
     {
         return $this->data;
     }
 
-    public function withCreated(?CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
     public function created(): ?CarbonImmutable
     {
         return $this->created;
-    }
-
-    public function withApiVersion(?string $apiVersion): self
-    {
-        $this->apiVersion = $apiVersion;
-
-        return $this;
     }
 
     public function apiVersion(): ?string

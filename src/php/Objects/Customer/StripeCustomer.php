@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Customer;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
@@ -110,27 +105,6 @@ class StripeCustomer
         return $instance;
     }
 
-    private static function applyDefaultPaymentMethod(self $instance, Customer $stripeCustomer): self
-    {
-        if (!isset($stripeCustomer->invoice_settings)) {
-            return $instance;
-        }
-
-        $defaultPaymentMethod = $stripeCustomer->invoice_settings->default_payment_method ?? null;
-
-        if (is_string($defaultPaymentMethod)) {
-            $instance->defaultPaymentMethod = $defaultPaymentMethod;
-            $instance->hasDefaultPaymentMethod = true;
-        }
-
-        if (is_object($defaultPaymentMethod)) {
-            $instance->defaultPaymentMethod = $defaultPaymentMethod->id;
-            $instance->hasDefaultPaymentMethod = true;
-        }
-
-        return $instance;
-    }
-
     private static function extractShipping(StripeObject $stripeShipping): ?StripeShipping
     {
         $shippingAddress = null;
@@ -156,153 +130,27 @@ class StripeCustomer
         return $shipping;
     }
 
-    /**
-     * @returns Collection<StripeSubscription>
-     *
-     * @throws ClassPropertyNullException
-     * @throws ApiErrorException
-     */
-    public function subscriptions(bool $refresh = false): Collection
+    private static function applyDefaultPaymentMethod(self $instance, Customer $stripeCustomer): self
     {
-        if ($this->subscriptions instanceof Collection && !$refresh) {
-            return $this->subscriptions;
+        if (!isset($stripeCustomer->invoice_settings)) {
+            return $instance;
         }
 
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
+        $defaultPaymentMethod = $stripeCustomer->invoice_settings->default_payment_method ?? null;
+
+        if (is_string($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod;
+            $instance->hasDefaultPaymentMethod = true;
         }
 
-        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
+        if (is_object($defaultPaymentMethod)) {
+            $instance->defaultPaymentMethod = $defaultPaymentMethod->id;
+            $instance->hasDefaultPaymentMethod = true;
+        }
 
-        return $this->subscriptions;
+        return $instance;
     }
 
-    /**
-     * @throws ApiErrorException
-     * @throws ClassPropertyNullException
-     *
-     * @returns Collection<StripePaymentMethod>
-     */
-    public function paymentMethods(bool $refresh = false): Collection
-    {
-        if ($this->paymentMethods instanceof Collection && !$refresh) {
-            return $this->paymentMethods;
-        }
-
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        $this->paymentMethods = app(StripePaymentMethodService::class)->getAllForCustomer($this->id);
-
-        return $this->paymentMethods;
-    }
-
-    /**
-     * @throws ApiErrorException
-     * @throws ClassPropertyNullException
-     * @throws VariableNullException
-     */
-    public function addPaymentMethod(StripePaymentMethod $paymentMethod): self
-    {
-        $paymentMethod = app(StripePaymentMethodService::class)->create($paymentMethod);
-        $paymentMethodId = $paymentMethod->id();
-
-        if (is_null($paymentMethodId)) {
-            throw new VariableNullException("paymentMethodId");
-        }
-
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        app(StripePaymentMethodService::class)->attach($paymentMethodId, $this->id);
-
-        if (!is_null($this->paymentMethods)) {
-            $this->paymentMethods(true);
-        }
-
-        return $this;
-    }
-
-    /** @throws ClassPropertyNullException */
-    public function createSetupIntent(): StripeSetupIntent
-    {
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        return StripeSetupIntent::make()->withCustomer($this->id);
-    }
-
-    /**
-     * @throws ApiErrorException
-     * @throws ClassPropertyNullException
-     */
-    public function hasDefaultPaymentMethod(): bool
-    {
-        if (is_null($this->id)) {
-            throw new ClassPropertyNullException("id");
-        }
-
-        if (!is_null($this->hasDefaultPaymentMethod)) {
-            return $this->hasDefaultPaymentMethod;
-        }
-
-        $this->hasDefaultPaymentMethod = $this->service()->hasDefaultPaymentMethod($this->id);
-
-        return $this->hasDefaultPaymentMethod;
-    }
-
-    /**
-     * @throws ApiErrorException
-     * @throws ClassPropertyNullException
-     */
-    public function save(): self
-    {
-        if (!is_null($this->defaultPaymentMethod)) {
-            if (is_null($this->id)) {
-                throw new ClassPropertyNullException("id");
-            }
-
-            $paymentMethods = $this->paymentMethods();
-            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
-
-            if (!$paymentMethodExists) {
-                throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
-            }
-        }
-
-        return is_null($this->id) ? $this->service()->create($this) : $this->service()->update($this->id, $this);
-    }
-
-    public function service(): StripeCustomerService
-    {
-        return app(StripeCustomerService::class);
-    }
-
-    public function toArray(): array
-    {
-        $array = [
-            "id" => $this->id,
-            "address" => $this->address?->toArray(),
-            "description" => $this->description,
-            "email" => $this->email,
-            "name" => $this->name,
-            "phone" => $this->phone,
-            "shipping" => $this->shipping?->toArray(),
-        ];
-
-        if (!is_null($this->defaultPaymentMethod)) {
-            $array["invoice_settings"] = [
-                "default_payment_method" => $this->defaultPaymentMethod,
-            ];
-        }
-
-        return Arr::whereNotNull($array);
-    }
-
-    // Fluent setters
     public function withId(string $id): self
     {
         $this->id = $id;
@@ -352,17 +200,166 @@ class StripeCustomer
         return $this;
     }
 
+    /**
+     * @returns Collection<StripeSubscription>
+     *
+     * @throws ClassPropertyNullException
+     * @throws ApiErrorException
+     */
+    public function subscriptions(bool $refresh = false): Collection
+    {
+        if ($this->subscriptions instanceof Collection && !$refresh) {
+            return $this->subscriptions;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->subscriptions = app(StripeSubscriptionService::class)->getAllForCustomer($this->id);
+
+        return $this->subscriptions;
+    }
+
+    // Fluent setters
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     * @throws VariableNullException
+     */
+    public function addPaymentMethod(StripePaymentMethod $paymentMethod): self
+    {
+        $paymentMethod = app(StripePaymentMethodService::class)->create($paymentMethod);
+        $paymentMethodId = $paymentMethod->id();
+
+        if (is_null($paymentMethodId)) {
+            throw new VariableNullException("paymentMethodId");
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        app(StripePaymentMethodService::class)->attach($paymentMethodId, $this->id);
+
+        if (!is_null($this->paymentMethods)) {
+            $this->paymentMethods(true);
+        }
+
+        return $this;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     *
+     * @returns Collection<StripePaymentMethod>
+     */
+    public function paymentMethods(bool $refresh = false): Collection
+    {
+        if ($this->paymentMethods instanceof Collection && !$refresh) {
+            return $this->paymentMethods;
+        }
+
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        $this->paymentMethods = app(StripePaymentMethodService::class)->getAllForCustomer($this->id);
+
+        return $this->paymentMethods;
+    }
+
+    /** @throws ClassPropertyNullException */
+    public function createSetupIntent(): StripeSetupIntent
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        return StripeSetupIntent::make()->withCustomer($this->id);
+    }
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
+    public function hasDefaultPaymentMethod(): bool
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        if (!is_null($this->hasDefaultPaymentMethod)) {
+            return $this->hasDefaultPaymentMethod;
+        }
+
+        $this->hasDefaultPaymentMethod = $this->service()->hasDefaultPaymentMethod($this->id);
+
+        return $this->hasDefaultPaymentMethod;
+    }
+
+    public function service(): StripeCustomerService
+    {
+        return app(StripeCustomerService::class);
+    }
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
+    public function save(): self
+    {
+        if (!is_null($this->defaultPaymentMethod)) {
+            if (is_null($this->id)) {
+                throw new ClassPropertyNullException("id");
+            }
+
+            $paymentMethods = $this->paymentMethods();
+            $paymentMethodExists = $paymentMethods->contains(fn ($pm): bool => $pm->id() === $this->defaultPaymentMethod);
+
+            if (!$paymentMethodExists) {
+                throw new InvalidArgumentException("Payment method {$this->defaultPaymentMethod} is not attached to customer {$this->id}");
+            }
+        }
+
+        return is_null($this->id) ? $this->service()->create($this) : $this->service()->update($this->id, $this);
+    }
+
+    public function toArray(): array
+    {
+        $array = [
+            "id" => $this->id,
+            "address" => $this->address?->toArray(),
+            "description" => $this->description,
+            "email" => $this->email,
+            "name" => $this->name,
+            "phone" => $this->phone,
+            "shipping" => $this->shipping?->toArray(),
+        ];
+
+        if (!is_null($this->defaultPaymentMethod)) {
+            $array["invoice_settings"] = [
+                "default_payment_method" => $this->defaultPaymentMethod,
+            ];
+        }
+
+        return Arr::whereNotNull($array);
+    }
+
+    // Getter methods
+
     public function withDefaultPaymentMethod(string $defaultPaymentMethod): self
     {
         $this->defaultPaymentMethod = $defaultPaymentMethod;
 
         return $this;
-    }
-
-    // Getter methods
-    public function id(): ?string
-    {
-        return $this->id;
     }
 
     public function address(): ?StripeAddress

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Objects\Webhook\Payloads;
 
 use Carbon\CarbonImmutable;
@@ -69,6 +64,104 @@ class StripeInvoiceWebhookData implements IWebhookData
             ->withMetadata(self::extractMetadata($stripeObject));
     }
 
+    public function withLines(?array $lines): self
+    {
+        $this->lines = $lines;
+
+        return $this;
+    }
+
+    public function withDueDate(?CarbonImmutable $dueDate): self
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function withCreated(?CarbonImmutable $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function withCurrency(?string $currency): self
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function withStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function withAmountRemaining(?int $amountRemaining): self
+    {
+        $this->amountRemaining = $amountRemaining;
+
+        return $this;
+    }
+
+    public function withAmountPaid(?int $amountPaid): self
+    {
+        $this->amountPaid = $amountPaid;
+
+        return $this;
+    }
+
+    public function withAmountDue(?int $amountDue): self
+    {
+        $this->amountDue = $amountDue;
+
+        return $this;
+    }
+
+    public function withTotal(?int $total): self
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+    public function withTax(?int $tax): self
+    {
+        $this->tax = $tax;
+
+        return $this;
+    }
+
+    public function withSubtotal(?int $subtotal): self
+    {
+        $this->subtotal = $subtotal;
+
+        return $this;
+    }
+
+    public function withCustomer(?string $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function withPaymentIntent(?string $paymentIntent): self
+    {
+        $this->paymentIntent = $paymentIntent;
+
+        return $this;
+    }
+
+    public function withSubscription(?string $subscription): self
+    {
+        $this->subscription = $subscription;
+
+        return $this;
+    }
+
     public function withNumber(?string $number): self
     {
         $this->number = $number;
@@ -81,23 +174,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->number;
     }
 
-    public function withSubscription(?string $subscription): self
-    {
-        $this->subscription = $subscription;
-
-        return $this;
-    }
-
     public function subscription(): ?string
     {
         return $this->subscription;
-    }
-
-    public function withPaymentIntent(?string $paymentIntent): self
-    {
-        $this->paymentIntent = $paymentIntent;
-
-        return $this;
     }
 
     public function paymentIntent(): ?string
@@ -105,23 +184,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->paymentIntent;
     }
 
-    public function withCustomer(?string $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
     public function customer(): ?string
     {
         return $this->customer;
-    }
-
-    public function withSubtotal(?int $subtotal): self
-    {
-        $this->subtotal = $subtotal;
-
-        return $this;
     }
 
     public function subtotal(): ?int
@@ -129,23 +194,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->subtotal;
     }
 
-    public function withTax(?int $tax): self
-    {
-        $this->tax = $tax;
-
-        return $this;
-    }
-
     public function tax(): ?int
     {
         return $this->tax;
-    }
-
-    public function withTotal(?int $total): self
-    {
-        $this->total = $total;
-
-        return $this;
     }
 
     public function total(): ?int
@@ -153,23 +204,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->total;
     }
 
-    public function withAmountDue(?int $amountDue): self
-    {
-        $this->amountDue = $amountDue;
-
-        return $this;
-    }
-
     public function amountDue(): ?int
     {
         return $this->amountDue;
-    }
-
-    public function withAmountPaid(?int $amountPaid): self
-    {
-        $this->amountPaid = $amountPaid;
-
-        return $this;
     }
 
     public function amountPaid(): ?int
@@ -177,23 +214,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->amountPaid;
     }
 
-    public function withAmountRemaining(?int $amountRemaining): self
-    {
-        $this->amountRemaining = $amountRemaining;
-
-        return $this;
-    }
-
     public function amountRemaining(): ?int
     {
         return $this->amountRemaining;
-    }
-
-    public function withStatus(?string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     public function status(): ?string
@@ -201,23 +224,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->status;
     }
 
-    public function withCurrency(?string $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
     public function currency(): ?string
     {
         return $this->currency;
-    }
-
-    public function withCreated(?CarbonImmutable $created): self
-    {
-        $this->created = $created;
-
-        return $this;
     }
 
     public function created(): ?CarbonImmutable
@@ -225,23 +234,9 @@ class StripeInvoiceWebhookData implements IWebhookData
         return $this->created;
     }
 
-    public function withDueDate(?CarbonImmutable $dueDate): self
-    {
-        $this->dueDate = $dueDate;
-
-        return $this;
-    }
-
     public function dueDate(): ?CarbonImmutable
     {
         return $this->dueDate;
-    }
-
-    public function withLines(?array $lines): self
-    {
-        $this->lines = $lines;
-
-        return $this;
     }
 
     public function lines(): ?array

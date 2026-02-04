@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentCaptureMethod;
 use EncoreDigitalGroup\Stripe\Enums\PaymentIntentStatus;
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;

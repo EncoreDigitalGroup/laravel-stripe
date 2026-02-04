@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 use EncoreDigitalGroup\Stripe\Enums\PaymentMethodType;
 use EncoreDigitalGroup\Stripe\Objects\Payment\StripePaymentMethod;
 use EncoreDigitalGroup\Stripe\Services\StripePaymentMethodService;

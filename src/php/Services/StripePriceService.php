@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Services;
 
 use EncoreDigitalGroup\Stripe\Objects\Product\StripePrice;
@@ -36,19 +31,6 @@ class StripePriceService
     }
 
     /**
-     * Update a price. Note: Only limited fields can be updated after creation
-     * (active, metadata, nickname, lookup_key, tax_behavior)
-     *
-     * @throws ApiErrorException
-     */
-    public function update(string $priceId, StripePrice $price): StripePrice
-    {
-        $stripePrice = $this->stripe->prices->update($priceId, $price->toUpdateArray());
-
-        return StripePrice::fromStripeObject($stripePrice);
-    }
-
-    /**
      * Archive a price (soft delete - sets active to false)
      * Prices cannot be deleted in Stripe, only archived
      *
@@ -59,6 +41,19 @@ class StripePriceService
         $stripePrice = $this->stripe->prices->update($priceId, [
             "active" => false,
         ]);
+
+        return StripePrice::fromStripeObject($stripePrice);
+    }
+
+    /**
+     * Update a price. Note: Only limited fields can be updated after creation
+     * (active, metadata, nickname, lookup_key, tax_behavior)
+     *
+     * @throws ApiErrorException
+     */
+    public function update(string $priceId, StripePrice $price): StripePrice
+    {
+        $stripePrice = $this->stripe->prices->update($priceId, $price->toUpdateArray());
 
         return StripePrice::fromStripeObject($stripePrice);
     }

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Copyright (c) 2025. Encore Digital Group.
- * All Right Reserved.
- */
-
 namespace EncoreDigitalGroup\Stripe\Support\Traits;
 
 use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
@@ -40,14 +35,14 @@ trait HasStripe
         $this->stripe = new StripeClient($config->authentication->secretKey);
     }
 
-    public static function make(?StripeClient $client = null): static
-    {
-        return new static($client);
-    }
-
     public static function config(): StripeConfig
     {
         return StripeConfig::make();
+    }
+
+    public static function make(?StripeClient $client = null): static
+    {
+        return new static($client);
     }
 
     public static function client(): StripeClient
