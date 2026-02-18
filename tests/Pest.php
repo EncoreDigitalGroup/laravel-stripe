@@ -8,7 +8,7 @@ pest()->extend(TestCase::class)
     ->in("Unit");
 
 
-expect()->extend("toHaveCalledStripeMethod", function (string|BackedEnum $method, ?array $expectedParams = null) {
+expect()->extend("toHaveCalledStripeMethod", function (string|BackedEnum $method, ?array $expectedParams = null): object {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
@@ -35,7 +35,7 @@ expect()->extend("toHaveCalledStripeMethod", function (string|BackedEnum $method
     return $this;
 });
 
-expect()->extend("toNotHaveCalledStripeMethod", function (string|BackedEnum $method) {
+expect()->extend("toNotHaveCalledStripeMethod", function (string|BackedEnum $method): object {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
@@ -53,7 +53,7 @@ expect()->extend("toNotHaveCalledStripeMethod", function (string|BackedEnum $met
     return $this;
 });
 
-expect()->extend("toHaveCalledStripeMethodTimes", function (string|BackedEnum $method, int $expectedCount) {
+expect()->extend("toHaveCalledStripeMethodTimes", function (string|BackedEnum $method, int $expectedCount): object {
     /** @var FakeStripeClient $fake */
     $fake = $this->value;
 
