@@ -6,7 +6,7 @@ esbuild.build({
     entryPoints: ["src/ts/index.ts"],
     bundle: true,
     // minify: true,
-    outfile: "dist/bundle.js",
+    outfile: "public/build/bundle.js",
     platform: "browser",
     target: ["es2020"],
     format: "iife",

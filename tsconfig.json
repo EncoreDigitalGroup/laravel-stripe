@@ -13,7 +13,7 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "outDir": "./dist",
+        "outDir": "./public/build",
         "removeComments": true,
         "resolveJsonModule": true,
         "rootDir": "./src/ts",

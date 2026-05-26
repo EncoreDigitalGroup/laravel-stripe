@@ -17,7 +17,7 @@ class ServiceProvider extends BaseServiceProvider
 
         if (class_exists(FilamentAsset::class)) {
             FilamentAsset::register([
-                Js::make("financialConnections", __DIR__ . "/../../../dist/bundle.js"),
+                Js::make("financialConnections", __DIR__ . "/../../../public/build/bundle.js"),
             ], "encoredigitalgroup/common-stripe");
         }
     }
