@@ -13,7 +13,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__ . "/../../../resources/views", "stripe");
-        Blade::componentNamespace('EncoreDigitalGroup\\Common\\Stripe\\Views', "stripe");
+        Blade::componentNamespace("EncoreDigitalGroup\\Stripe\\Views", "stripe");
 
         if (class_exists(FilamentAsset::class)) {
             FilamentAsset::register([
