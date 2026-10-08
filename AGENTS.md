@@ -1,6 +1,22 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI Coding Agents when working with code in this repository.
+
+> Before reading or executing a plan, read [`docs/_planning/README.md`](docs/_planning/README.md).
+
+## Reference files
+
+| Working on             | Read                                                                                                                                                                                    |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Coding rules           | [`docs/standards/policies.md`](docs/standards/policies.md)                                                                                                                              |
+| Runtime and tooling    | [`docs/standards/technology-stack.md`](docs/standards/technology-stack.md)                                                                                                              |
+| Architecture decisions | [`docs/standards/decisions/README.md`](docs/standards/decisions/README.md)                                                                                                              |
+| Logging                | [`docs/standards/policies/structured-logging.md`](docs/standards/policies/structured-logging.md)                                                                                        |
+| Testing                | [`docs/standards/policies/testing.md`](docs/standards/policies/testing.md) and [`docs/standards/policies/test-suite-performance.md`](docs/standards/policies/test-suite-performance.md) |
+| Project terms          | [`docs/standards/glossary.md`](docs/standards/glossary.md)                                                                                                                              |
+
+Agents must run `./vendor/bin/pest --parallel` and `./vendor/bin/phpstan analyse` for code changes. Never run `./vendor/bin/duster fix`, PHP-CS-Fixer, Rector, or another
+formatter or codemod in any mode; CI owns formatting.
 
 ## Repository Overview
 
@@ -9,7 +25,7 @@ enums while maintaining compatibility with Laravel 11-12 applications.
 
 **Key characteristics:**
 
-- PHP 8.3+ with strict typing
+- PHP 8.4+ with strict typing
 - PHPStan Level 8 static analysis
 - Cognitive complexity limits (function: 10, class: 50)
 - Pest v4 for testing with custom Stripe faking infrastructure
@@ -50,7 +66,7 @@ tests/
 
 - `stripe/stripe-php: ^16.5 || ^17.0 || ^18.0` - Official Stripe SDK (supports multiple versions)
 - `encoredigitalgroup/stdlib: ^2.0` - Provides `Arr::whereNotNull()` and other utilities
-- `illuminate/support: ^11|^12` - Laravel collections and helpers
+- `illuminate/support: ^11|^12|^13` - Laravel collections and helpers
 - `phpgenesis/logger: ^1` - Logging utilities
 
 **Development:**
@@ -232,7 +248,7 @@ public function create(StripeProduct $product): StripeProduct
 
 ## Testing Infrastructure
 
-### Stripe::fake() Pattern
+### Stripe::fake () Pattern
 
 Tests use a custom faking system that intercepts Stripe API calls without network requests:
 
@@ -317,7 +333,7 @@ Stripe::fake([
 
 ## Code Style Notes
 
-1. **Use app()->bound() for bound checks, app() for resolution:**
+1. **Use app ()->bound () for bound checks, app () for resolution:**
    ```php
    // Correct
    if (app()->bound(StripeClient::class)) {

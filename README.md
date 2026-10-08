@@ -16,9 +16,9 @@ The official Stripe PHP SDK, while powerful, returns dynamic objects and arrays 
 
 ## Requirements
 
-- PHP 8.3+
-- Laravel 11 or 12
-- Stripe PHP SDK ^18.0
+- PHP 8.4+
+- Laravel Illuminate Support 11, 12, or 13
+- Stripe PHP SDK 16.5, 17, or 18
 
 ## Installation
 
@@ -427,6 +427,15 @@ Run the test suite:
 Contributions to this repository are governed by the Encore Digital Group [Contribution Terms](https://docs.encoredigitalgroup.com/Contributing/Terms/).
 
 Additional details on how to contribute are available [here](https://docs.encoredigitalgroup.com/Contributing/).
+
+## Further Documentation
+
+- [AGENTS.md](AGENTS.md) - AI-agent guidance and required verification.
+- [Coding policies](docs/standards/policies.md) - One policy per engineering concern.
+- [Technology stack](docs/standards/technology-stack.md) - Runtime, framework, and tooling constraints.
+- [Glossary](docs/standards/glossary.md) - Package and tooling terms.
+- [Architecture decisions](docs/standards/decisions/README.md) - Durable decision-record format.
+- [Planning lifecycle](docs/_planning/README.md) - Temporary plan handling.
 
 ## License
 
