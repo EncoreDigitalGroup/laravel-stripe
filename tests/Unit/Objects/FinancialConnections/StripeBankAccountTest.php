@@ -1,6 +1,8 @@
 <?php
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
+use EncoreDigitalGroup\Stripe\Enums\FinancialConnectionsAccountStatus;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 
@@ -64,6 +66,25 @@ describe("StripeBankAccount", function (): void {
             ->and($bankAccount->subscriptions())->toBe([])
             ->and($bankAccount->supportedPaymentMethodTypes())->toBe([])
             ->and($bankAccount->transactionRefresh())->toBeNull();
+    });
+
+    test("requires an account ID to subscribe to transaction refreshes", function (): void {
+        expect(fn (): StripeBankAccount => StripeBankAccount::make()->subscribeToTransactions())
+            ->toThrow(ClassPropertyNullException::class, "id cannot be null.");
+    });
+
+    test("requires an account ID to refresh transactions", function (): void {
+        expect(fn (): StripeBankAccount => StripeBankAccount::make()->refreshTransactions())
+            ->toThrow(ClassPropertyNullException::class, "id cannot be null.");
+    });
+
+    test("supports every Financial Connections account status", function (): void {
+        foreach (FinancialConnectionsAccountStatus::cases() as $status) {
+            $bankAccount = StripeBankAccount::make()->withStatus($status);
+
+            expect($bankAccount->status())->toBe($status)
+                ->and($bankAccount->toArray()["status"])->toBe($status->value);
+        }
     });
 
     test("toArray returns correct structure", function (): void {

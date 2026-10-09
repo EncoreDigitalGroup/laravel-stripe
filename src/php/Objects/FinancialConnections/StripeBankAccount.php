@@ -3,15 +3,23 @@
 namespace EncoreDigitalGroup\Stripe\Objects\FinancialConnections;
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\StdLib\Exceptions\NullExceptions\ClassPropertyNullException;
 use EncoreDigitalGroup\StdLib\Objects\Support\Types\Arr;
+use EncoreDigitalGroup\Stripe\Enums\FinancialConnectionsAccountStatus;
+use EncoreDigitalGroup\Stripe\Services\StripeFinancialConnectionsAccountService;
+use EncoreDigitalGroup\Stripe\Support\Traits\HasGet;
 use EncoreDigitalGroup\Stripe\Support\Traits\HasTimestamps;
 use PHPGenesis\Common\Traits\HasMake;
+use Stripe\Exception\ApiErrorException;
+use Stripe\FinancialConnections\Account;
 
 class StripeBankAccount
 {
+    use HasGet;
     use HasMake;
     use HasTimestamps;
 
+    protected ?FinancialConnectionsAccountStatus $status = null;
     private ?string $id = null;
     private ?string $category = null;
     private ?CarbonImmutable $created = null;
@@ -23,6 +31,104 @@ class StripeBankAccount
     private array $subscriptions = [];
     private array $supportedPaymentMethodTypes = [];
     private ?StripeTransactionRefresh $transactionRefresh = null;
+
+    public static function fromStripeObject(Account $account): self
+    {
+        $instance = self::setBasicProperties(self::make(), $account);
+        $instance = self::setArrayProperties($instance, $account);
+        $instance = self::setTransactionRefresh($instance, $account);
+
+        return self::setStatus($instance, $account);
+    }
+
+    protected static function setBasicProperties(self $instance, Account $account): self
+    {
+        if (isset($account->id)) {
+            $instance = $instance->withId($account->id);
+        }
+        if (isset($account->category)) {
+            $instance = $instance->withCategory($account->category);
+        }
+        if (isset($account->created)) {
+            $created = self::timestampToCarbon($account->created);
+            if ($created instanceof CarbonImmutable) {
+                $instance = $instance->withCreated($created);
+            }
+        }
+        if (isset($account->display_name)) {
+            $instance = $instance->withDisplayName($account->display_name);
+        }
+        if (isset($account->institution_name)) {
+            $instance = $instance->withInstitutionName($account->institution_name);
+        }
+        if (isset($account->last4)) {
+            return $instance->withLast4($account->last4);
+        }
+
+        return $instance;
+    }
+
+    protected static function setArrayProperties(self $instance, Account $account): self
+    {
+        if (isset($account->livemode)) {
+            $instance = $instance->withLiveMode($account->livemode);
+        }
+        if (isset($account->permissions)) {
+            $instance = $instance->withPermissions($account->permissions);
+        }
+        if (isset($account->subscriptions)) {
+            $instance = $instance->withSubscriptions($account->subscriptions);
+        }
+        if (isset($account->supported_payment_method_types)) {
+            return $instance->withSupportedPaymentMethodTypes($account->supported_payment_method_types);
+        }
+
+        return $instance;
+    }
+
+    protected static function setTransactionRefresh(self $instance, Account $account): self
+    {
+        if (!isset($account->transaction_refresh)) {
+            return $instance;
+        }
+
+        $refresh = $account->transaction_refresh;
+        $transactionRefresh = StripeTransactionRefresh::make();
+
+        if (isset($refresh->id)) {
+            $transactionRefresh = $transactionRefresh->withId($refresh->id);
+        }
+        if (isset($refresh->last_attempted_at)) {
+            $lastAttemptedAt = self::timestampToCarbon($refresh->last_attempted_at);
+            if ($lastAttemptedAt instanceof CarbonImmutable) {
+                $transactionRefresh = $transactionRefresh->withLastAttemptedAt($lastAttemptedAt);
+            }
+        }
+        if (isset($refresh->next_refresh_available_at)) {
+            $nextRefreshAvailableAt = self::timestampToCarbon($refresh->next_refresh_available_at);
+            if ($nextRefreshAvailableAt instanceof CarbonImmutable) {
+                $transactionRefresh = $transactionRefresh->withNextRefreshAvailableAt($nextRefreshAvailableAt);
+            }
+        }
+        if (isset($refresh->status)) {
+            $transactionRefresh = $transactionRefresh->withStatus($refresh->status);
+        }
+
+        return $instance->withTransactionRefresh($transactionRefresh);
+    }
+
+    protected static function setStatus(self $instance, Account $account): self
+    {
+        if (!isset($account->status)) {
+            return $instance;
+        }
+
+        $status = FinancialConnectionsAccountStatus::tryFrom($account->status);
+
+        return $status instanceof FinancialConnectionsAccountStatus
+            ? $instance->withStatus($status)
+            : $instance;
+    }
 
     public function toArray(): array
     {
@@ -38,6 +144,7 @@ class StripeBankAccount
             "subscriptions" => $this->subscriptions,
             "supported_payment_method_types" => $this->supportedPaymentMethodTypes,
             "transaction_refresh" => $this->transactionRefresh?->toArray(),
+            "status" => $this->status?->value,
         ];
 
         return Arr::whereNotNull($array);
@@ -121,6 +228,44 @@ class StripeBankAccount
         return $this;
     }
 
+    public function withStatus(FinancialConnectionsAccountStatus $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function service(): StripeFinancialConnectionsAccountService
+    {
+        return app(StripeFinancialConnectionsAccountService::class);
+    }
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
+    public function subscribeToTransactions(): self
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        return $this->service()->subscribeToTransactions($this->id);
+    }
+
+    /**
+     * @throws ApiErrorException
+     * @throws ClassPropertyNullException
+     */
+    public function refreshTransactions(): self
+    {
+        if (is_null($this->id)) {
+            throw new ClassPropertyNullException("id");
+        }
+
+        return $this->service()->refreshTransactions($this->id);
+    }
+
     // Getter methods
     public function id(): ?string
     {
@@ -175,5 +320,10 @@ class StripeBankAccount
     public function transactionRefresh(): ?StripeTransactionRefresh
     {
         return $this->transactionRefresh;
+    }
+
+    public function status(): ?FinancialConnectionsAccountStatus
+    {
+        return $this->status;
     }
 }

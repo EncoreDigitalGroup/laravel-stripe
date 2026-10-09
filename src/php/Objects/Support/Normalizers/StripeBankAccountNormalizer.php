@@ -3,6 +3,7 @@
 namespace EncoreDigitalGroup\Stripe\Objects\Support\Normalizers;
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\Stripe\Enums\FinancialConnectionsAccountStatus;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use InvalidArgumentException;
@@ -29,6 +30,7 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
             "subscriptions" => $data->subscriptions(),
             "supported_payment_method_types" => $data->supportedPaymentMethodTypes(),
             "transaction_refresh" => $data->transactionRefresh(),
+            "status" => $data->status()?->value,
         ];
     }
 
@@ -45,6 +47,13 @@ class StripeBankAccountNormalizer extends AbstractNormalizer implements Denormal
         $bankAccount = $this->setBasicProperties(StripeBankAccount::make(), $data);
         $bankAccount = $this->setArrayProperties($bankAccount, $data);
         $bankAccount = $this->setTransactionRefresh($bankAccount, $data, $format, $context);
+
+        if (isset($data["status"])) {
+            $status = FinancialConnectionsAccountStatus::tryFrom($data["status"]);
+            if ($status instanceof FinancialConnectionsAccountStatus) {
+                return $bankAccount->withStatus($status);
+            }
+        }
 
         return $bankAccount;
     }

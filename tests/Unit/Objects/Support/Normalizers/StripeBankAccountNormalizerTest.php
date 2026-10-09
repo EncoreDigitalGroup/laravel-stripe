@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\CarbonImmutable;
+use EncoreDigitalGroup\Stripe\Enums\FinancialConnectionsAccountStatus;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeTransactionRefresh;
 use EncoreDigitalGroup\Stripe\Objects\Support\Normalizers\StripeBankAccountNormalizer;
@@ -19,6 +20,7 @@ test("can normalize StripeBankAccount to array", function (): void {
         ->withPermissions(["transactions"])
         ->withSubscriptions(["sub_1"])
         ->withSupportedPaymentMethodTypes(["us_bank_account"])
+        ->withStatus(FinancialConnectionsAccountStatus::Active)
         ->withTransactionRefresh($transactionRefresh);
 
     $normalizer = new StripeBankAccountNormalizer;
@@ -57,6 +59,7 @@ test("can denormalize array to StripeBankAccount", function (): void {
         "permissions" => ["balances", "transactions"],
         "subscriptions" => [],
         "supported_payment_method_types" => ["ach"],
+        "status" => "inactive",
     ];
 
     $normalizer = new StripeBankAccountNormalizer;
@@ -67,7 +70,27 @@ test("can denormalize array to StripeBankAccount", function (): void {
         ->and($result->category())->toBe("credit")
         ->and($result->displayName())->toBe("My Bank")
         ->and($result->last4())->toBe("5678")
-        ->and($result->permissions())->toBe(["balances", "transactions"]);
+        ->and($result->permissions())->toBe(["balances", "transactions"])
+        ->and($result->status())->toBe(FinancialConnectionsAccountStatus::Inactive);
+});
+
+test("normalizes every Financial Connections account status", function (): void {
+    $normalizer = new StripeBankAccountNormalizer;
+
+    foreach (FinancialConnectionsAccountStatus::cases() as $status) {
+        $result = $normalizer->normalize(StripeBankAccount::make()->withStatus($status));
+        $denormalized = $normalizer->denormalize(["status" => $status->value], StripeBankAccount::class);
+
+        expect($result["status"])->toBe($status->value)
+            ->and($denormalized->status())->toBe($status);
+    }
+});
+
+test("denormalizes omitted or unknown status to null", function (): void {
+    $normalizer = new StripeBankAccountNormalizer;
+
+    expect($normalizer->denormalize([], StripeBankAccount::class)->status())->toBeNull()
+        ->and($normalizer->denormalize(["status" => "pending"], StripeBankAccount::class)->status())->toBeNull();
 });
 
 test("denormalize handles transaction_refresh", function (): void {

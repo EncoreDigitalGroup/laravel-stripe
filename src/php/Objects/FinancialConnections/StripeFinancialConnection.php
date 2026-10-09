@@ -48,4 +48,9 @@ class StripeFinancialConnection
     {
         return $this->permissions;
     }
+
+    public function account(): StripeBankAccount
+    {
+        return StripeBankAccount::make();
+    }
 }

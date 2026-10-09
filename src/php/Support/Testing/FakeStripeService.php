@@ -71,4 +71,9 @@ class FakeStripeService
 
         return $this->client->resolveFake($fullMethod, $params);
     }
+
+    public function __get(string $name): FakeStripeService
+    {
+        return new self("{$this->serviceName}.{$name}", $this->client);
+    }
 }

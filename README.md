@@ -215,6 +215,46 @@ $paymentMethod = $paymentMethods->first();
 echo $paymentMethod->type()?->value; // "card"
 ```
 
+### Financial Connections account operations
+
+Retrieve an existing Financial Connections account through the typed package API:
+
+```php
+use EncoreDigitalGroup\Stripe\Stripe;
+use EncoreDigitalGroup\Stripe\Enums\FinancialConnectionsAccountStatus;
+
+$account = Stripe::financialConnection()->account()->get("fca_123");
+
+if ($account->status() === FinancialConnectionsAccountStatus::Active) {
+    echo $account->displayName();
+}
+```
+
+`status()` returns a `FinancialConnectionsAccountStatus` value for a known Stripe status: `Active`, `Inactive`, or `Disconnected`. It returns `null` when Stripe omits or
+returns an unknown status.
+
+Subscribe an existing account to periodic transaction refreshes:
+
+```php
+$account = Stripe::financialConnection()
+    ->account()
+    ->withId("fca_123")
+    ->subscribeToTransactions();
+```
+
+The account needs an ID, and Stripe must treat it as active before it accepts the subscription. Stripe API errors propagate unchanged.
+
+Request an on-demand transaction refresh for an existing account:
+
+```php
+$account = Stripe::financialConnection()
+    ->account()
+    ->withId("fca_123")
+    ->refreshTransactions();
+```
+
+The account needs an ID, and Stripe must treat it as active before it accepts the refresh. Stripe API errors propagate unchanged.
+
 ### Product & Price Management
 
 ```php

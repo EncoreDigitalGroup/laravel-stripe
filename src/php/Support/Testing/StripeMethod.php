@@ -100,6 +100,11 @@ enum StripeMethod: string
     case WebhookEndpointsDelete = "webhookEndpoints.delete";
     case WebhookEndpointsAll = "webhookEndpoints.all";
 
+    // Financial Connections account methods
+    case FinancialConnectionsAccountsRetrieve = "financialConnections.accounts.retrieve";
+    case FinancialConnectionsAccountsSubscribe = "financialConnections.accounts.subscribe";
+    case FinancialConnectionsAccountsRefresh = "financialConnections.accounts.refresh";
+
     // Wildcard patterns for matching any method on a service
     case CustomersAny = "customers.*";
     case ProductsAny = "products.*";

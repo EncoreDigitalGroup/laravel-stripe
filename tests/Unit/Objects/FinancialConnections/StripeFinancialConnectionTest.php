@@ -1,7 +1,12 @@
 <?php
 
 use EncoreDigitalGroup\Stripe\Objects\Customer\StripeCustomer;
+use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeBankAccount;
 use EncoreDigitalGroup\Stripe\Objects\FinancialConnections\StripeFinancialConnection;
+
+test("can create a Financial Connections account", function (): void {
+    expect(StripeFinancialConnection::make()->account())->toBeInstanceOf(StripeBankAccount::class);
+});
 
 test("can create financial connection with customer", function (): void {
     $customer = StripeCustomer::make()

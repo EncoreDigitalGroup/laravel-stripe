@@ -20,3 +20,4 @@ rector.php export-ignore
 RELEASE.md export-ignore
 tlint.json export-ignore
 tsconfig.json export-ignore
+/docs export-ignore
